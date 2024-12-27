@@ -11,7 +11,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.example.ktor.model.Priority
 import org.example.ktor.model.Task
-import org.example.ktor.model.TaskRepository
+import org.example.ktor.data.TaskRepository
 
 
 

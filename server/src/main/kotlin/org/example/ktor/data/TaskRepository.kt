@@ -1,4 +1,7 @@
-package org.example.ktor.model
+package org.example.ktor.data
+
+import org.example.ktor.model.Priority
+import org.example.ktor.model.Task
 
 interface TaskRepository {
     fun allTasks(): List<Task>

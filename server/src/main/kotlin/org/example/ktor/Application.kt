@@ -4,7 +4,7 @@ package org.example.ktor
 import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import org.example.ktor.model.InMemoryTaskRepository
+import org.example.ktor.data.InMemoryTaskRepository
 import org.example.ktor.plugins.configureSerialization
 
 fun main() {
