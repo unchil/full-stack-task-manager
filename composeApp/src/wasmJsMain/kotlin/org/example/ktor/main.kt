@@ -20,7 +20,6 @@ import full_stack_task_manager.composeapp.generated.resources.Res
 import full_stack_task_manager.composeapp.generated.resources.compose_multiplatform
 import kotlinx.browser.document
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
