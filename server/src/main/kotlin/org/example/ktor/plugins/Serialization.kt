@@ -21,7 +21,9 @@ fun Application.configureSerialization(repository: TaskRepository) {
     }
 
     routing {
-
+        get("/") {
+            call.respondText ("Beautiful World!")
+        }
         route("/tasks") {
             get {
                 val tasks = repository.allTasks()

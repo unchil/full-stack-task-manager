@@ -9,4 +9,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlin.serialization) apply false
 
+    // Appended
+    alias(libs.plugins.google.devtools.ksp) apply false
+    alias(libs.plugins.secretsGradle) apply false
+    alias(libs.plugins.kotlin.android) apply false
 }
