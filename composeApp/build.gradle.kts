@@ -34,7 +34,7 @@ kotlin {
     
     jvm("desktop")
 
-/*
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "composeApp"
@@ -55,7 +55,7 @@ kotlin {
         binaries.executable()
     }
 
- */
+
 
     sourceSets {
         val desktopMain by getting
@@ -64,7 +64,8 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
-         //   implementation(libs.ktor.client.android)
+           // implementation(libs.ktor.client.android)
+            implementation(libs.ktor.client.cio)
         }
         
         commonMain.dependencies {
@@ -87,17 +88,18 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
 
-       //     implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.cio)
         }
 
         iosMain.dependencies {
 
-        //    implementation(libs.ktor.client.darwin)
+           // implementation(libs.ktor.client.darwin)
+            implementation(libs.ktor.client.cio)
         }
 
         wasmJsMain.dependencies {
 
-        //    implementation(libs.ktor.client.js)
+            implementation(libs.ktor.client.js)
         }
 
 

@@ -9,6 +9,9 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.request.receive
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.plugins.defaultheaders.*
+
+
 import org.example.ktor.model.Priority
 import org.example.ktor.model.Task
 import org.example.ktor.data.TaskRepository
@@ -16,8 +19,13 @@ import org.example.ktor.data.TaskRepository
 
 
 fun Application.configureSerialization(repository: TaskRepository) {
+
     install(ContentNegotiation) {
         json()
+    }
+
+    install(DefaultHeaders){
+        header("Access-Control-Allow-Origin", "*")
     }
 
     routing {

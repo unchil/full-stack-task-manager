@@ -22,7 +22,7 @@ kotlin {
 
     jvm()
 
-/*
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "composeApp"
@@ -43,7 +43,7 @@ kotlin {
         binaries.executable()
     }
 
- */
+
 
 
 
@@ -58,7 +58,7 @@ kotlin {
             implementation(libs.ktor.client.negotiation)
             implementation(libs.ktor.serialization.json)
 
-            implementation(libs.ktor.client.cio)
+        //    implementation(libs.ktor.client.cio)
 
         }
 
