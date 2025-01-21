@@ -64,7 +64,6 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
-           // implementation(libs.ktor.client.android)
             implementation(libs.ktor.client.cio)
         }
         
@@ -80,8 +79,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(projects.shared)
 
-
-
         }
 
         desktopMain.dependencies {
@@ -92,14 +89,7 @@ kotlin {
         }
 
         iosMain.dependencies {
-
-           // implementation(libs.ktor.client.darwin)
             implementation(libs.ktor.client.cio)
-        }
-
-        wasmJsMain.dependencies {
-
-            implementation(libs.ktor.client.js)
         }
 
 
