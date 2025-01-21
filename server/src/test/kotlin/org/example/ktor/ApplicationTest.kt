@@ -1,12 +1,12 @@
 package org.example.ktor
 
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.application.*
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.config.ApplicationConfig
-import io.ktor.server.testing.*
-import kotlin.test.*
+import io.ktor.server.testing.testApplication
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class ApplicationTest {
     @Test
@@ -24,8 +24,10 @@ class ApplicationTest {
     fun testConfig() = testApplication {
         environment {
             config = ApplicationConfig("application.yaml")
+            assertEquals( config.property("ktor.deployment.port").getString(), "7788")
+            assertEquals( config.property("ktor.deployment.host").getString(), "127.0.0.1")
         }
-
     }
+
 
 }
