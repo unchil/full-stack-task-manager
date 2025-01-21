@@ -15,13 +15,13 @@ import org.example.ktor.SERVER_PORT
 import org.example.ktor.getPlatform
 import org.example.ktor.model.Task
 
-
+import io.ktor.client.engine.cio.*
 
 class TaskApi {
 
     private val ip_addr = if( getPlatform().name.contains("Android") ) "10.0.2.2" else "localhost"
 
-    private val httpClient = HttpClient {
+    private val httpClient = HttpClient(CIO) {
         install(ContentNegotiation) {
             json(Json {
                 encodeDefaults = true

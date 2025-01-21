@@ -21,6 +21,7 @@ kotlin {
     
     jvm()
 
+/*
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "composeApp"
@@ -41,6 +42,10 @@ kotlin {
         binaries.executable()
     }
 
+ */
+
+
+
 
     sourceSets {
         commonMain.dependencies {
@@ -49,11 +54,10 @@ kotlin {
             implementation(libs.kotlinx.serialization)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.logging)
-
-
-            implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.negotiation)
             implementation(libs.ktor.serialization.json)
+
+            implementation(libs.ktor.client.cio)
 
         }
 
