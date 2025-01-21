@@ -6,8 +6,11 @@ plugins {
 
 group = "org.example.ktor"
 version = "1.0.0"
+
+
 application {
-    mainClass.set("org.example.ktor.ApplicationKt")
+
+    mainClass.set("io.ktor.server.netty.EngineMain")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}")
 }
 
@@ -16,6 +19,7 @@ dependencies {
     implementation(libs.logback)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.config.yaml)
     implementation(libs.ktor.server.negotiation)
     implementation(libs.ktor.serialization.json.jvm)
 

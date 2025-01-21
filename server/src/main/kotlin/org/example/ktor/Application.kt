@@ -2,21 +2,15 @@ package org.example.ktor
 
 
 import io.ktor.server.application.Application
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import org.example.ktor.data.InMemoryTaskRepository
-import org.example.ktor.plugins.configureSerialization
+import org.example.ktor.module.configureRouting
 
-fun main() {
-    embeddedServer(Netty, port = SERVER_PORT, host = "localhost", module = Application::module)
-        .start(wait = true)
+fun main(args: Array<String>){
+    io.ktor.server.netty.EngineMain.main(args)
 }
 
-fun Application.module() {
-
-    val repository = InMemoryTaskRepository()
-
-    configureSerialization(repository)
-
-
+fun Application.module_Routing(){
+    configureRouting()
 }
+
+
+

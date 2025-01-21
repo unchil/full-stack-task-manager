@@ -1,4 +1,4 @@
-package org.example.ktor.plugins
+package org.example.ktor.module
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
