@@ -24,6 +24,11 @@ uiDesktop = "1.7.0"
 ksp = "2.1.0-1.0.29"
 secrets-gradle-plugin = "2.0.1"
 
+sqlite-version = "3.47.1.0"
+h2-version = "2.3.232"
+exposed-version = "0.57.0"
+
+
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -61,6 +66,12 @@ ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version
 ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktor-client-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-logging = { group = "io.ktor", name ="ktor-client-logging", version.ref = "ktor" }
+
+sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-version" }
+h2 = { module = "com.h2database:h2", version.ref = "h2-version" }
+exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed-version" }
+exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version.ref = "exposed-version" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

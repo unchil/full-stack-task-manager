@@ -29,9 +29,7 @@ fun Application.configureSerialization(repository: TaskRepository) {
     }
 
     routing {
-        get("/") {
-            call.respondText ("Beautiful World!")
-        }
+
         route("/tasks") {
             get {
                 val tasks = repository.allTasks()
@@ -73,7 +71,7 @@ fun Application.configureSerialization(repository: TaskRepository) {
             post {
                 try {
                     val task = call.receive<Task>()
-                    repository.addOrUpdateTask(task)
+                    repository.addTask(task)
                     call.respond(HttpStatusCode.NoContent)
                 } catch (ex: IllegalStateException) {
                     call.respond(HttpStatusCode.BadRequest)

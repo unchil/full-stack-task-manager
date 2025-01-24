@@ -1,9 +1,21 @@
 ktor:
   application:
     modules:
-     # - org.example.ktor.ApplicationKt.module_Routing
+      #- org.example.ktor.ApplicationKt.module_Routing
       - org.example.ktor.ApplicationKt.module_Serialization
   deployment:
     port: 7788
     host: "127.0.0.1"
 
+
+storage:
+  dbName: "sqlite"
+  database:
+    h2:
+      driverClassName: "org.h2.Driver"
+      jdbcURL: "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
+      user: "root"
+      password: ""
+    sqlite:
+      driverClassName: "org.sqlite.JDBC"
+      jdbcURL: "jdbc:sqlite:/Volumes/WorkSpace/Dev/full-stack-task-manager/full-stack-task-manager.sqlite"

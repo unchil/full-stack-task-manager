@@ -17,17 +17,17 @@ class InMemoryTaskRepository : TaskRepository {
         Task("Socializing", "Go to a party", Priority.High)
     )
 
-    override fun allTasks(): List<Task> = tasks
+    override suspend fun allTasks(): List<Task> = tasks
 
-    override fun tasksByPriority(priority: Priority) = tasks.filter {
+    override suspend fun tasksByPriority(priority: Priority) = tasks.filter {
         it.priority == priority
     }
 
-    override fun taskByName(name: String) = tasks.find {
+    override suspend fun taskByName(name: String) = tasks.find {
         it.name.equals(name, ignoreCase = true)
     }
 
-    override fun addOrUpdateTask(task: Task) {
+    override suspend fun addTask(task: Task) {
         var notFound = true
 
         tasks = tasks.map {
@@ -43,7 +43,7 @@ class InMemoryTaskRepository : TaskRepository {
         }
     }
 
-    override fun removeTask(name: String): Boolean {
+    override suspend fun removeTask(name: String): Boolean {
         val oldTasks = tasks
         tasks = tasks.filterNot { it.name == name }
         return oldTasks.size > tasks.size

@@ -23,6 +23,11 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.ktor.server.negotiation)
     implementation(libs.ktor.serialization.json.jvm)
+    implementation(libs.sqlite)
+    implementation(libs.h2)
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
+
 
     testImplementation(libs.kotlin.test)
     testImplementation(libs.ktor.server.tests)
