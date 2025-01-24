@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
+    alias(libs.plugins.kotlin.serialization)
     application
 }
 
@@ -15,13 +16,12 @@ application {
 }
 
 dependencies {
-    implementation(projects.shared)
-
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.headers)
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.ktor.server.negotiation)
+    implementation(libs.kotlinx.serialization)
     implementation(libs.ktor.serialization.json.jvm)
     implementation(libs.sqlite)
     implementation(libs.h2)

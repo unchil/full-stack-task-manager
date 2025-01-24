@@ -3,8 +3,8 @@ package org.example.ktor.data
 import kotlinx.coroutines.Dispatchers
 import org.example.ktor.db.entity.TaskTable
 import org.example.ktor.db.entity.taskTableToModel
-import org.example.ktor.model.Priority
-import org.example.ktor.model.Task
+import org.example.ktor.model.*
+
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.deleteWhere
