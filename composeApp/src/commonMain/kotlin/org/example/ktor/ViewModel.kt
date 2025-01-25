@@ -9,7 +9,10 @@ import org.example.ktor.data.Repository
 import org.example.ktor.model.Task
 
 
-class AppViewModel(private val repository:Repository, private val scope: CoroutineScope) {
+class AppViewModel( private val scope: CoroutineScope) {
+
+    private val repository:Repository
+        = getPlatform().repository
 
     private val _tasksStateFlow: MutableStateFlow<List<Task>>
             = MutableStateFlow(emptyList())
@@ -46,10 +49,12 @@ class AppViewModel(private val repository:Repository, private val scope: Corouti
 
     suspend fun updateTask(task: Task){
         repository.updateTask(task)
+        repository.getAllTasks()
     }
 
     suspend fun removeTask(task: Task){
         repository.removeTask(task)
+        repository.getAllTasks()
     }
 
 
