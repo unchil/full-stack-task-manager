@@ -30,12 +30,6 @@ fun App() {
             AppViewModel(scope)
         }
 
-        LaunchedEffect(key1 = viewModel) {
-            viewModel.onEvent(
-                AppViewModel.Event.GetAllTasks
-            )
-        }
-
         val tasks = viewModel.tasksStateFlow.collectAsState().value
 
 

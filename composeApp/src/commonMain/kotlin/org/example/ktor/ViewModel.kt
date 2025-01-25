@@ -22,6 +22,7 @@ class AppViewModel( private val scope: CoroutineScope) {
 
     init {
         scope.launch {
+            repository.getAllTasks()
             repository._tasksStateFlow.collectLatest {
                 _tasksStateFlow.value = it
             }
