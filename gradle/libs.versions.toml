@@ -1,6 +1,6 @@
 [versions]
 agp = "8.7.3"
-android-compileSdk = "34"
+android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "34"
 androidx-activityCompose = "1.10.0"
@@ -27,6 +27,7 @@ secrets-gradle-plugin = "2.0.1"
 sqlite-version = "3.47.1.0"
 h2-version = "2.3.232"
 exposed-version = "0.57.0"
+dataframe = "0.15.0"
 
 
 [libraries]
@@ -46,6 +47,7 @@ logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization = {group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization"}
+kotlinx-dataframe = {group = "org.jetbrains.kotlinx", name = "dataframe", version.ref = "dataframe"}
 
 
 ktor-server-core = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
@@ -73,6 +75,7 @@ exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version
 exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version.ref = "exposed-version" }
 
 
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
@@ -88,3 +91,5 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
 secretsGradle = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets-gradle-plugin" }
+
+dataframe = { id="org.jetbrains.kotlinx.dataframe", version.ref= "dataframe"}
