@@ -4,6 +4,8 @@ import io.ktor.client.plugins.logging.*
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.kotlinx.dataframe.DataRow
+import org.jetbrains.kotlinx.dataframe.io.readJson
 
 class Repository {
 
@@ -12,11 +14,12 @@ class Repository {
     private val conn:Database
     private val nifsApi:NifsApi
 
+    val Config = DataRow.readJson(path="/Volumes/WorkSpace/Dev/full-stack-task-manager/client/src/main/resources/application.json")
 
     init {
         conn = Database.connect(
-            url = "jdbc:sqlite:/Volumes/WorkSpace/Dev/full-stack-task-manager/full-stack-task-manager.sqlite",
-            driver = "org.sqlite.JDBC"
+            url = Config["jdbcURL"].toString(),
+            driver = Config["driverClassName"].toString()
         )
         transaction(conn) {
             addLogger(StdOutSqlLogger)
@@ -31,9 +34,10 @@ class Repository {
             nifsApi.getObservation().let {
                 val recvData = Json.decodeFromString<ObservationResponse>(it)
                 if(recvData.header.resultCode.equals("00")){
-                    logger.log(::getRealTimeObservation.name  + "\nresult:" + recvData.body.item.size  )
+                    logger.log(::getRealTimeObservation.name  + ": receive count [" + recvData.body.item.size + "]"  )
 
                     transaction (conn){
+                 //       SchemaUtils.drop( ObservationTable)
                         SchemaUtils.create( ObservationTable)
 
                         recvData.body.item.forEach { item ->
@@ -51,7 +55,7 @@ class Repository {
                                     it[sal] = item.sal ?: "0.0".toFloat()
                                 }
                             } catch (e:Exception){
-                                logger.log(item.sta_cde + "," + item.obs_dat + "," + item.obs_tim + "," + item.obs_lay)
+                                logger.log("Exception PRIMARYKEY: [" + item.sta_cde + "," + item.obs_dat + "," + item.obs_tim + "," + item.obs_lay + "]")
                                 e.localizedMessage?.let {
                                     logger.log(it)
                                 }
@@ -60,7 +64,7 @@ class Repository {
                         }
                     }
                 }else{
-                    logger.log(::getRealTimeObservation.name  +  "\nresult:" + recvData.header.resultMsg  )
+                    logger.log(::getRealTimeObservation.name  +  ": receive message [" + recvData.header.resultMsg + "]" )
                 }
             }
         } catch(e: Exception) {
@@ -76,7 +80,7 @@ class Repository {
                 val recvData = Json.decodeFromString<ObservatoryResponse>(it)
                 if(recvData.header.resultCode.equals("00")) {
 
-                    logger.log(::getRealTimeObservatory.name  + "\nresult:" + recvData.body.item.size  )
+                    logger.log(::getRealTimeObservatory.name  + ": receive count [" + recvData.body.item.size + "]"  )
 
                     transaction (conn){
                         SchemaUtils.drop( ObservatoryTable)
@@ -102,7 +106,7 @@ class Repository {
                     }
 
                 }else{
-                    logger.log(::getRealTimeObservatory.name  +  "\nresult:" + recvData.header.resultMsg  )
+                    logger.log(::getRealTimeObservatory.name  +  ": receive message [" + recvData.header.resultMsg + "]" )
                 }
             }
         } catch (e: Exception){

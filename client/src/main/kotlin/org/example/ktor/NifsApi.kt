@@ -9,12 +9,15 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import org.jetbrains.kotlinx.dataframe.DataRow
+import org.jetbrains.kotlinx.dataframe.io.readJson
 
 
 class NifsApi {
+    val Config = DataRow.readJson(path="/Volumes/WorkSpace/Dev/full-stack-task-manager/client/src/main/resources/application.json")
 
-    val endPoint = "https://www.nifs.go.kr"
-    val apiKey = "*************************"
+    val endPoint = Config["endPoint"].toString()
+    val apiKey = Config["key"].toString()
 
     val client = HttpClient(CIO) {
 /*
@@ -43,8 +46,8 @@ class NifsApi {
     suspend fun getObservation():String {
         client.get(urlString = endPoint ){
             url{
-                appendPathSegments( "OpenAPI_json")
-                parameters.append("id", "risaList")
+                appendPathSegments( Config["subPath"].toString())
+                parameters.append("id", Config["list"].toString())
                 parameters.append("key", apiKey)
             }
         }.let {
@@ -55,8 +58,8 @@ class NifsApi {
     suspend fun getObservatory():String {
         client.get(urlString = endPoint ){
             url{
-                appendPathSegments( "OpenAPI_json")
-                parameters.append("id", "risaCode")
+                appendPathSegments(Config["subPath"].toString())
+                parameters.append("id", Config["code"].toString())
                 parameters.append("key", apiKey)
             }
         }.let {
