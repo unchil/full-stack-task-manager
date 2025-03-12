@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -32,13 +33,12 @@ class NifsApi {
     }
 
     val client = HttpClient(CIO) {
-/*
+
         install(Logging){
-            logger = Logger.DEFAULT
+            logger = Logger.SIMPLE
             level = LogLevel.INFO
         }
 
- */
         install(ContentNegotiation) {
             json(Json {
                 encodeDefaults = true
