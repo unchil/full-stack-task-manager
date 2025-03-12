@@ -10,61 +10,55 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-import org.jetbrains.kotlinx.dataframe.AnyRow
 import org.jetbrains.kotlinx.dataframe.DataRow
+import org.jetbrains.kotlinx.dataframe.api.column
+import org.jetbrains.kotlinx.dataframe.api.columnGroup
 import org.jetbrains.kotlinx.dataframe.io.readJson
-import org.jetbrains.kotlinx.dataframe.api.*
 
 class NifsApi {
 
-    private val NIFS_API by columnGroup()
-    private val endPoint by NIFS_API.column<String>()
-    private val apikey by NIFS_API.column<String>()
-    private val subPath by NIFS_API.column<String>()
-    private val id by NIFS_API.columnGroup()
-    private val list by id.column<String>()
-    private val code by id.column<String>()
-    private val Config: AnyRow
+    companion object {
+        private val NIFS_API by columnGroup()
+        private val endPoint by NIFS_API.column<String>()
+        private val apikey by NIFS_API.column<String>()
+        private val subPath by NIFS_API.column<String>()
+        private val id by NIFS_API.columnGroup()
+        private val list by id.column<String>()
+        private val code by id.column<String>()
+        private val Config = DataRow.readJson(path=this::class.java.classLoader.getResource("application.json")!!.path)
 
-    init {
-        val confPath = this::class.java.classLoader.getResource("application.json")!!.path
-        Config = DataRow.readJson(path=confPath)
-    }
-
-    private val client = HttpClient(CIO) {
-
-        install(Logging){
-            logger = Logger.SIMPLE
-            level = LogLevel.INFO
-        }
-
-        install(ContentNegotiation) {
-            json(Json {
-                encodeDefaults = true
-                isLenient = true
-                coerceInputValues = true
-                ignoreUnknownKeys = true
-            })
-        }
-        install(HttpTimeout) {
-            requestTimeoutMillis = 10000
-            connectTimeoutMillis = 3000
-            socketTimeoutMillis = 3000
-        }
-    }
-
-    suspend fun callOpenAPI_json(id:String):String{
-
-        client.get(urlString = Config[endPoint] ){
-            url{
-                appendPathSegments( Config[subPath])
-                parameters.append("id", Config[ if (id.equals("list")) list else code ] )
-                parameters.append("key", Config[apikey] )
+        suspend fun callOpenAPI_json(id:String):String{
+            client.get(urlString = Config[endPoint] ){
+                url{
+                    appendPathSegments( Config[subPath])
+                    parameters.append("id", Config[ if (id.equals("list")) list else code ] )
+                    parameters.append("key", Config[apikey] )
+                }
+            }.let {
+                return it.bodyAsText(java.nio.charset.Charset.forName("EUC-KR"))
             }
-        }.let {
-            return it.bodyAsText(java.nio.charset.Charset.forName("EUC-KR"))
+        }
+
+        val client = HttpClient(CIO) {
+
+            install(Logging){
+                logger = Logger.SIMPLE
+                level = LogLevel.INFO
+            }
+
+            install(ContentNegotiation) {
+                json(Json {
+                    encodeDefaults = true
+                    isLenient = true
+                    coerceInputValues = true
+                    ignoreUnknownKeys = true
+                })
+            }
+            install(HttpTimeout) {
+                requestTimeoutMillis = 10000
+                connectTimeoutMillis = 3000
+                socketTimeoutMillis = 3000
+            }
         }
     }
-
-
 }

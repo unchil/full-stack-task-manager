@@ -11,38 +11,21 @@ import org.jetbrains.kotlinx.dataframe.api.*
 class Repository {
 
     private val logger = Logger.DEFAULT
-    private val conn:Database
-    private val nifsApi:NifsApi
 
     init {
-        val SQLITE_DB by columnGroup()
-        val driverClassName  by SQLITE_DB.column<String>()
-        val jdbcURL by SQLITE_DB.column<String>()
-
-        val confPath = this::class.java.classLoader.getResource("application.json")!!.path
-        val Config = DataRow.readJson(path=confPath)
-
-        conn = Database.connect(
-            url = Config[jdbcURL],
-            driver =  Config[driverClassName]
-        )
         transaction(conn) {
             addLogger(StdOutSqlLogger)
         }
-
-        nifsApi = NifsApi()
     }
-
 
     suspend fun getRealTimeObservation(){
         try{
-            nifsApi.callOpenAPI_json("list").let {
+            NifsApi.callOpenAPI_json("list").let {
                 val recvData = Json.decodeFromString<ObservationResponse>(it)
                 if(recvData.header.resultCode.equals("00")){
                     logger.log(::getRealTimeObservation.name  + ": receive count [" + recvData.body.item.size + "]"  )
 
                     transaction (conn){
-                 //       SchemaUtils.drop( ObservationTable)
                         SchemaUtils.create( ObservationTable)
 
                         recvData.body.item.forEach { item ->
@@ -81,7 +64,7 @@ class Repository {
 
     suspend fun getRealTimeObservatory(){
         try{
-            nifsApi.callOpenAPI_json("code").let {
+            NifsApi.callOpenAPI_json("code").let {
                 val recvData = Json.decodeFromString<ObservatoryResponse>(it)
                 if(recvData.header.resultCode.equals("00")) {
 
@@ -121,5 +104,17 @@ class Repository {
         }
     }
 
+    companion object {
+        private val SQLITE_DB by columnGroup()
+        private val driverClassName  by SQLITE_DB.column<String>()
+        private val jdbcURL by SQLITE_DB.column<String>()
+        private val Config = DataRow.readJson(path=this::class.java.classLoader.getResource("application.json")!!.path)
+
+        val conn = Database.connect(
+            url = Config[jdbcURL],
+            driver =  Config[driverClassName]
+        )
+
+    }
 
 }
