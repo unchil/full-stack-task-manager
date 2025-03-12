@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlinx.dataframe.DataRow
 import org.jetbrains.kotlinx.dataframe.io.readJson
+import org.jetbrains.kotlinx.dataframe.api.*
 
 class Repository {
 
@@ -15,11 +16,14 @@ class Repository {
     private val nifsApi:NifsApi
 
     val Config = DataRow.readJson(path="/Volumes/WorkSpace/Dev/full-stack-task-manager/client/src/main/resources/application.json")
+    val SQLITE_DB by columnGroup()
+    val driverClassName  by SQLITE_DB.column<String>()
+    val jdbcURL by SQLITE_DB.column<String>()
 
     init {
         conn = Database.connect(
-            url = Config["jdbcURL"].toString(),
-            driver = Config["driverClassName"].toString()
+            url = Config[jdbcURL],
+            driver =  Config[driverClassName]
         )
         transaction(conn) {
             addLogger(StdOutSqlLogger)

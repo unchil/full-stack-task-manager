@@ -11,13 +11,18 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.jetbrains.kotlinx.dataframe.DataRow
 import org.jetbrains.kotlinx.dataframe.io.readJson
-
+import org.jetbrains.kotlinx.dataframe.api.*
 
 class NifsApi {
-    val Config = DataRow.readJson(path="/Volumes/WorkSpace/Dev/full-stack-task-manager/client/src/main/resources/application.json")
 
-    val endPoint = Config["endPoint"].toString()
-    val apiKey = Config["key"].toString()
+    val Config = DataRow.readJson(path="/Volumes/WorkSpace/Dev/full-stack-task-manager/client/src/main/resources/application.json")
+    val NIFS_API by columnGroup()
+    val endPoint by NIFS_API.column<String>()
+    val apikey by NIFS_API.column<String>()
+    val subPath by NIFS_API.column<String>()
+    val id by NIFS_API.columnGroup()
+    val list by id.column<String>()
+    val code by id.column<String>()
 
     val client = HttpClient(CIO) {
 /*
@@ -44,11 +49,11 @@ class NifsApi {
 
 
     suspend fun getObservation():String {
-        client.get(urlString = endPoint ){
+        client.get(urlString = Config[endPoint] ){
             url{
-                appendPathSegments( Config["subPath"].toString())
-                parameters.append("id", Config["list"].toString())
-                parameters.append("key", apiKey)
+                appendPathSegments( Config[subPath])
+                parameters.append("id", Config[list] )
+                parameters.append("key", Config[apikey] )
             }
         }.let {
             return it.bodyAsText(java.nio.charset.Charset.forName("EUC-KR"))
@@ -56,11 +61,11 @@ class NifsApi {
     }
 
     suspend fun getObservatory():String {
-        client.get(urlString = endPoint ){
+        client.get(urlString = Config[endPoint] ){
             url{
-                appendPathSegments(Config["subPath"].toString())
-                parameters.append("id", Config["code"].toString())
-                parameters.append("key", apiKey)
+                appendPathSegments(Config[subPath])
+                parameters.append("id", Config[code])
+                parameters.append("key", Config[apikey])
             }
         }.let {
             return it.bodyAsText(java.nio.charset.Charset.forName("EUC-KR"))
