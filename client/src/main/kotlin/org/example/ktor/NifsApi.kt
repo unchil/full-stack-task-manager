@@ -54,12 +54,12 @@ class NifsApi {
         }
     }
 
+    suspend fun callOpenAPI_json(id:String):String{
 
-    suspend fun getObservation():String {
         client.get(urlString = Config[endPoint] ){
             url{
                 appendPathSegments( Config[subPath])
-                parameters.append("id", Config[list] )
+                parameters.append("id", Config[ if (id.equals("list")) list else code ] )
                 parameters.append("key", Config[apikey] )
             }
         }.let {
@@ -67,16 +67,5 @@ class NifsApi {
         }
     }
 
-    suspend fun getObservatory():String {
-        client.get(urlString = Config[endPoint] ){
-            url{
-                appendPathSegments(Config[subPath])
-                parameters.append("id", Config[code])
-                parameters.append("key", Config[apikey])
-            }
-        }.let {
-            return it.bodyAsText(java.nio.charset.Charset.forName("EUC-KR"))
-        }
-    }
 
 }

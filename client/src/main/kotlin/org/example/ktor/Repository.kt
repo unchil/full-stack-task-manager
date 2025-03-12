@@ -37,7 +37,7 @@ class Repository {
 
     suspend fun getRealTimeObservation(){
         try{
-            nifsApi.getObservation().let {
+            nifsApi.callOpenAPI_json("list").let {
                 val recvData = Json.decodeFromString<ObservationResponse>(it)
                 if(recvData.header.resultCode.equals("00")){
                     logger.log(::getRealTimeObservation.name  + ": receive count [" + recvData.body.item.size + "]"  )
@@ -82,7 +82,7 @@ class Repository {
 
     suspend fun getRealTimeObservatory(){
         try{
-            nifsApi.getObservatory().let {
+            nifsApi.callOpenAPI_json("code").let {
                 val recvData = Json.decodeFromString<ObservatoryResponse>(it)
                 if(recvData.header.resultCode.equals("00")) {
 
