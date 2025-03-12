@@ -9,13 +9,13 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import org.jetbrains.kotlinx.dataframe.AnyRow
 import org.jetbrains.kotlinx.dataframe.DataRow
 import org.jetbrains.kotlinx.dataframe.io.readJson
 import org.jetbrains.kotlinx.dataframe.api.*
 
 class NifsApi {
 
-    val Config = DataRow.readJson(path="/Volumes/WorkSpace/Dev/full-stack-task-manager/client/src/main/resources/application.json")
     val NIFS_API by columnGroup()
     val endPoint by NIFS_API.column<String>()
     val apikey by NIFS_API.column<String>()
@@ -23,6 +23,13 @@ class NifsApi {
     val id by NIFS_API.columnGroup()
     val list by id.column<String>()
     val code by id.column<String>()
+
+    val Config: AnyRow
+
+    init {
+        val confPath = this::class.java.classLoader.getResource("application.json")!!.path
+        Config = DataRow.readJson(path=confPath)
+    }
 
     val client = HttpClient(CIO) {
 /*

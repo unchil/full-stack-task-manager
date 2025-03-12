@@ -15,12 +15,14 @@ class Repository {
     private val conn:Database
     private val nifsApi:NifsApi
 
-    val Config = DataRow.readJson(path="/Volumes/WorkSpace/Dev/full-stack-task-manager/client/src/main/resources/application.json")
-    val SQLITE_DB by columnGroup()
-    val driverClassName  by SQLITE_DB.column<String>()
-    val jdbcURL by SQLITE_DB.column<String>()
-
     init {
+        val SQLITE_DB by columnGroup()
+        val driverClassName  by SQLITE_DB.column<String>()
+        val jdbcURL by SQLITE_DB.column<String>()
+
+        val confPath = this::class.java.classLoader.getResource("application.json")!!.path
+        val Config = DataRow.readJson(path=confPath)
+
         conn = Database.connect(
             url = Config[jdbcURL],
             driver =  Config[driverClassName]
