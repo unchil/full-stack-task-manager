@@ -1,7 +1,6 @@
 package org.example.ktor
 
 import org.jetbrains.exposed.sql.Table
-import kotlin.math.round
 
 object ObservationTable: Table("Observation"){
     val sta_cde = varchar("sta_cde", 5)

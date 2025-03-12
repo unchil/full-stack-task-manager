@@ -17,22 +17,21 @@ import org.jetbrains.kotlinx.dataframe.api.*
 
 class NifsApi {
 
-    val NIFS_API by columnGroup()
-    val endPoint by NIFS_API.column<String>()
-    val apikey by NIFS_API.column<String>()
-    val subPath by NIFS_API.column<String>()
-    val id by NIFS_API.columnGroup()
-    val list by id.column<String>()
-    val code by id.column<String>()
-
-    val Config: AnyRow
+    private val NIFS_API by columnGroup()
+    private val endPoint by NIFS_API.column<String>()
+    private val apikey by NIFS_API.column<String>()
+    private val subPath by NIFS_API.column<String>()
+    private val id by NIFS_API.columnGroup()
+    private val list by id.column<String>()
+    private val code by id.column<String>()
+    private val Config: AnyRow
 
     init {
         val confPath = this::class.java.classLoader.getResource("application.json")!!.path
         Config = DataRow.readJson(path=confPath)
     }
 
-    val client = HttpClient(CIO) {
+    private val client = HttpClient(CIO) {
 
         install(Logging){
             logger = Logger.SIMPLE

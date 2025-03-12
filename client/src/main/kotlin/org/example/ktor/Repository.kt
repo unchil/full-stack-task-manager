@@ -10,8 +10,7 @@ import org.jetbrains.kotlinx.dataframe.api.*
 
 class Repository {
 
-    val logger = Logger.DEFAULT
-
+    private val logger = Logger.DEFAULT
     private val conn:Database
     private val nifsApi:NifsApi
 
