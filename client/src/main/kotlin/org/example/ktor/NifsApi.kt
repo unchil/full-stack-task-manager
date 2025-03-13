@@ -10,29 +10,17 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-import org.jetbrains.kotlinx.dataframe.DataRow
-import org.jetbrains.kotlinx.dataframe.api.column
-import org.jetbrains.kotlinx.dataframe.api.columnGroup
-import org.jetbrains.kotlinx.dataframe.io.readJson
 
 class NifsApi {
 
     companion object {
-        private val NIFS_API by columnGroup()
-        private val endPoint by NIFS_API.column<String>()
-        private val apikey by NIFS_API.column<String>()
-        private val subPath by NIFS_API.column<String>()
-        private val id by NIFS_API.columnGroup()
-        private val list by id.column<String>()
-        private val code by id.column<String>()
-        private val Config = DataRow.readJson(path=this::class.java.classLoader.getResource("application.json")!!.path)
 
         suspend fun callOpenAPI_json(id:String):String{
-            client.get(urlString = Config[endPoint] ){
+            client.get(urlString = LoadConfig.Config[LoadConfig.endPoint] ){
                 url{
-                    appendPathSegments( Config[subPath])
-                    parameters.append("id", Config[ if (id.equals("list")) list else code ] )
-                    parameters.append("key", Config[apikey] )
+                    appendPathSegments( LoadConfig.Config[LoadConfig.subPath])
+                    parameters.append("id", LoadConfig.Config[ if (id.equals("list")) LoadConfig.list else LoadConfig.code ] )
+                    parameters.append("key", LoadConfig.Config[LoadConfig.apikey] )
                 }
             }.let {
                 return it.bodyAsText(java.nio.charset.Charset.forName("EUC-KR"))
