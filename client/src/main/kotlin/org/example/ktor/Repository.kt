@@ -103,8 +103,8 @@ class Repository {
 
     companion object {
         val conn = Database.connect(
-            url = LoadConfig.Config[LoadConfig.jdbcURL],
-            driver =  LoadConfig.Config[LoadConfig.driverClassName]
+            url = Config.Item[Config.jdbcURL],
+            driver =  Config.Item[Config.driverClassName]
         )
 
     }

@@ -16,11 +16,11 @@ class NifsApi {
     companion object {
 
         suspend fun callOpenAPI_json(id:String):String{
-            client.get(urlString = LoadConfig.Config[LoadConfig.endPoint] ){
+            client.get(urlString = Config.Item[Config.endPoint] ){
                 url{
-                    appendPathSegments( LoadConfig.Config[LoadConfig.subPath])
-                    parameters.append("id", LoadConfig.Config[ if (id.equals("list")) LoadConfig.list else LoadConfig.code ] )
-                    parameters.append("key", LoadConfig.Config[LoadConfig.apikey] )
+                    appendPathSegments( Config.Item[Config.subPath])
+                    parameters.append("id", Config.Item[ if (id.equals("list")) Config.list else Config.code ] )
+                    parameters.append("key", Config.Item[Config.apikey] )
                 }
             }.let {
                 return it.bodyAsText(java.nio.charset.Charset.forName("EUC-KR"))
