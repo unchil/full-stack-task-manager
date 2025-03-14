@@ -9,11 +9,11 @@ data class Observation(
     val sta_nam_kor: String,
     val obs_dat: String,
     val obs_tim: String,
-    val repair_gbn: Int,
-    val obs_lay: Int,
-    val wtr_tmp: Double,
-    val dox: Double?,
-    val sal: Double?,
+    val repair_gbn: String,
+    val obs_lay: String,
+    val wtr_tmp: String,
+    val dox: String?,
+    val sal: String?,
 )
 
 @Serializable
@@ -28,9 +28,9 @@ data class Observatory(
     val sur_tmp_yn: String,
     val mid_tmp_yn: String,
     val bot_tmp_yn: String,
-    val sur_dep: Double?,
-    val mid_dep: Double?,
-    val bot_dep: Double?,
+    val sur_dep: String?,
+    val mid_dep: String?,
+    val bot_dep: String?,
     val sta_des: String?
 )
 

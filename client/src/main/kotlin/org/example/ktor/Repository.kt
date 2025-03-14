@@ -37,9 +37,9 @@ class Repository {
                                     it[obs_tim] = item.obs_tim
                                     it[repair_gbn] = item.repair_gbn
                                     it[obs_lay] = item.obs_lay
-                                    it[wtr_tmp] = String.format("%.2f", item.wtr_tmp)
-                                    it[dox] = if(item.dox != null)  String.format("%.2f", item.dox) else "0.0"
-                                    it[sal] = if(item.sal != null)  String.format("%.2f", item.sal) else "0.0"
+                                    it[wtr_tmp] = item.wtr_tmp
+                                    it[dox] = item.dox
+                                    it[sal] = item.sal
                                 }
                             } catch (e:Exception){
                                 logger.log("Exception PRIMARYKEY: [" + item.sta_cde + "," + item.obs_dat + "," + item.obs_tim + "," + item.obs_lay + "]")
@@ -78,17 +78,17 @@ class Repository {
                                 it[sta_cde] = item.sta_cde
                                 it[sta_nam_kor] = item.sta_nam_kor
                                 it[bld_dat] = item.bld_dat
-                                it[end_dat] = item.end_dat ?: ""
+                                it[end_dat] = item.end_dat
                                 it[gru_nam] = item.gru_nam
                                 it[lon] = item.lon
                                 it[lat] = item.lat
                                 it[sur_tmp_yn] = item.sur_tmp_yn
                                 it[mid_tmp_yn] = item.mid_tmp_yn
                                 it[bot_tmp_yn] = item.bot_tmp_yn
-                                it[sur_dep] =  if(item.sur_dep != null) String.format("%.1f", item.sur_dep) else "0.0"
-                                it[mid_dep] =  if(item.mid_dep != null) String.format("%.1f", item.mid_dep) else "0.0"
-                                it[bot_dep] =  if(item.bot_dep != null) String.format("%.1f", item.bot_dep) else "0.0"
-                                it[sta_des] = item.sta_des ?: ""
+                                it[sur_dep] =  item.sur_dep
+                                it[mid_dep] =  item.mid_dep
+                                it[bot_dep] =  item.bot_dep
+                                it[sta_des] = item.sta_des
                             }
                         }
                     }
