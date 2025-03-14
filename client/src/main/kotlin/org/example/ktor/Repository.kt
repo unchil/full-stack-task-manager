@@ -15,6 +15,7 @@ class Repository {
         }
     }
 
+    @Suppress("DefaultLocale")
     suspend fun getRealTimeObservation(){
         try{
             NifsApi.callOpenAPI_json("list").let {
@@ -23,6 +24,7 @@ class Repository {
                     logger.log(::getRealTimeObservation.name  + ": receive count [" + recvData.body.item.size + "]"  )
 
                     transaction (conn){
+
                         SchemaUtils.create( ObservationTable)
 
                         recvData.body.item.forEach { item ->
@@ -35,9 +37,9 @@ class Repository {
                                     it[obs_tim] = item.obs_tim
                                     it[repair_gbn] = item.repair_gbn
                                     it[obs_lay] = item.obs_lay
-                                    it[wtr_tmp] = item.wtr_tmp
-                                    it[dox] = item.dox ?: "0.0".toFloat()
-                                    it[sal] = item.sal ?: "0.0".toFloat()
+                                    it[wtr_tmp] = String.format("%.2f", item.wtr_tmp)
+                                    it[dox] = if(item.dox != null)  String.format("%.2f", item.dox) else "0.0"
+                                    it[sal] = if(item.sal != null)  String.format("%.2f", item.sal) else "0.0"
                                 }
                             } catch (e:Exception){
                                 logger.log("Exception PRIMARYKEY: [" + item.sta_cde + "," + item.obs_dat + "," + item.obs_tim + "," + item.obs_lay + "]")
@@ -59,6 +61,7 @@ class Repository {
         }
     }
 
+    @Suppress("DefaultLocale")
     suspend fun getRealTimeObservatory(){
         try{
             NifsApi.callOpenAPI_json("code").let {
@@ -82,9 +85,9 @@ class Repository {
                                 it[sur_tmp_yn] = item.sur_tmp_yn
                                 it[mid_tmp_yn] = item.mid_tmp_yn
                                 it[bot_tmp_yn] = item.bot_tmp_yn
-                                it[sur_dep] = item.sur_dep ?: "0.0".toFloat()
-                                it[mid_dep] = item.mid_dep ?: "0.0".toFloat()
-                                it[bot_dep] = item.bot_dep ?: "0.0".toFloat()
+                                it[sur_dep] =  if(item.sur_dep != null) String.format("%.1f", item.sur_dep) else "0.0"
+                                it[mid_dep] =  if(item.mid_dep != null) String.format("%.1f", item.mid_dep) else "0.0"
+                                it[bot_dep] =  if(item.bot_dep != null) String.format("%.1f", item.bot_dep) else "0.0"
                                 it[sta_des] = item.sta_des ?: ""
                             }
                         }

@@ -9,9 +9,13 @@ object ObservationTable: Table("Observation"){
     val obs_tim = varchar("obs_tim", 8)
     val repair_gbn =  integer("repair_gbn")
     val obs_lay = integer("obs_lay")
-    val wtr_tmp = float("wtr_tmp")
-    val dox = float("dox")
-    val sal = float("sal")
+    val wtr_tmp = varchar("wtr_tmp", 10)
+    val dox = varchar("dox", 10)
+    val sal = varchar("sal", 10)
+
+    init {
+        index("idx_datetime", false, *arrayOf(obs_dat, obs_tim))
+    }
 
     override val primaryKey = PrimaryKey(sta_cde, obs_dat, obs_tim, obs_lay, name = "primaryKey")
 }
@@ -28,9 +32,9 @@ object ObservatoryTable: Table("Observatory"){
     val sur_tmp_yn = varchar("sur_tmp_yn", 1)
     val mid_tmp_yn = varchar("mid_tmp_yn", 1)
     val bot_tmp_yn = varchar("bot_tmp_yn", 1)
-    val sur_dep = float("sur_dep")
-    val mid_dep = float("mid_dep")
-    val bot_dep = float("bot_dep")
+    val sur_dep = varchar("sur_dep", 10)
+    val mid_dep = varchar("mid_dep", 10)
+    val bot_dep = varchar("bot_dep", 10)
     val sta_des = varchar("sta_des", 250)
 
     override val primaryKey = PrimaryKey(sta_cde, name = "primaryKey")
