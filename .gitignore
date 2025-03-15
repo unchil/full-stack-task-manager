@@ -17,3 +17,4 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 /client/src/main/resources/application.json
+/notebook/kotlinNotebook.ipynb
