@@ -17,3 +17,6 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 /client/src/main/resources/application.json
+/notebook/kotlinNotebook.ipynb
+/full-stack-task-manager.sqlite
+/kotlin-js-store/yarn.lock
