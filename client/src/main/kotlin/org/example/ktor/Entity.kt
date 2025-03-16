@@ -21,7 +21,6 @@ object ObservationTable: Table("Observation"){
     override val primaryKey = PrimaryKey(sta_cde, obs_dat, obs_tim, obs_lay, name = "primaryKey")
 }
 
-
 object ObservatoryTable: Table("Observatory"){
     val sta_cde = varchar("sta_cde", 5)
     val sta_nam_kor = varchar("sta_nam_kor", 30)
