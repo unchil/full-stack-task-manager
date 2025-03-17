@@ -35,6 +35,7 @@ class Repository {
                                     it[sta_nam_kor] = item.sta_nam_kor
                                     it[obs_dat] = item.obs_dat
                                     it[obs_tim] = item.obs_tim
+                                    it[obs_datetime] = "${item.obs_dat} ${item.obs_tim}"
                                     it[repair_gbn] = item.repair_gbn
                                     it[obs_lay] = item.obs_lay
                                     it[wtr_tmp] = item.wtr_tmp
