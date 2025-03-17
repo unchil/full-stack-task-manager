@@ -17,4 +17,4 @@ storage:
       password: ""
     sqlite:
       driverClassName: "org.sqlite.JDBC"
-      jdbcURL: "jdbc:sqlite:/Volumes/WorkSpace/Dev/full-stack-task-manager/full-stack-task-manager.sqlite"
+      jdbcURL: "jdbc:sqlite:/Users/unchil/full-stack-task-manager/full-stack-task-manager.sqlite"

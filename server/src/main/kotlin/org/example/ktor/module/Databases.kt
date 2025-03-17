@@ -82,11 +82,14 @@ fun initMemoryDb(db:Database){
 fun initSqliteDbTable(db:Database){
     transaction (db){
         addLogger(StdOutSqlLogger)
+        /*
         SchemaUtils.drop( TaskTable)
         SchemaUtils.create( TaskTable)
         initTaskTable()
+         */
     }
 }
+
 
 fun initTaskTable(){
 
