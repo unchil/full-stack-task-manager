@@ -11,6 +11,7 @@ import org.example.ktor.db.entity.observatoryTableToModel
 import org.example.ktor.model.Observation
 import org.example.ktor.model.Observatory
 import org.jetbrains.exposed.sql.Transaction
+import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
@@ -30,8 +31,20 @@ class NifsRepository:NifsRepositoryInterface {
 
         ObservationTable.selectAll()
             .where {
-                ObservationTable.obs_datetime greaterEq previous24Hour
+                ObservationTable.obs_datetime.greaterEq(previous24Hour)
             }.map {
+                observationTableToModel(it)
+            }
+    }
+
+    override suspend fun currentObservation(): List<Observation> = suspendTransaction {
+
+        val currentDateTime = ObservationTable.obs_datetime.max()
+
+        ObservationTable.selectAll()
+            .where {
+                ObservationTable.obs_datetime.eq(currentDateTime)
+            }.map{
                 observationTableToModel(it)
             }
     }
