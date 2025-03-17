@@ -1,7 +1,5 @@
 package org.example.ktor
 
-import org.example.ktor.ObservationTable.nullable
-import org.example.ktor.ObservatoryTable.nullable
 import org.jetbrains.exposed.sql.Table
 
 object ObservationTable: Table("Observation"){
@@ -9,7 +7,7 @@ object ObservationTable: Table("Observation"){
     val sta_nam_kor = varchar("sta_nam_kor", 50)
     val obs_dat = varchar("obs_dat", 10)
     val obs_tim = varchar("obs_tim", 8)
-    val obs_datetime = varchar("obs_datetime", 19).nullable()
+    val obs_datetime = varchar("obs_datetime", 19)
     val repair_gbn =  varchar("repair_gbn", 1)
     val obs_lay = varchar("obs_lay", 1)
     val wtr_tmp = varchar("wtr_tmp", 10)
@@ -22,6 +20,7 @@ object ObservationTable: Table("Observation"){
 
     override val primaryKey = PrimaryKey(sta_cde, obs_dat, obs_tim, obs_lay, name = "primaryKey")
 }
+
 
 object ObservatoryTable: Table("Observatory"){
     val sta_cde = varchar("sta_cde", 5)
