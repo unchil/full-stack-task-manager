@@ -4,7 +4,7 @@ import org.example.ktor.model.Observation
 import org.example.ktor.model.Observatory
 
 interface NifsRepositoryInterface {
-    suspend fun lastOneDayObservation(): List<Observation>
-    suspend fun currentObservation(): List<Observation>
+
+    suspend fun observationList(division:String):List<Observation>
     suspend fun observatoryInfo():List<Observatory>
 }

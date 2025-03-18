@@ -1,10 +1,10 @@
 package org.example.ktor
 
 
-import io.ktor.server.application.Application
-import org.example.ktor.data.Repository
-import org.example.ktor.module.configureDatabases
-import org.example.ktor.module.configureSerialization
+import io.ktor.server.application.*
+import org.example.ktor.data.NifsRepository
+import org.example.ktor.module.configureNifsDatabase
+import org.example.ktor.module.configureNifsSerialization
 
 fun main(args: Array<String>){
     io.ktor.server.netty.EngineMain.main(args)
@@ -12,9 +12,8 @@ fun main(args: Array<String>){
 
 
 fun Application.module_Serialization(){
-    configureDatabases()
-    val repository = Repository()
-    configureSerialization(repository)
+    configureNifsDatabase()
+    configureNifsSerialization(NifsRepository())
 }
 
 
