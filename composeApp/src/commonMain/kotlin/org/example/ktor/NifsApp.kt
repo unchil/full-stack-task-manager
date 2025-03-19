@@ -31,7 +31,7 @@ fun NifsApp() {
 
         LazyColumn(modifier = Modifier.fillMaxSize().padding(8.dp)) {
             items(eastObservatory.count()) { index ->
-                Text("Observatory Info:${eastObservatory[index].sta_nam_kor}"  )
+                Text("Observatory Info:${eastObservatory[index].sta_cde}"  )
             }
         }
 
