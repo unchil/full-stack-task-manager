@@ -18,6 +18,6 @@ fun main() = application {
         title = "full-stack-task-manager",
         state = state,
     ) {
-        App()
+        NifsApp()
     }
 }
