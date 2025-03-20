@@ -4,10 +4,11 @@ import io.ktor.client.plugins.logging.*
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import io.ktor.util.logging.*
 
 class Repository {
 
-    private val logger = Logger.DEFAULT
+    internal val LOGGER = KtorSimpleLogger("org.example.ktor")
 
     init {
         transaction(conn) {
@@ -21,8 +22,7 @@ class Repository {
             NifsApi.callOpenAPI_json("list").let {
                 val recvData = Json.decodeFromString<ObservationResponse>(it)
                 if(recvData.header.resultCode.equals("00")){
-                    logger.log(::getRealTimeObservation.name  + ": receive count [" + recvData.body.item.size + "]"  )
-
+                    LOGGER.debug(::getRealTimeObservation.name  + ": receive count [" + recvData.body.item.size + "]")
                     transaction (conn){
 
                         SchemaUtils.create( ObservationTable)
@@ -43,21 +43,21 @@ class Repository {
                                     it[sal] = item.sal
                                 }
                             } catch (e:Exception){
-                                logger.log("Exception PRIMARYKEY: [" + item.sta_cde + "," + item.obs_dat + "," + item.obs_tim + "," + item.obs_lay + "]")
+                                LOGGER.debug("Exception PRIMARYKEY: [" + item.sta_cde + "," + item.obs_dat + "," + item.obs_tim + "," + item.obs_lay + "]")
                                 e.localizedMessage?.let {
-                                    logger.log(it)
+                                    LOGGER.error(it)
                                 }
                             }
 
                         }
                     }
                 }else{
-                    logger.log(::getRealTimeObservation.name  +  ": receive message [" + recvData.header.resultMsg + "]" )
+                    LOGGER.debug(::getRealTimeObservation.name  +  ": receive message [" + recvData.header.resultMsg + "]" )
                 }
             }
         } catch(e: Exception) {
             e.localizedMessage?.let {
-                logger.log(it)
+                LOGGER.error(it)
             }
         }
     }
@@ -69,7 +69,7 @@ class Repository {
                 val recvData = Json.decodeFromString<ObservatoryResponse>(it)
                 if(recvData.header.resultCode.equals("00")) {
 
-                    logger.log(::getRealTimeObservatory.name  + ": receive count [" + recvData.body.item.size + "]"  )
+                    LOGGER.debug(::getRealTimeObservatory.name  + ": receive count [" + recvData.body.item.size + "]"  )
 
                     transaction (conn){
                         SchemaUtils.drop( ObservatoryTable)
@@ -95,12 +95,12 @@ class Repository {
                     }
 
                 }else{
-                    logger.log(::getRealTimeObservatory.name  +  ": receive message [" + recvData.header.resultMsg + "]" )
+                    LOGGER.debug(::getRealTimeObservatory.name  +  ": receive message [" + recvData.header.resultMsg + "]" )
                 }
             }
         } catch (e: Exception){
             e.localizedMessage?.let {
-                logger.log(it)
+                LOGGER.error(it)
             }
         }
     }
