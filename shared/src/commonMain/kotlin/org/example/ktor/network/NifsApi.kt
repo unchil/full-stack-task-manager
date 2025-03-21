@@ -12,6 +12,7 @@ import kotlinx.serialization.json.Json
 import org.example.ktor.getPlatform
 import org.example.ktor.model.Observation
 import org.example.ktor.model.Observatory
+import org.example.ktor.model.RealTimeObservation
 
 class NifsApi {
 
@@ -39,7 +40,7 @@ class NifsApi {
         }
     }
 
-    suspend fun getObservation(division:String): List<Observation> {
+    suspend fun getObservation(division:String): List<RealTimeObservation> {
         val url = "${endPoint}/nifs/observations/$division"
         return httpClient.get(url).body()
     }

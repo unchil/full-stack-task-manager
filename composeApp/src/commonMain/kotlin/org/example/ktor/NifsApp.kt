@@ -23,15 +23,15 @@ fun NifsApp() {
             NifsViewModel(scope)
         }
 
-        val observatoryInfo = viewModel._observatoryStateFlow.collectAsState().value
+        val observationCurrent = viewModel._observationCurrentStateFlow.collectAsState().value
 
-        val eastObservatory = observatoryInfo.filter {
+        val eastObservation = observationCurrent.filter {
             it.gru_nam.equals("동해")
         }
 
         LazyColumn(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-            items(eastObservatory.count()) { index ->
-                Text("Observatory Info:${eastObservatory[index].sta_cde}"  )
+            items(eastObservation.count()) { index ->
+                Text("Observatory Info:${eastObservation[index].sta_nam_kor}"  )
             }
         }
 

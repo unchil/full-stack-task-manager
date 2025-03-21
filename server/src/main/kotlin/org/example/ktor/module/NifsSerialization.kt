@@ -48,6 +48,20 @@ fun Application.configureNifsSerialization(repository: NifsRepository) {
 
             }
 
+            get("/observation_realtime"){
+                try {
+                    val result = repository.observationRealTime()
+                    if (result.isEmpty()) {
+                        call.respond(HttpStatusCode.NotFound)
+                        return@get
+                    }
+                    call.respond(result)
+
+                } catch (ex: IllegalArgumentException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+
 
             get ("/observatory"){
                 try {

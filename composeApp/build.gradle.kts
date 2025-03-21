@@ -66,6 +66,8 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 
             implementation(libs.ktor.client.cio)
+
+            implementation(libs.skiko)
         }
         
         commonMain.dependencies {
@@ -79,7 +81,10 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
 
-
+            implementation(libs.let.plot.common)
+            implementation(libs.let.plot.platf.awt)
+            implementation(libs.let.plot.compose)
+            implementation(libs.let.plot.kernel)
         }
 
         desktopMain.dependencies {

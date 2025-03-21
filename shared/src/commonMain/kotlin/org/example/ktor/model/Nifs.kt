@@ -32,3 +32,18 @@ data class Observatory(
     val bot_dep: String?,
     val sta_des: String?
 )
+
+
+@Serializable
+data class RealTimeObservation(
+    val sta_cde: String,
+    val sta_nam_kor: String,
+    val obs_datetime: String,
+    val obs_lay: String,
+    val wtr_tmp: String,
+    val dox: String?,
+    val sal: String?,
+    val gru_nam: String,
+    val lon: Double,
+    val lat: Double,
+)

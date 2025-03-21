@@ -7,20 +7,19 @@ import kotlinx.coroutines.launch
 import org.example.ktor.data.NifsRepository
 import org.example.ktor.model.Observation
 import org.example.ktor.model.Observatory
+import org.example.ktor.model.RealTimeObservation
 
 class NifsViewModel ( private val scope: CoroutineScope) {
 
     private val repository: NifsRepository
         = getPlatform().nifsRepository
 
-    val _observationOneDayStateFlow: MutableStateFlow<List<Observation>>
+    val _observationOneDayStateFlow: MutableStateFlow<List<RealTimeObservation>>
             = MutableStateFlow(emptyList())
 
-    val _observationCurrentStateFlow: MutableStateFlow<List<Observation>>
+    val _observationCurrentStateFlow: MutableStateFlow<List<RealTimeObservation>>
             = MutableStateFlow(emptyList())
 
-    val _observatoryStateFlow: MutableStateFlow<List<Observatory>>
-            = MutableStateFlow(emptyList())
 
 
     init {
@@ -28,9 +27,7 @@ class NifsViewModel ( private val scope: CoroutineScope) {
             repository.getObservatory()
             repository.getObservations("current")
 
-            repository._observatoryStateFlow.collectLatest {
-                _observatoryStateFlow.value = it
-            }
+
             repository._observationCurrentStateFlow.collectLatest {
                 _observationCurrentStateFlow.value = it
             }

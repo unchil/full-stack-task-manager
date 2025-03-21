@@ -2,6 +2,19 @@ package org.example.ktor.model
 
 import kotlinx.serialization.Serializable
 
+@Serializable
+data class RealTimeObservation(
+    val sta_cde: String,
+    val sta_nam_kor: String,
+    val obs_datetime: String,
+    val obs_lay: String,
+    val wtr_tmp: String,
+    val dox: String?,
+    val sal: String?,
+    val gru_nam: String,
+    val lon: Double,
+    val lat: Double,
+)
 
 @Serializable
 data class Observation(
