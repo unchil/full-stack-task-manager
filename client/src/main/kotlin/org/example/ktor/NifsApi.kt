@@ -30,7 +30,7 @@ class NifsApi {
         val client = HttpClient(CIO) {
 
             install(Logging){
-                logger = Logger.SIMPLE
+                logger = Logger.DEFAULT
                 level = LogLevel.INFO
             }
 

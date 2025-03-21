@@ -4,10 +4,12 @@
             <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="APPENDER"/>
     </root>
 
-    <logger name="io.ktor.client.HttpClient" level="INFO"/>
+    <logger name="io.ktor.client.HttpClient" level="DEBUG"/>
+    <logger name="org.example.ktor.Repository" level="INFO"/>
+    <logger name="Exposed" level="INFO"/>
 
 </configuration>

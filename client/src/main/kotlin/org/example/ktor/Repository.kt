@@ -1,14 +1,14 @@
 package org.example.ktor
 
-import io.ktor.client.plugins.logging.*
+import io.ktor.util.logging.*
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import io.ktor.util.logging.*
 
 class Repository {
 
-    internal val LOGGER = KtorSimpleLogger("org.example.ktor")
+
+    internal val LOGGER = KtorSimpleLogger( Repository::class.java.name )
 
     init {
         transaction(conn) {
@@ -22,7 +22,7 @@ class Repository {
             NifsApi.callOpenAPI_json("list").let {
                 val recvData = Json.decodeFromString<ObservationResponse>(it)
                 if(recvData.header.resultCode.equals("00")){
-                    LOGGER.debug(::getRealTimeObservation.name  + ": receive count [" + recvData.body.item.size + "]")
+                    LOGGER.info( "${::getRealTimeObservation.name} [receive count[${recvData.body.item.size}]]")
                     transaction (conn){
 
                         SchemaUtils.create( ObservationTable)
@@ -43,21 +43,22 @@ class Repository {
                                     it[sal] = item.sal
                                 }
                             } catch (e:Exception){
-                                LOGGER.debug("Exception PRIMARYKEY: [" + item.sta_cde + "," + item.obs_dat + "," + item.obs_tim + "," + item.obs_lay + "]")
-                                e.localizedMessage?.let {
-                                    LOGGER.error(it)
+
+                                e.localizedMessage?.let { msg ->
+                                    LOGGER.debug(msg)
+                                    LOGGER.debug("Exception PRIMARYKEY: [" + item.sta_cde + "," + item.obs_dat + "," + item.obs_tim + "," + item.obs_lay + "]")
                                 }
                             }
 
                         }
                     }
                 }else{
-                    LOGGER.debug(::getRealTimeObservation.name  +  ": receive message [" + recvData.header.resultMsg + "]" )
+                    LOGGER.error( "${::getRealTimeObservation.name} [receive message[${recvData.header.resultMsg}]]")
                 }
             }
         } catch(e: Exception) {
-            e.localizedMessage?.let {
-                LOGGER.error(it)
+            e.localizedMessage?.let { msg ->
+                LOGGER.error( "${::getRealTimeObservation.name} [${msg}]")
             }
         }
     }
@@ -69,38 +70,46 @@ class Repository {
                 val recvData = Json.decodeFromString<ObservatoryResponse>(it)
                 if(recvData.header.resultCode.equals("00")) {
 
-                    LOGGER.debug(::getRealTimeObservatory.name  + ": receive count [" + recvData.body.item.size + "]"  )
+                    LOGGER.info( "${::getRealTimeObservatory.name} [receive count[${recvData.body.item.size}]]")
 
                     transaction (conn){
                         SchemaUtils.drop( ObservatoryTable)
                         SchemaUtils.create( ObservatoryTable)
                         recvData.body.item.forEach { item ->
-                            ObservatoryTable.insert { it ->
-                                it[sta_cde] = item.sta_cde
-                                it[sta_nam_kor] = item.sta_nam_kor
-                                it[bld_dat] = item.bld_dat
-                                it[end_dat] = item.end_dat
-                                it[gru_nam] = item.gru_nam
-                                it[lon] = item.lon
-                                it[lat] = item.lat
-                                it[sur_tmp_yn] = item.sur_tmp_yn
-                                it[mid_tmp_yn] = item.mid_tmp_yn
-                                it[bot_tmp_yn] = item.bot_tmp_yn
-                                it[sur_dep] =  item.sur_dep
-                                it[mid_dep] =  item.mid_dep
-                                it[bot_dep] =  item.bot_dep
-                                it[sta_des] = item.sta_des
+                            try {
+                                ObservatoryTable.insert { it ->
+                                    it[sta_cde] = item.sta_cde
+                                    it[sta_nam_kor] = item.sta_nam_kor
+                                    it[bld_dat] = item.bld_dat
+                                    it[end_dat] = item.end_dat
+                                    it[gru_nam] = item.gru_nam
+                                    it[lon] = item.lon
+                                    it[lat] = item.lat
+                                    it[sur_tmp_yn] = item.sur_tmp_yn
+                                    it[mid_tmp_yn] = item.mid_tmp_yn
+                                    it[bot_tmp_yn] = item.bot_tmp_yn
+                                    it[sur_dep] = item.sur_dep
+                                    it[mid_dep] = item.mid_dep
+                                    it[bot_dep] = item.bot_dep
+                                    it[sta_des] = item.sta_des
+                                }
+                            }catch (e:Exception){
+                                e.localizedMessage?.let { msg ->
+                                    LOGGER.debug(msg)
+                                    LOGGER.debug("Exception PRIMARYKEY: [${item.sta_cde}]")
+                                }
                             }
+
                         }
                     }
 
                 }else{
-                    LOGGER.debug(::getRealTimeObservatory.name  +  ": receive message [" + recvData.header.resultMsg + "]" )
+                    LOGGER.error( "${::getRealTimeObservatory.name} [receive message[${recvData.header.resultMsg}]]")
                 }
             }
         } catch (e: Exception){
-            e.localizedMessage?.let {
-                LOGGER.error(it)
+            e.localizedMessage?.let { msg ->
+                LOGGER.error( "${::getRealTimeObservatory.name} [${msg}]")
             }
         }
     }
