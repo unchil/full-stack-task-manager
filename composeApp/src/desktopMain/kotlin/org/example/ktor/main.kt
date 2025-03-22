@@ -81,11 +81,13 @@ fun NifsDeskApp(){
         LaunchedEffect(key1= viewModel._seaWaterInfoCurrentStateFlow.collectAsState().value){
 
             val sta_nam_kor = mutableListOf<String>()
+            val sta_cod = mutableListOf<String>()
             val obs_lay = mutableListOf<String>()
             val wtr_tmp = mutableListOf<Float>()
             val obs_datetime = mutableListOf<String>()
 
             seaWaterInfoCurrent.forEach {
+                sta_cod.add(it.sta_cde)
                 obs_datetime.add(it.obs_datetime)
                 sta_nam_kor.add(
                     when(it.sta_nam_kor){
@@ -110,15 +112,15 @@ fun NifsDeskApp(){
                 wtr_tmp.add( it.wtr_tmp.trim().toFloat()  )
             }
 
-            val data = mapOf<String, List<Any>>("CollectionTime" to obs_datetime, "ObservationPoint" to sta_nam_kor, "ObservationDepth" to obs_lay, "Temperature" to wtr_tmp  )
+            val data = mapOf<String, List<Any>>("CollectionTime" to obs_datetime, "ObservationName" to sta_nam_kor, "ObservationCode" to sta_cod,"ObservationDepth" to obs_lay, "Temperature" to wtr_tmp  )
 
-            figure = letsPlot(data,) { x = "ObservationPoint" } +
+            figure = letsPlot(data,) { x = "ObservationName" } +
                     geomBar(
                         position = positionDodge(),
                         alpha = 0.5,
                         tooltips= layerTooltips()
                          .line("@|@CollectionTime")
-                         .line("@|@ObservationPoint")
+                         .line("ObservationPoint|@ObservationName/@ObservationCode")
                          .line("@|@ObservationDepth")
                          .line("Temperature|^y °C" )
 
