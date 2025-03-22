@@ -107,7 +107,7 @@ fun NifsDeskApp(){
                         else -> {""}
                     }
                 )
-                wtr_tmp.add(it.wtr_tmp.toFloat())
+                wtr_tmp.add( it.wtr_tmp.trim().toFloat()  )
             }
 
             val data = mapOf<String, List<Any>>("CollectionTime" to obs_datetime, "ObservationPoint" to sta_nam_kor, "ObservationDepth" to obs_lay, "Temperature" to wtr_tmp  )
@@ -116,12 +116,19 @@ fun NifsDeskApp(){
                     geomBar(
                         position = positionDodge(),
                         alpha = 0.5,
+/*
                         tooltips= layerTooltips()
-                            .format("Temperature", ".1f")
+                            .format("Temperature", "{.0f} °C")
                             .line("@|@CollectionTime")
                             .line("@|@ObservationPoint")
                             .line("@|@ObservationDepth")
-                            .line("@|@Temperature °C")
+                            .line("@|@Temperature")
+
+ */
+
+
+
+
                     ) {
                         fill = "ObservationDepth"
                         weight = "Temperature"
