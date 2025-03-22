@@ -77,7 +77,7 @@ exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version
 let-plot-common = { group = "org.jetbrains.lets-plot", name = "lets-plot-common", version = "4.5.2"}
 let-plot-platf-awt = { group = "org.jetbrains.lets-plot", name = "platf-awt", version = "4.5.2"}
 ### Note: the latest supported version is lets-plot-skia v2.0.0. The new versions temporarily don't support Android
-let-plot-compose = { group = "org.jetbrains.lets-plot", name = "lets-plot-compose", version = "2.0.0"}
+let-plot-compose = { group = "org.jetbrains.lets-plot", name = "lets-plot-compose", version = "2.1.1"}
 let-plot-kernel = { group = "org.jetbrains.lets-plot", name = "lets-plot-kotlin-kernel", version = "4.9.3"}
 skiko-android = { group = "org.jetbrains.skiko", name = "skiko-android", version ="0.8.4" }
 

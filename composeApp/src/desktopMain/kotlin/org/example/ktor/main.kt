@@ -102,7 +102,7 @@ fun NifsDeskApp(){
 
 
         Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-/*
+
             PlotPanel(
                 figure = figure,
                 preserveAspectRatio = preserveAspectRatio.value,
@@ -111,14 +111,16 @@ fun NifsDeskApp(){
                 computationMessages.forEach { println("[APP MESSAGE] $it") }
             }
 
- */
 
+/*
             LazyColumn(modifier = Modifier.fillMaxSize().padding(8.dp)) {
                 items(seaWaterInfoCurrent.count()) { index ->
                     Text("${seaWaterInfoCurrent[index].sta_nam_kor}:${seaWaterInfoCurrent[index].obs_lay}:${seaWaterInfoCurrent[index].wtr_tmp}:${seaWaterInfoCurrent[index].lon} :${seaWaterInfoCurrent[index].lat}    "  )
                 }
             }
-            
+
+ */
+
         }
 
     }
