@@ -116,18 +116,11 @@ fun NifsDeskApp(){
                     geomBar(
                         position = positionDodge(),
                         alpha = 0.5,
-/*
                         tooltips= layerTooltips()
-                            .format("Temperature", "{.0f} °C")
-                            .line("@|@CollectionTime")
-                            .line("@|@ObservationPoint")
-                            .line("@|@ObservationDepth")
-                            .line("@|@Temperature")
-
- */
-
-
-
+                         .line("@|@CollectionTime")
+                         .line("@|@ObservationPoint")
+                         .line("@|@ObservationDepth")
+                         .line("Temperature|^y °C" )
 
                     ) {
                         fill = "ObservationDepth"
