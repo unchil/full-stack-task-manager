@@ -5,19 +5,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.example.ktor.data.NifsRepository
-import org.example.ktor.model.Observation
-import org.example.ktor.model.Observatory
-import org.example.ktor.model.RealTimeObservation
+import org.example.ktor.model.SeawaterInformationByObservationPoint
 
 class NifsViewModel ( private val scope: CoroutineScope) {
 
     private val repository: NifsRepository
         = getPlatform().nifsRepository
 
-    val _observationOneDayStateFlow: MutableStateFlow<List<RealTimeObservation>>
+    val _seaWaterInfoOneDayStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
             = MutableStateFlow(emptyList())
 
-    val _observationCurrentStateFlow: MutableStateFlow<List<RealTimeObservation>>
+    val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
             = MutableStateFlow(emptyList())
 
 
@@ -25,14 +23,14 @@ class NifsViewModel ( private val scope: CoroutineScope) {
     init {
         scope.launch {
             repository.getObservatory()
-            repository.getObservations("current")
+            repository.getSeaWaterInfo("current")
 
 
-            repository._observationCurrentStateFlow.collectLatest {
-                _observationCurrentStateFlow.value = it
+            repository._seaWaterInfoCurrentStateFlow.collectLatest {
+                _seaWaterInfoCurrentStateFlow.value = it
             }
-            repository._observationOneDayStateFlow.collectLatest {
-                _observationOneDayStateFlow.value = it
+            repository._seaWaterInfoOneDayStateFlow.collectLatest {
+                _seaWaterInfoOneDayStateFlow.value = it
             }
         }
     }
@@ -40,7 +38,7 @@ class NifsViewModel ( private val scope: CoroutineScope) {
     suspend fun onEvent(event: Event) {
         when (event) {
             is Event.ObservationRefresh -> {
-                getObservations(event.division)
+                getSeaWaterInfo(event.division)
             }
             Event.ObservatoryRefresh -> {
                 getObservatory()
@@ -49,8 +47,8 @@ class NifsViewModel ( private val scope: CoroutineScope) {
 
     }
 
-    suspend fun getObservations(division: String){
-        repository.getObservations(division)
+    suspend fun getSeaWaterInfo(division: String){
+        repository.getSeaWaterInfo(division)
     }
 
     suspend fun getObservatory(){

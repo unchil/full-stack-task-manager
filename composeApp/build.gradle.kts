@@ -67,7 +67,10 @@ kotlin {
 
             implementation(libs.ktor.client.cio)
 
-            implementation(libs.skiko)
+            implementation(libs.skiko.android)
+            implementation(libs.let.plot.kernel)
+            implementation(libs.let.plot.common)
+            implementation(libs.let.plot.compose)
         }
         
         commonMain.dependencies {
@@ -80,11 +83,13 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
-
+/*
             implementation(libs.let.plot.common)
             implementation(libs.let.plot.platf.awt)
             implementation(libs.let.plot.compose)
             implementation(libs.let.plot.kernel)
+
+ */
         }
 
         desktopMain.dependencies {
@@ -92,6 +97,11 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.logback)
             implementation(libs.ktor.client.cio)
+
+            implementation(libs.let.plot.kernel)
+            implementation(libs.let.plot.common)
+            implementation(libs.let.plot.platf.awt)
+            implementation(libs.let.plot.compose)
         }
 
         iosMain.dependencies {

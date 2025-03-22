@@ -3,7 +3,7 @@ package org.example.ktor.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RealTimeObservation(
+data class SeawaterInformationByObservationPoint(
     val sta_cde: String,
     val sta_nam_kor: String,
     val obs_datetime: String,

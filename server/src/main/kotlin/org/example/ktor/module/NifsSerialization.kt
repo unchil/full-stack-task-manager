@@ -48,9 +48,16 @@ fun Application.configureNifsSerialization(repository: NifsRepository) {
 
             }
 
-            get("/observation_realtime"){
+            get("/seawaterinfo/{division}"){
+
+                val division = call.parameters["division"]
+                if (division == null) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+
                 try {
-                    val result = repository.observationRealTime()
+                    val result = repository.seaWaterInfo(division)
                     if (result.isEmpty()) {
                         call.respond(HttpStatusCode.NotFound)
                         return@get

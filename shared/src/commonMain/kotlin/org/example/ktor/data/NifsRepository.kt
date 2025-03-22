@@ -1,35 +1,34 @@
 package org.example.ktor.data
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.example.ktor.model.Observation
 import org.example.ktor.model.Observatory
-import org.example.ktor.model.RealTimeObservation
+import org.example.ktor.model.SeawaterInformationByObservationPoint
 import org.example.ktor.network.NifsApi
 
 class NifsRepository {
 
     private val nifsApi = NifsApi()
 
-    val _observationOneDayStateFlow: MutableStateFlow<List<RealTimeObservation>>
+    val _seaWaterInfoOneDayStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
         = MutableStateFlow(emptyList())
 
-    val _observationCurrentStateFlow: MutableStateFlow<List<RealTimeObservation>>
+    val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
             = MutableStateFlow(emptyList())
 
     val _observatoryStateFlow: MutableStateFlow<List<Observatory>>
         = MutableStateFlow(emptyList())
 
-    suspend fun getObservations(division: String) {
+    suspend fun getSeaWaterInfo(division: String) {
         try {
             when(division) {
                 "oneday" -> {
-                    _observationOneDayStateFlow.value = nifsApi.getObservation(division)
+                    _seaWaterInfoOneDayStateFlow.value = nifsApi.getSeaWaterInfo(division)
                 }
                 "current" -> {
-                    _observationCurrentStateFlow.value = nifsApi.getObservation(division)
+                    _seaWaterInfoCurrentStateFlow.value = nifsApi.getSeaWaterInfo(division)
                 }
                 else -> {
-                    _observationCurrentStateFlow.value =emptyList()
+                    _seaWaterInfoCurrentStateFlow.value =emptyList()
                 }
             }
 

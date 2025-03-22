@@ -35,7 +35,7 @@ data class Observatory(
 
 
 @Serializable
-data class RealTimeObservation(
+data class SeawaterInformationByObservationPoint(
     val sta_cde: String,
     val sta_nam_kor: String,
     val obs_datetime: String,

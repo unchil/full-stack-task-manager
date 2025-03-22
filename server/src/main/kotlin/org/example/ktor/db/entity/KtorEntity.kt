@@ -20,7 +20,18 @@ fun taskTableToModel(it: ResultRow) = Task(
 )
 
 
-
+fun toSeawaterInformationByObservationPoint(it: ResultRow) = SeawaterInformationByObservationPoint(
+    it[ObservationTable.sta_cde],
+    it[ObservationTable.sta_nam_kor],
+    it[ObservationTable.obs_datetime],
+    it[ObservationTable.obs_lay],
+    it[ObservationTable.wtr_tmp],
+    it[ObservationTable.dox],
+    it[ObservationTable.sal],
+    it[ObservatoryTable.gru_nam],
+    it[ObservatoryTable.lat],
+    it[ObservatoryTable.lon]
+)
 
 
 object ObservationTable: Table("Observation"){
@@ -42,7 +53,7 @@ object ObservationTable: Table("Observation"){
     override val primaryKey = PrimaryKey(sta_cde, obs_dat, obs_tim, obs_lay, name = "primaryKey")
 }
 
-fun observationTableToModel(it: ResultRow) = Observation (
+fun toObservation(it: ResultRow) = Observation (
     it[ObservationTable.sta_cde],
     it[ObservationTable.sta_nam_kor],
     it[ObservationTable.obs_datetime],
@@ -73,7 +84,7 @@ object ObservatoryTable: Table("Observatory"){
     override val primaryKey = PrimaryKey(sta_cde, name = "primaryKey")
 }
 
-fun observatoryTableToModel(it: ResultRow) = Observatory (
+fun toObservatory(it: ResultRow) = Observatory (
     it[ObservatoryTable.sta_cde],
     it[ObservatoryTable.sta_nam_kor],
     it[ObservatoryTable.bld_dat],

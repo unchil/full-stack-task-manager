@@ -22,23 +22,16 @@ fun NifsApp() {
         val viewModel = remember {
             NifsViewModel(scope)
         }
-
-        val observationCurrent = viewModel._observationCurrentStateFlow.collectAsState().value
-
-        val eastObservation = observationCurrent.filter {
+        val seaWaterInfoCurrent = viewModel._seaWaterInfoCurrentStateFlow.collectAsState().value
+        val eastSeaWaterInfo = seaWaterInfoCurrent.filter {
             it.gru_nam.equals("동해")
         }
 
         LazyColumn(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-            items(eastObservation.count()) { index ->
-                Text("Observatory Info:${eastObservation[index].sta_nam_kor}"  )
+            items(eastSeaWaterInfo.count()) { index ->
+                Text("${eastSeaWaterInfo[index].sta_nam_kor}:${eastSeaWaterInfo[index].obs_lay}:${eastSeaWaterInfo[index].wtr_tmp}:${eastSeaWaterInfo[index].lon} :${eastSeaWaterInfo[index].lat}    "  )
             }
         }
-
-
-
-
-
 
     }
 

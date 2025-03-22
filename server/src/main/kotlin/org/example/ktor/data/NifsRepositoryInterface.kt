@@ -2,11 +2,11 @@ package org.example.ktor.data
 
 import org.example.ktor.model.Observation
 import org.example.ktor.model.Observatory
-import org.example.ktor.model.RealTimeObservation
+import org.example.ktor.model.SeawaterInformationByObservationPoint
 
 interface NifsRepositoryInterface {
 
-    suspend fun observationRealTime():List<RealTimeObservation>
-    suspend fun observationList(division:String):List<RealTimeObservation>
+    suspend fun seaWaterInfo(division:String):List<SeawaterInformationByObservationPoint>
+    suspend fun observationList(division:String):List<Observation>
     suspend fun observatoryInfo():List<Observatory>
 }
