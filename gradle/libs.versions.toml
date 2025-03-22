@@ -11,12 +11,12 @@ androidx-espresso-core = "3.6.1"
 androidx-lifecycle = "2.8.4"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
-compose-multiplatform = "1.7.3"
+compose-multiplatform = "1.7.1"
 junit = "4.13.2"
-kotlin = "2.1.0"
-kotlinx-coroutines = "1.9.0"
-ktor = "3.0.2"
-logback = "1.5.12"
+kotlin = "2.1.10"
+kotlinx-coroutines = "1.10.1"
+ktor = "3.0.3"
+logback = "1.5.16"
 
 serialization = "1.7.3"
 uiDesktop = "1.7.0"
@@ -79,7 +79,7 @@ let-plot-platf-awt = { group = "org.jetbrains.lets-plot", name = "platf-awt", ve
 ### Note: the latest supported version is lets-plot-skia v2.0.0. The new versions temporarily don't support Android
 let-plot-compose = { group = "org.jetbrains.lets-plot", name = "lets-plot-compose", version = "2.1.1"}
 let-plot-kernel = { group = "org.jetbrains.lets-plot", name = "lets-plot-kotlin-kernel", version = "4.9.3"}
-skiko-android = { group = "org.jetbrains.skiko", name = "skiko-android", version ="0.8.4" }
+skiko-android = { group = "org.jetbrains.skiko", name = "skiko-android", version ="0.8.18" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
