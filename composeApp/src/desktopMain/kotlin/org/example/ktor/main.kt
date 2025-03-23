@@ -15,7 +15,6 @@ import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import org.jetbrains.letsPlot.geom.geomBar
 import org.jetbrains.letsPlot.geom.geomPoint
-import org.jetbrains.letsPlot.geom.geomText
 import org.jetbrains.letsPlot.ggsize
 import org.jetbrains.letsPlot.intern.Plot
 import org.jetbrains.letsPlot.label.labs
@@ -47,12 +46,9 @@ fun NifsDeskApp(){
 
     MaterialTheme {
 
-        val scope = rememberCoroutineScope()
+        val coroutineScope = rememberCoroutineScope()
 
-
-        val viewModel = remember {
-            NifsViewModel(scope)
-        }
+        val viewModel = remember { NifsViewModel(coroutineScope) }
 
         val seaWaterInfoCurrent = viewModel._seaWaterInfoCurrentStateFlow.collectAsState().value.filter {
             it.gru_nam.equals("동해")
@@ -60,13 +56,9 @@ fun NifsDeskApp(){
 
         val preserveAspectRatio = remember { mutableStateOf(false) }
 
-        fun blankPlot(): Plot {
-            return letsPlot() + geomPoint()
-        }
+        var figure: Plot by remember { mutableStateOf(letsPlot() + geomPoint()) }
 
-        var figure: Plot by remember { mutableStateOf(blankPlot()) }
-
-        LaunchedEffect(key1= viewModel._seaWaterInfoCurrentStateFlow.collectAsState().value){
+        fun makeData():Map<String,List<Any>> {
 
             val sta_nam_kor = mutableListOf<String>()
             val sta_cod = mutableListOf<String>()
@@ -88,76 +80,71 @@ fun NifsDeskApp(){
                 )
                 wtr_tmp.add( it.wtr_tmp.trim().toFloat()  )
             }
-
-            val data = mapOf<String, List<Any>> (
+            return mapOf<String, List<Any>> (
                 "CollectionTime" to obs_datetime,
                 "ObservatoryName" to sta_nam_kor,
                 "ObservatoryCode" to sta_cod,
                 "ObservatoryDepth" to obs_lay,
                 "Temperature" to wtr_tmp  )
+        }
 
-            figure = letsPlot(data) {
-                    x = "ObservatoryName"
-                    weight = "Temperature" } +
-                geomBar(
-                    position = positionDodge(),
-                    alpha = 0.6,
-                    tooltips= layerTooltips()
-                         .line("수집시간|@CollectionTime")
-                         .line("관측지점|@ObservatoryName/@ObservatoryCode")
-                         .line("관측수심|@ObservatoryDepth")
-                         .line("온도|^y °C" )
+        fun makeFigure(data:Map<String,List<Any>>):Plot {
+            return letsPlot(data) {
+                x = "ObservatoryName"
+                weight = "Temperature" } +
+                    geomBar(
+                        position = positionDodge(),
+                        alpha = 0.6,
+                        tooltips= layerTooltips()
+                            .line("수집시간|@CollectionTime")
+                            .line("관측지점|@ObservatoryName/@ObservatoryCode")
+                            .line("관측수심|@ObservatoryDepth")
+                            .line("온도|^y °C" )
+                    ) {
+                        fill = "ObservatoryDepth" } +
+                    labs( title="Korea EastSea 수온 정보", y="온도 °C", x="관측지점", fill="관측수심", caption="Nifs") +
+                    scaleYContinuous(limits = Pair(0, 15)) +
+                    theme(
+                        plotTitle=elementText(family="AppleGothic"),
+                        axisText=elementText(family="AppleGothic"),
+                        axisTitle=elementText(family="AppleGothic"),
+                        axisTitleY=elementText(family="AppleGothic"),
+                        axisTitleX=elementText(family="AppleGothic") ,
+                        legendTitle=elementText(family="AppleGothic"),
+                        legendText=elementText(family="AppleGothic"),
+                        axisTooltip=elementText(family="AppleGothic"),
+                        axisTooltipText=elementText(family="AppleGothic"),
+                        tooltip=elementText(family="AppleGothic"),
+                        tooltipText=elementText(family="AppleGothic"),
+                        tooltipTitleText=elementText(family="AppleGothic") ) +
+                    ggsize(width = 1200, height = 300)
+        }
 
-                ) {
-                    fill = "ObservatoryDepth" } +
-                labs( title="Korea EastSea 수온 정보", y="온도 °C", x="관측지점", fill="관측수심", caption="Nifs") +
-                scaleYContinuous(limits = Pair(0, 15)) +
-                theme(
-                    plotTitle=elementText(family="AppleGothic"),
-                    axisText=elementText(family="AppleGothic"),
-                    axisTitle=elementText(family="AppleGothic"),
-                    axisTitleY=elementText(family="AppleGothic"),
-                    axisTitleX=elementText(family="AppleGothic") ,
-                    legendTitle=elementText(family="AppleGothic"),
-                    legendText=elementText(family="AppleGothic"),
-                    axisTooltip=elementText(family="AppleGothic"),
-                    axisTooltipText=elementText(family="AppleGothic"),
-                    tooltip=elementText(family="AppleGothic"),
-                    tooltipText=elementText(family="AppleGothic"),
-                    tooltipTitleText=elementText(family="AppleGothic"),
-
-                ) +
-                ggsize(width = 1200, height = 300)
-
-               // fontFamilyInfo("AppleGothic")
-
+        LaunchedEffect(key1= viewModel._seaWaterInfoCurrentStateFlow.collectAsState().value){
+            figure = makeFigure(makeData())
         }
 
         Row(modifier = Modifier.fillMaxSize().padding(8.dp)) {
 
-            Column(modifier = Modifier.size(width = 360.dp, height = 600.dp)){
-
-
-
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    items(seaWaterInfoCurrent.count()
-                    ) { index ->
-                        Text("${seaWaterInfoCurrent[index].sta_nam_kor}:${seaWaterInfoCurrent[index].sta_cde}:${seaWaterInfoCurrent[index].obs_lay}:${seaWaterInfoCurrent[index].wtr_tmp}:${seaWaterInfoCurrent[index].lon} :${seaWaterInfoCurrent[index].lat}"  )
-                    }
-                }
-
-            }
-
-
             PlotPanel(
+                modifier = Modifier.size(width = 800.dp, height = 600.dp),
                 figure = figure,
-                preserveAspectRatio = preserveAspectRatio.value,
-                modifier = Modifier.size(width = 840.dp, height = 600.dp)
+                preserveAspectRatio = preserveAspectRatio.value
             ) { computationMessages ->
                 computationMessages.forEach { println("[APP MESSAGE] $it") }
             }
 
-
+            Column(modifier = Modifier.fillMaxWidth()){
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    items(seaWaterInfoCurrent.count()
+                    ) { index ->
+                        Text("    ${seaWaterInfoCurrent[index].sta_nam_kor}:${seaWaterInfoCurrent[index].sta_cde}:" +
+                                "${seaWaterInfoCurrent[index].obs_lay}:${seaWaterInfoCurrent[index].wtr_tmp}:" +
+                                "${seaWaterInfoCurrent[index].lon} :${seaWaterInfoCurrent[index].lat}"
+                        )
+                    }
+                }
+            }
         }
 
     }
