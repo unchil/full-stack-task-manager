@@ -45,7 +45,7 @@ fun NifsAndroid(){
 
 
         val viewModel = remember {
-            NifsBarsViewModel(scope)
+            NifsBarsViewModel()
         }
 
         val seaWaterInfoCurrent = viewModel._seaWaterInfoCurrentStateFlow.collectAsState().value

@@ -1,15 +1,15 @@
 package org.example.ktor
 
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.example.ktor.data.NifsRepository
-import org.example.ktor.model.Observatory
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
 
-class NifsBarsViewModel(scope:CoroutineScope) {
+class NifsBarsViewModel: ViewModel() {
 
 
     private val repository: NifsRepository
@@ -21,11 +21,10 @@ class NifsBarsViewModel(scope:CoroutineScope) {
 
 
     init {
-        scope.launch {
+        viewModelScope.launch {
 
             repository._seaWaterInfoCurrentStateFlow.collectLatest {
                 _seaWaterInfoCurrentStateFlow.value = it
-
             }
 
         }
