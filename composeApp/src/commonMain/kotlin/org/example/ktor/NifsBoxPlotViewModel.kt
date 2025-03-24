@@ -7,31 +7,21 @@ import kotlinx.coroutines.launch
 import org.example.ktor.data.NifsRepository
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
-class NifsViewModel ( private val scope: CoroutineScope) {
+class NifsBoxPlotViewModel (scope: CoroutineScope) {
 
     private val repository: NifsRepository
-        = getPlatform().nifsRepository
+            = getPlatform().nifsRepository
+
 
     val _seaWaterInfoOneDayStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
             = MutableStateFlow(emptyList())
 
-    val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
-            = MutableStateFlow(emptyList())
-
-
-
     init {
         scope.launch {
-            repository.getObservatory()
-            repository.getSeaWaterInfo("current")
-
-
-            repository._seaWaterInfoCurrentStateFlow.collectLatest {
-                _seaWaterInfoCurrentStateFlow.value = it
-            }
             repository._seaWaterInfoOneDayStateFlow.collectLatest {
                 _seaWaterInfoOneDayStateFlow.value = it
             }
+
         }
     }
 

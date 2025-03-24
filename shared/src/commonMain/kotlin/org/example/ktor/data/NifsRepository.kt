@@ -1,11 +1,14 @@
 package org.example.ktor.data
 
+import io.ktor.util.logging.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.example.ktor.model.Observatory
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 import org.example.ktor.network.NifsApi
 
 class NifsRepository {
+
+    internal val LOGGER = KtorSimpleLogger( "NifsRepository" )
 
     private val nifsApi = NifsApi()
 
@@ -23,25 +26,28 @@ class NifsRepository {
             when(division) {
                 "oneday" -> {
                     _seaWaterInfoOneDayStateFlow.value = nifsApi.getSeaWaterInfo(division)
+                    LOGGER.debug("getSeaWaterInfo() called[${_seaWaterInfoOneDayStateFlow.value.count()}]")
                 }
                 "current" -> {
                     _seaWaterInfoCurrentStateFlow.value = nifsApi.getSeaWaterInfo(division)
+                    LOGGER.debug("getSeaWaterInfo() called[${_seaWaterInfoCurrentStateFlow.value.count()}]")
                 }
                 else -> {
                     _seaWaterInfoCurrentStateFlow.value =emptyList()
                 }
             }
 
-        }catch (_:Exception){
-
+        }catch (e:Exception){
+            e.message?.let { LOGGER.error(it) }
         }
     }
 
     suspend fun getObservatory() {
         try {
             _observatoryStateFlow.value = nifsApi.getObservatory()
-        }catch (_:Exception){
-
+            LOGGER.debug("getObservatory() called[${_observatoryStateFlow.value.count()}]")
+        }catch (e:Exception){
+            e.message?.let { LOGGER.error(it) }
         }
     }
 

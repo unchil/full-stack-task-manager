@@ -20,7 +20,7 @@ fun NifsApp() {
 
         val scope = rememberCoroutineScope()
         val viewModel = remember {
-            NifsViewModel(scope)
+            NifsBarsViewModel(scope)
         }
         val seaWaterInfoCurrent = viewModel._seaWaterInfoCurrentStateFlow.collectAsState().value
         val eastSeaWaterInfo = seaWaterInfoCurrent.filter {
@@ -36,3 +36,4 @@ fun NifsApp() {
     }
 
 }
+

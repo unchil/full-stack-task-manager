@@ -41,12 +41,16 @@ class NifsApi {
 
     suspend fun getSeaWaterInfo(division:String): List<SeawaterInformationByObservationPoint> {
         val url = "${endPoint}/nifs/seawaterinfo/$division"
-        return httpClient.get(url).body()
+        val result = httpClient.get(url).body<List<SeawaterInformationByObservationPoint>>()
+        return result
     }
 
     suspend fun getObservatory(): List<Observatory> {
         val url = "${endPoint}/nifs/observatory"
-        return httpClient.get(url).body()
+
+            val result = httpClient.get(url).body<List<Observatory>>()
+            return result
+
     }
 
 }
