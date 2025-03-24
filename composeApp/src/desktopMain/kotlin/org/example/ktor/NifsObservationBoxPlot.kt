@@ -60,10 +60,11 @@ fun NifsObservationBoxPlot(modifier: Modifier = Modifier) {
         fun makeBoxPlotFigure(data:Map<String,List<Any>>): Plot {
             val sta_nam_korByMiddle = asDiscrete("ObservatoryName", orderBy = "..middle..", order = 1)
 
-            return letsPlot(data) { y = "Temperature"} +
+            return letsPlot(data)  +
                     scaleColorViridis(option = "C", end = 0.8) +
                     geomBoxplot{
-                        x=sta_nam_korByMiddle
+                        x= sta_nam_korByMiddle
+                        y="Temperature"
                         color = "..middle.."
 
                     } +
