@@ -1,14 +1,13 @@
 package org.example.ktor
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.letsPlot.geom.geomBar
-import org.jetbrains.letsPlot.geom.geomPoint
 import org.jetbrains.letsPlot.ggsize
 import org.jetbrains.letsPlot.intern.Plot
 import org.jetbrains.letsPlot.label.labs
@@ -81,7 +80,7 @@ fun NifsObservationLayerBars(modifier:Modifier = Modifier) {
                             .line("온도|^y °C" )
                     ) {
                         fill = "ObservatoryDepth" } +
-                    labs( title="Korea EastSea 수온 정보", y="온도 °C", x="관측지점", fill="관측수심", caption="Nifs") +
+                    labs( title="Korea EastSea 수온 정보", y="수온 °C", x="관측지점", fill="관측수심", caption="Nifs") +
                     scaleYContinuous(limits = Pair(0, 15)) +
                     theme(
                         plotTitle= elementText(family="AppleGothic"),

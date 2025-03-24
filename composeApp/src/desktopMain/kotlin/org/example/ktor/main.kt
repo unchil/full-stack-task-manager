@@ -10,7 +10,7 @@ import androidx.compose.ui.window.application
 
 
 val state = WindowState(
-    size = DpSize(1400.dp, 620.dp),
+    size = DpSize(1400.dp, 800.dp),
     position = WindowPosition(Alignment.Center)
 )
 

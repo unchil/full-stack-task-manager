@@ -1,7 +1,10 @@
 package org.example.ktor
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -10,13 +13,14 @@ import androidx.compose.ui.Modifier
 fun NifsCompose(){
     MaterialTheme {
 
-        Row(modifier = Modifier.fillMaxSize()) {
+        Column (modifier = Modifier.fillMaxSize()) {
 
-            NifsObservationLayerBars(modifier = Modifier.weight(0.5f) )
+            Row{
+                NifsObservationBoxPlot(modifier = Modifier.weight(0.5f))
+                NifsObservationLayerBars(modifier = Modifier.weight(0.5f) )
+            }
 
-            NifsObservationBoxPlot(modifier = Modifier.weight(0.5f))
-
-
+            NifsObservationLine(modifier = Modifier.fillMaxWidth() )
         }
 
     }
