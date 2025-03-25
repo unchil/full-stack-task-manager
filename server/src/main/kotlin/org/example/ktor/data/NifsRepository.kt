@@ -124,8 +124,8 @@ class NifsRepository:NifsRepositoryInterface {
                     tmp_avg
                 )
                 .where { (ObservationTable.obs_datetime greaterEq previous24Hour) and (ObservationTable.obs_lay eq "1")}
-                .groupBy ( ObservationTable.sta_cde , ObservationTable.sta_nam_kor, time)
-                .orderBy(ObservationTable.sta_nam_kor to SortOrder.ASC , datetime to SortOrder.ASC  )
+                .groupBy ( ObservatoryTable.gru_nam, ObservationTable.sta_cde , ObservationTable.sta_nam_kor, time)
+                .orderBy( ObservatoryTable.gru_nam to SortOrder.ASC, ObservationTable.sta_nam_kor to SortOrder.ASC , datetime to SortOrder.ASC  )
                 .map {
                     SeaWaterInfoByOneHourStat(
                         it[ObservatoryTable.gru_nam],
