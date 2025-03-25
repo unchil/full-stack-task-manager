@@ -7,55 +7,78 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.jetbrains.letsPlot.geom.geomLine
-import org.jetbrains.letsPlot.ggsize
+import org.jetbrains.letsPlot.geom.geomRibbon
 import org.jetbrains.letsPlot.intern.Plot
-import org.jetbrains.letsPlot.label.labs
 import org.jetbrains.letsPlot.letsPlot
+import org.jetbrains.letsPlot.label.labs
 import org.jetbrains.letsPlot.scale.scaleYContinuous
+import org.jetbrains.letsPlot.ggsize
 import org.jetbrains.letsPlot.skia.compose.PlotPanel
 import org.jetbrains.letsPlot.themes.elementText
 import org.jetbrains.letsPlot.themes.theme
 
 @Composable
-fun NifsObservationLine(modifier: Modifier = Modifier) {
+fun NifsObservationRibbon(modifier: Modifier = Modifier) {
     MaterialTheme {
 
-        val viewModel = remember { NifsBoxPlotViewModel() }
-        val seaWaterInfoOneday = viewModel._seaWaterInfoOneDayStateFlow.collectAsState().value.filter {
-            it.gru_nam.equals("동해") and it.obs_lay.equals("1")
-        }
-        LaunchedEffect(key1 = viewModel){
-            viewModel.onEvent(NifsBoxPlotViewModel.Event.ObservationRefresh("oneday"))
+        val viewModel = remember { NifsRibbonViewModel() }
+
+        val seaWaterInfoStat = viewModel._seaWaterInfoStatStateFlow.collectAsState().value.filter {
+            it.gru_nam.equals("동해")
         }
 
-        var figureLine: Plot by remember { mutableStateOf(letsPlot() + geomLine()) }
+        LaunchedEffect(key1 = viewModel){
+            viewModel.onEvent(NifsRibbonViewModel.Event.ObservationStatRefresh)
+        }
+
+        var figureLine: Plot by remember { mutableStateOf(letsPlot() + geomRibbon()) }
 
         val preserveAspectRatio = remember { mutableStateOf(false) }
 
+
         fun makeData():Map<String,List<Any>> {
 
+            val gru_nam = mutableListOf<String>()
+            val sta_cde = mutableListOf<String>()
             val sta_nam_kor = mutableListOf<String>()
-            val wtr_tmp = mutableListOf<Float>()
             val obs_datetime = mutableListOf<String>()
+            val tmp_min = mutableListOf<Float>()
+            val tmp_max = mutableListOf<Float>()
+            val tmp_avg = mutableListOf<Float>()
 
-
-            seaWaterInfoOneday.forEach {
+            seaWaterInfoStat.forEach {
+                gru_nam.add(it.gru_nam)
+                sta_cde.add(it.sta_cde)
                 sta_nam_kor.add(it.sta_nam_kor)
                 obs_datetime.add(it.obs_datetime)
-                wtr_tmp.add( it.wtr_tmp.trim().toFloat()  )
+                tmp_min.add( it.tmp_min.toFloat())
+                tmp_max.add( it.tmp_max.toFloat())
+                tmp_avg.add( it.tmp_avg.toFloat())
             }
             return mapOf<String, List<Any>> (
-                "CollectingTime" to obs_datetime,
+                "GroupName" to gru_nam,
                 "ObservatoryName" to sta_nam_kor,
-                "Temperature" to wtr_tmp  )
+                "ObservatoryCode" to sta_cde,
+                "CollectingTime" to obs_datetime,
+                "TemperatureMin" to tmp_min,
+                "TemperatureMax" to tmp_max,
+                "TemperatureAvg" to tmp_avg,
+            )
         }
 
-        fun makeLineFigure(data:Map<String,List<Any>>): Plot {
+        fun makeRibbonFigure(data:Map<String,List<Any>>): Plot {
             return letsPlot(data) +
-                    geomLine { x="CollectingTime"; y="Temperature"; color="ObservatoryName"} +
-                    labs( title="Korea EastSea Water Quality Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
-                    scaleYContinuous(limits=Pair(4,15) ) +
+                    geomRibbon(alpha = 0.1){
+                        x="CollectingTime"
+                        ymin="TemperatureMin"
+                        ymax="TemperatureMax"
+                        fill="ObservatoryName"
+                    } +
+                    geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
+                    scaleYContinuous(limits=Pair(10,12.5) ) +
+                    labs(title="Korea EastSea Water Quality Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
                     theme(
                         plotTitle= elementText(family="AppleGothic"),
                         axisTextX= elementText(family="AppleGothic", angle=45),
@@ -69,12 +92,12 @@ fun NifsObservationLine(modifier: Modifier = Modifier) {
                         tooltip= elementText(family="AppleGothic"),
                         tooltipText= elementText(family="AppleGothic"),
                         tooltipTitleText= elementText(family="AppleGothic") ) +
-                    ggsize( width = 1200, height = 600)
+                    ggsize(1200, 800)
         }
 
-        LaunchedEffect(key1= seaWaterInfoOneday){
+        LaunchedEffect(key1= seaWaterInfoStat){
             val data = makeData()
-            figureLine = makeLineFigure(data)
+            figureLine = makeRibbonFigure(data)
         }
 
         Row(modifier = Modifier.then(modifier).padding(vertical = 8.dp)) {
@@ -86,6 +109,7 @@ fun NifsObservationLine(modifier: Modifier = Modifier) {
                 computationMessages.forEach { println("[APP MESSAGE] $it") }
             }
         }
+
 
     }
 }

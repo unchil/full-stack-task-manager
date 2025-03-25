@@ -9,13 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.letsPlot.asDiscrete
 import org.jetbrains.letsPlot.geom.geomBoxplot
-import org.jetbrains.letsPlot.geom.geomLine
 import org.jetbrains.letsPlot.ggsize
 import org.jetbrains.letsPlot.intern.Plot
 import org.jetbrains.letsPlot.label.labs
 import org.jetbrains.letsPlot.letsPlot
 import org.jetbrains.letsPlot.scale.scaleColorViridis
-import org.jetbrains.letsPlot.scale.scaleYContinuous
 import org.jetbrains.letsPlot.skia.compose.PlotPanel
 import org.jetbrains.letsPlot.themes.elementText
 import org.jetbrains.letsPlot.themes.theme

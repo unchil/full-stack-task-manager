@@ -3,6 +3,7 @@ package org.example.ktor.data
 import io.ktor.util.logging.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.example.ktor.model.Observatory
+import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 import org.example.ktor.network.NifsApi
 
@@ -16,6 +17,9 @@ class NifsRepository {
         = MutableStateFlow(emptyList())
 
     val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
+            = MutableStateFlow(emptyList())
+
+    val _seaWaterInfoStatStateFlow: MutableStateFlow<List<SeaWaterInfoByOneHourStat>>
             = MutableStateFlow(emptyList())
 
     val _observatoryStateFlow: MutableStateFlow<List<Observatory>>
@@ -37,6 +41,15 @@ class NifsRepository {
                 }
             }
 
+        }catch (e:Exception){
+            e.message?.let { LOGGER.error(it) }
+        }
+    }
+
+    suspend fun getSeaWaterInfoStat() {
+        try {
+            _seaWaterInfoStatStateFlow.value = nifsApi.getSeaWaterInfoStat()
+            LOGGER.debug("getSeaWaterInfoStat() called[${_seaWaterInfoStatStateFlow.value.count()}]")
         }catch (e:Exception){
             e.message?.let { LOGGER.error(it) }
         }

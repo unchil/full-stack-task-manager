@@ -17,6 +17,17 @@ data class SeawaterInformationByObservationPoint(
 )
 
 @Serializable
+data class SeaWaterInfoByOneHourStat(
+    val gru_nam: String,
+    val sta_cde: String,
+    val sta_nam_kor: String,
+    val obs_datetime: String,
+    val tmp_min: String,
+    val tmp_max: String,
+    val tmp_avg: String
+)
+
+@Serializable
 data class Observation(
     val sta_cde: String,
     val sta_nam_kor: String,

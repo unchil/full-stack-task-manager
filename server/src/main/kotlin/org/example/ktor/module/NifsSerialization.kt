@@ -27,27 +27,6 @@ fun Application.configureNifsSerialization(repository: NifsRepository) {
 
         route("/nifs") {
 
-            get("/observations/{division}"){
-                val division = call.parameters["division"]
-                if (division == null) {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@get
-                }
-
-                try {
-                    val result = repository.observationList(division)
-                    if (result.isEmpty()) {
-                        call.respond(HttpStatusCode.NotFound)
-                        return@get
-                    }
-                    call.respond(result)
-
-                } catch (ex: IllegalArgumentException) {
-                    call.respond(HttpStatusCode.BadRequest)
-                }
-
-            }
-
             get("/seawaterinfo/{division}"){
 
                 val division = call.parameters["division"]
@@ -69,6 +48,41 @@ fun Application.configureNifsSerialization(repository: NifsRepository) {
                 }
             }
 
+            get ("/stat"){
+                try {
+                    val result = repository.seaWaterInfoStatistics()
+                    if (result.isEmpty()) {
+                        call.respond(HttpStatusCode.NotFound)
+                        return@get
+                    }
+                    call.respond(result)
+
+                } catch (ex: IllegalArgumentException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+
+            }
+
+            get("/observations/{division}"){
+                val division = call.parameters["division"]
+                if (division == null) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+
+                try {
+                    val result = repository.observationList(division)
+                    if (result.isEmpty()) {
+                        call.respond(HttpStatusCode.NotFound)
+                        return@get
+                    }
+                    call.respond(result)
+
+                } catch (ex: IllegalArgumentException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+
+            }
 
             get ("/observatory"){
                 try {

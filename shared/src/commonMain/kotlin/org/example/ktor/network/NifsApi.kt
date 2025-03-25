@@ -11,6 +11,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.example.ktor.getPlatform
 import org.example.ktor.model.Observatory
+import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
 class NifsApi {
@@ -43,6 +44,15 @@ class NifsApi {
         val url = "${endPoint}/nifs/seawaterinfo/$division"
         val result = httpClient.get(url).body<List<SeawaterInformationByObservationPoint>>()
         return result
+    }
+
+
+    suspend fun getSeaWaterInfoStat(): List<SeaWaterInfoByOneHourStat> {
+        val url = "${endPoint}/nifs/stat"
+
+        val result = httpClient.get(url).body<List<SeaWaterInfoByOneHourStat>>()
+        return result
+
     }
 
     suspend fun getObservatory(): List<Observatory> {
