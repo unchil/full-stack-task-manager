@@ -102,7 +102,7 @@ class NifsRepository:NifsRepositoryInterface {
             .format(LocalDateTime.Format{byUnicodePattern("yyyy-MM-dd HH:mm:ss")})
 
         val time = ObservationTable.obs_tim.substring(0,3)
-        val datetime = ObservationTable.obs_datetime.min()
+        val datetime = ObservationTable.obs_datetime.min().substring(3, 11)
         val tmp_min = ObservationTable.wtr_tmp.castTo(FloatColumnType()).min()
         val tmp_max = ObservationTable.wtr_tmp.castTo(FloatColumnType()).max()
         val tmp_avg = ObservationTable.wtr_tmp.castTo(FloatColumnType()).avg()

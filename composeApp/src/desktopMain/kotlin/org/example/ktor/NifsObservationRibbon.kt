@@ -49,15 +49,17 @@ fun NifsObservationRibbon(modifier: Modifier = Modifier) {
             val tmp_avg = mutableListOf<Float>()
 
             seaWaterInfoStat.forEach {
+
                 gru_nam.add(it.gru_nam)
                 sta_cde.add(it.sta_cde)
                 sta_nam_kor.add(it.sta_nam_kor)
                 obs_datetime.add(it.obs_datetime)
-                tmp_min.add( it.tmp_min.toFloat())
-                tmp_max.add( it.tmp_max.toFloat())
-                tmp_avg.add( it.tmp_avg.toFloat())
+                tmp_min.add(it.tmp_min.toFloat())
+                tmp_max.add(it.tmp_max.toFloat())
+                tmp_avg.add(it.tmp_avg.toFloat())
+
             }
-            return mapOf<String, List<Any>> (
+            val data = mapOf<String, List<Any>> (
                 "GroupName" to gru_nam,
                 "ObservatoryName" to sta_nam_kor,
                 "ObservatoryCode" to sta_cde,
@@ -66,6 +68,7 @@ fun NifsObservationRibbon(modifier: Modifier = Modifier) {
                 "TemperatureMax" to tmp_max,
                 "TemperatureAvg" to tmp_avg,
             )
+            return data
         }
 
         fun makeRibbonFigure(data:Map<String,List<Any>>): Plot {
@@ -77,7 +80,7 @@ fun NifsObservationRibbon(modifier: Modifier = Modifier) {
                         fill="ObservatoryName"
                     } +
                     geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
-                    scaleYContinuous(limits=Pair(10,12.5) ) +
+                 //   scaleYContinuous(limits=Pair(10,12.5) ) +
                     labs(title="Korea EastSea Water Quality Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
                     theme(
                         plotTitle= elementText(family="AppleGothic"),
