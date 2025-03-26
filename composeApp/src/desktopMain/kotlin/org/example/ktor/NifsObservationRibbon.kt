@@ -83,8 +83,8 @@ fun NifsObservationRibbon(modifier: Modifier = Modifier) {
                  //   scaleYContinuous(limits=Pair(10,12.5) ) +
                     labs(title="Korea EastSea Water Quality Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
                     theme(
-                        plotTitle= elementText(family="AppleGothic"),
-                        axisTextX= elementText(family="AppleGothic", angle=45),
+                        plotTitle= elementText(),
+                        axisTextX= elementText( angle=45),
                         axisTitle= elementText(family="AppleGothic"),
                         axisTitleY= elementText(family="AppleGothic"),
                         axisTitleX= elementText(family="AppleGothic" ) ,

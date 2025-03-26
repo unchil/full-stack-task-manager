@@ -64,8 +64,8 @@ fun NifsObservationLine(modifier: Modifier = Modifier) {
                     labs( title="Korea EastSea Water Quality Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
                     scaleYContinuous(limits=Pair(4,15) ) +
                     theme(
-                        plotTitle= elementText(family="AppleGothic"),
-                        axisTextX= elementText(family="AppleGothic", angle=45),
+                        plotTitle= elementText(),
+                        axisTextX= elementText( angle=45),
                         axisTitle= elementText(family="AppleGothic"),
                         axisTitleY= elementText(family="AppleGothic"),
                         axisTitleX= elementText(family="AppleGothic" ) ,
