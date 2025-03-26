@@ -48,7 +48,7 @@ logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization = {group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization"}
 kotlinx-dataframe = {group = "org.jetbrains.kotlinx", name = "dataframe", version.ref = "dataframe"}
-
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.6.2" }
 
 ktor-server-core = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty-jvm", version.ref = "ktor" }
@@ -80,6 +80,9 @@ let-plot-platf-awt = { group = "org.jetbrains.lets-plot", name = "platf-awt", ve
 let-plot-compose = { group = "org.jetbrains.lets-plot", name = "lets-plot-compose", version = "2.1.1"}
 let-plot-kernel = { group = "org.jetbrains.lets-plot", name = "lets-plot-kotlin-kernel", version = "4.9.3"}
 skiko-android = { group = "org.jetbrains.skiko", name = "skiko-android", version ="0.8.18" }
+
+
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

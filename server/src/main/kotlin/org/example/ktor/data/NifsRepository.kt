@@ -29,6 +29,7 @@ class NifsRepository:NifsRepositoryInterface {
     @OptIn(FormatStringsInDatetimeFormats::class)
     override suspend fun seaWaterInfo(division: String): List<SeawaterInformationByObservationPoint>  = suspendTransaction {
 
+
         return@suspendTransaction when(division) {
             "oneday" -> {
                 val previous24Hour = Clock.System.now()

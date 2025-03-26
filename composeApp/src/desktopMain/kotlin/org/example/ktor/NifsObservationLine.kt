@@ -7,6 +7,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.format
+import kotlinx.datetime.format.byUnicodePattern
 import org.jetbrains.letsPlot.geom.geomLine
 import org.jetbrains.letsPlot.ggsize
 import org.jetbrains.letsPlot.intern.Plot
@@ -35,6 +38,10 @@ fun NifsObservationLine(modifier: Modifier = Modifier) {
 
         fun makeData():Map<String,List<Any>> {
 
+            val dateTimeFormatInput = LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm:ss") }
+            val dateTimeFormatOuput = LocalDateTime.Format { byUnicodePattern("yy/MM/dd HH:mm") }
+
+
             val sta_nam_kor = mutableListOf<String>()
             val wtr_tmp = mutableListOf<Float>()
             val obs_datetime = mutableListOf<String>()
@@ -42,7 +49,7 @@ fun NifsObservationLine(modifier: Modifier = Modifier) {
 
             seaWaterInfoOneday.forEach {
                 sta_nam_kor.add(it.sta_nam_kor)
-                obs_datetime.add(it.obs_datetime)
+                obs_datetime.add(dateTimeFormatInput.parse(it.obs_datetime).format(dateTimeFormatOuput))
                 wtr_tmp.add( it.wtr_tmp.trim().toFloat()  )
             }
             return mapOf<String, List<Any>> (

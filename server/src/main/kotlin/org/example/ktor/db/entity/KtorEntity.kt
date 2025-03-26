@@ -3,6 +3,8 @@ package org.example.ktor.db.entity
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 import org.example.ktor.model.*
+import org.jetbrains.exposed.sql.min
+import org.jetbrains.exposed.sql.substring
 
 object TaskTable : Table("task") {
     val id = integer("id").autoIncrement()
@@ -21,6 +23,7 @@ fun taskTableToModel(it: ResultRow) = Task(
 
 
 fun toSeawaterInformationByObservationPoint(it: ResultRow) = SeawaterInformationByObservationPoint(
+
     it[ObservationTable.sta_cde],
     it[ObservationTable.sta_nam_kor],
     it[ObservationTable.obs_datetime],
