@@ -13,7 +13,7 @@ androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 compose-multiplatform = "1.7.1"
 junit = "4.13.2"
-kotlin = "2.1.10"
+kotlin = "2.1.20"
 kotlinx-coroutines = "1.10.1"
 ktor = "3.0.3"
 logback = "1.5.16"
@@ -21,13 +21,17 @@ logback = "1.5.16"
 serialization = "1.7.3"
 uiDesktop = "1.7.0"
 
-ksp = "2.1.0-1.0.29"
+ksp = "2.1.20-1.0.31"
 secrets-gradle-plugin = "2.0.1"
 
 sqlite-version = "3.47.1.0"
 h2-version = "2.3.232"
 exposed-version = "0.57.0"
 dataframe = "0.15.0"
+playServicesMaps = "19.1.0"
+googlemaps = "6.5.2"
+uiAndroid = "1.7.8"
+geotools ="32.2"
 
 
 [libraries]
@@ -82,6 +86,19 @@ let-plot-kernel = { group = "org.jetbrains.lets-plot", name = "lets-plot-kotlin-
 skiko-android = { group = "org.jetbrains.skiko", name = "skiko-android", version ="0.8.18" }
 
 
+google-maps-compose = { group ="com.google.maps.android", name = "maps-compose", version.ref = "googlemaps"}
+google-maps-compose-utils = { group ="com.google.maps.android", name = "maps-compose-utils", version.ref = "googlemaps"}
+google-maps-compose-widgets = { group ="com.google.maps.android", name = "maps-compose-widgets", version.ref = "googlemaps"}
+
+
+
+
+
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
+androidx-ui-android = { group = "androidx.compose.ui", name = "ui-android", version.ref = "uiAndroid" }
+
+geotool-shapefile = { group ="org.geotools", name="gt-shapefile", version.ref="geotools"}
+geotool-cql = { group ="org.geotools", name="gt-cql", version.ref="geotools"}
 
 
 [plugins]

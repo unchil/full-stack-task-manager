@@ -9,7 +9,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-
+    alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.secretsGradle)
 
 }
 
@@ -67,6 +68,9 @@ kotlin {
 
             implementation(libs.ktor.client.cio)
 
+            implementation(libs.google.maps.compose)
+            implementation(libs.google.maps.compose.widgets)
+            implementation(libs.google.maps.compose.utils)
 
         }
         
@@ -82,6 +86,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.kotlinx.datetime)
 
+
+
         }
 
         desktopMain.dependencies {
@@ -94,6 +100,7 @@ kotlin {
             implementation(libs.let.plot.platf.awt)
             implementation(libs.let.plot.kernel)
             implementation(libs.let.plot.compose)
+
         }
 
         iosMain.dependencies {
@@ -114,6 +121,10 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+
+        buildFeatures {
+            buildConfig = true
+        }
     }
     packaging {
         resources {
@@ -131,6 +142,9 @@ android {
     }
 
 }
+dependencies {
+    implementation(libs.androidx.ui.android)
+}
 
 
 
@@ -144,4 +158,22 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+
+secrets {
+    // To add your Maps API key to this project:
+    // 1. If the secrets.properties file does not exist, create it in the same folder as the local.properties file.
+    // 2. Add this line, where YOUR_API_KEY is your API key:
+    //        MAPS_API_KEY=YOUR_API_KEY
+    propertiesFileName = "secrets.properties"
+
+    // A properties file containing default secret values. This file can be
+    // checked in version control.
+    defaultPropertiesFileName = "local.defaults.properties"
+
+    // Configure which keys should be ignored by the plugin by providing regular expressions.
+    // "sdk.dir" is ignored by default.
+    ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
+    ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
 }

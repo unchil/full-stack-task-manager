@@ -32,8 +32,9 @@ fun toSeawaterInformationByObservationPoint(it: ResultRow) = SeawaterInformation
     it[ObservationTable.dox],
     it[ObservationTable.sal],
     it[ObservatoryTable.gru_nam],
-    it[ObservatoryTable.lat],
-    it[ObservatoryTable.lon]
+    it[ObservatoryTable.lon],
+    it[ObservatoryTable.lat]
+
 )
 
 

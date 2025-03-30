@@ -1,7 +1,7 @@
 package org.example.ktor.model
 
 import kotlinx.serialization.Serializable
-
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class Observation(
@@ -57,4 +57,30 @@ data class SeaWaterInfoByOneHourStat(
     val tmp_min: String,
     val tmp_max: String,
     val tmp_avg: String
+)
+
+
+
+
+@Serializable
+data class GeoJson(
+    val type: String,
+    val features: List<Feature>? = null,
+    val geometry: Geometry? = null,
+    val coordinates: List<JsonElement>? = null,
+    val geometries: List<Geometry>? = null
+)
+
+@Serializable
+data class Feature(
+    val type: String,
+    val geometry: Geometry,
+    val properties: Map<String, JsonElement>? = null
+)
+
+@Serializable
+data class Geometry(
+    val type: String,
+    val coordinates: List<JsonElement>? = null,
+    val geometries: List<Geometry>? = null
 )

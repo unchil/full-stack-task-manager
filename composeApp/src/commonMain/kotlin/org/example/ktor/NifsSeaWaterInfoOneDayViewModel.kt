@@ -8,23 +8,19 @@ import kotlinx.coroutines.launch
 import org.example.ktor.data.NifsRepository
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
-
-class NifsBarsViewModel: ViewModel() {
-
+class NifsSeaWaterInfoOneDayViewModel: ViewModel () {
 
     private val repository: NifsRepository
-        = getPlatform().nifsRepository
+            = getPlatform().nifsRepository
 
 
-    val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
+    val _seaWaterInfoOneDayStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
             = MutableStateFlow(emptyList())
-
 
     init {
         viewModelScope.launch {
-
-            repository._seaWaterInfoCurrentStateFlow.collectLatest {
-                _seaWaterInfoCurrentStateFlow.value = it
+            repository._seaWaterInfoOneDayStateFlow.collectLatest {
+                _seaWaterInfoOneDayStateFlow.value = it
             }
 
         }
@@ -35,9 +31,6 @@ class NifsBarsViewModel: ViewModel() {
             is Event.ObservationRefresh -> {
                 getSeaWaterInfo(event.division)
             }
-            Event.ObservatoryRefresh -> {
-                getObservatory()
-            }
         }
 
     }
@@ -46,13 +39,9 @@ class NifsBarsViewModel: ViewModel() {
         repository.getSeaWaterInfo(division)
     }
 
-    suspend fun getObservatory(){
-        repository.getObservatory()
-    }
 
     sealed class Event {
         data class ObservationRefresh(val division: String) : Event()
-        data object ObservatoryRefresh : Event()
     }
 
 }

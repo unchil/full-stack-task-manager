@@ -7,13 +7,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.jetbrains.letsPlot.geom.geomLine
 import org.jetbrains.letsPlot.geom.geomRibbon
 import org.jetbrains.letsPlot.intern.Plot
 import org.jetbrains.letsPlot.letsPlot
 import org.jetbrains.letsPlot.label.labs
-import org.jetbrains.letsPlot.scale.scaleYContinuous
 import org.jetbrains.letsPlot.ggsize
 import org.jetbrains.letsPlot.skia.compose.PlotPanel
 import org.jetbrains.letsPlot.themes.elementText
@@ -23,14 +21,14 @@ import org.jetbrains.letsPlot.themes.theme
 fun NifsObservationRibbon(modifier: Modifier = Modifier) {
     MaterialTheme {
 
-        val viewModel = remember { NifsRibbonViewModel() }
+        val viewModel = remember { NifsSeaWaterInfoStatViewModel() }
 
         val seaWaterInfoStat = viewModel._seaWaterInfoStatStateFlow.collectAsState().value.filter {
             it.gru_nam.equals("동해")
         }
 
         LaunchedEffect(key1 = viewModel){
-            viewModel.onEvent(NifsRibbonViewModel.Event.ObservationStatRefresh)
+            viewModel.onEvent(NifsSeaWaterInfoStatViewModel.Event.ObservationStatRefresh)
         }
 
         var figureLine: Plot by remember { mutableStateOf(letsPlot() + geomRibbon()) }

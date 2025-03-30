@@ -2,10 +2,15 @@ package org.example.ktor.data
 
 import io.ktor.util.logging.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.serialization.json.Json
+import org.example.ktor.model.GeoJson
 import org.example.ktor.model.Observatory
 import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 import org.example.ktor.network.NifsApi
+
+import io.ktor.utils.io.core.*
+
 
 class NifsRepository {
 
@@ -63,5 +68,7 @@ class NifsRepository {
             e.message?.let { LOGGER.error(it) }
         }
     }
+
+
 
 }

@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import org.example.ktor.data.NifsRepository
 import org.example.ktor.model.SeaWaterInfoByOneHourStat
 
-class NifsRibbonViewModel: ViewModel() {
+class NifsSeaWaterInfoStatViewModel: ViewModel() {
 
     private val repository: NifsRepository
             = getPlatform().nifsRepository
@@ -26,12 +26,6 @@ class NifsRibbonViewModel: ViewModel() {
 
     suspend fun onEvent(event: Event) {
         when (event) {
-            is Event.ObservationRefresh -> {
-                getSeaWaterInfo(event.division)
-            }
-            Event.ObservatoryRefresh -> {
-                getObservatory()
-            }
 
             Event.ObservationStatRefresh -> {
                 getObservationStat()
@@ -40,21 +34,13 @@ class NifsRibbonViewModel: ViewModel() {
 
     }
 
-    suspend fun getSeaWaterInfo(division: String){
-        repository.getSeaWaterInfo(division)
-    }
-
     suspend fun getObservationStat(){
         repository.getSeaWaterInfoStat()
     }
 
-    suspend fun getObservatory(){
-        repository.getObservatory()
-    }
+
 
     sealed class Event {
-        data class ObservationRefresh(val division: String) : Event()
-        data object ObservatoryRefresh : Event()
         data object ObservationStatRefresh: Event()
     }
 

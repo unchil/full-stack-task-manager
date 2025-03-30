@@ -25,7 +25,7 @@ fun NifsObservationLayerBars(modifier:Modifier = Modifier) {
 
     MaterialTheme {
 
-        val viewModel = remember { NifsBarsViewModel() }
+        val viewModel = remember { NifsSeaWaterInfoCurrentViewModel() }
 
         val seaWaterInfoCurrent = viewModel._seaWaterInfoCurrentStateFlow.collectAsState().value.filter { it.gru_nam.equals("동해") }
         val preserveAspectRatio = remember { mutableStateOf(false) }
@@ -102,7 +102,7 @@ fun NifsObservationLayerBars(modifier:Modifier = Modifier) {
 
 
         LaunchedEffect(key1 = viewModel){
-            viewModel.onEvent(NifsBarsViewModel.Event.ObservationRefresh("current"))
+            viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh("current"))
         }
 
 

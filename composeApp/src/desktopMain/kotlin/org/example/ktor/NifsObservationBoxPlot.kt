@@ -23,13 +23,13 @@ fun NifsObservationBoxPlot(modifier: Modifier = Modifier) {
 
     MaterialTheme {
 
-        val viewModel = remember { NifsBoxPlotViewModel() }
+        val viewModel = remember { NifsSeaWaterInfoOneDayViewModel() }
         val seaWaterInfoOneday = viewModel._seaWaterInfoOneDayStateFlow.collectAsState().value.filter {
             it.gru_nam.equals("동해") and it.obs_lay.equals("1")
         }
 
         LaunchedEffect(key1 = viewModel){
-            viewModel.onEvent(NifsBoxPlotViewModel.Event.ObservationRefresh("oneday"))
+            viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh("oneday"))
         }
 
         var figureBoxPlot: Plot by remember { mutableStateOf(letsPlot() + geomBoxplot()) }

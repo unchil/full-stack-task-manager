@@ -50,8 +50,9 @@ class NifsRepository:NifsRepositoryInterface {
                     ObservationTable.dox,
                     ObservationTable.sal,
                     ObservatoryTable.gru_nam,
-                    ObservatoryTable.lat,
-                    ObservatoryTable.lon
+                    ObservatoryTable.lon,
+                    ObservatoryTable.lat
+
                 ).where{
                     ObservationTable.obs_datetime greaterEq previous24Hour
                 }.map {
@@ -79,8 +80,9 @@ class NifsRepository:NifsRepositoryInterface {
                     ObservationTable.dox,
                     ObservationTable.sal,
                     ObservatoryTable.gru_nam,
-                    ObservatoryTable.lat,
-                    ObservatoryTable.lon
+                    ObservatoryTable.lon,
+                    ObservatoryTable.lat
+
                 ).where{
                     ObservationTable.obs_datetime eq currentTime
                 }.map {
