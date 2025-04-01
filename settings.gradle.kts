@@ -2,6 +2,7 @@ rootProject.name = "full-stack-task-manager"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
+
     repositories {
 
         google {
@@ -11,12 +12,9 @@ pluginManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
-
-
         mavenCentral()
-
         gradlePluginPortal()
-//  mavenLocal()
+
 
 
     }
@@ -25,7 +23,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        //  mavenLocal()
     }
 }
 

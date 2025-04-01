@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.android.gms.maps.model.CameraPosition
@@ -42,12 +43,15 @@ fun NifsAndroid(){
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(home, 18f)
         }
+
+        val markerState = remember { MarkerState(position = home ) }
+
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState
         ) {
             Marker(
-                state = MarkerState(position = home),
+                state = markerState,
                 title = "Home",
                 snippet = "Home Sweet Home"
             )

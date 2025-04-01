@@ -39,7 +39,7 @@ kotlin {
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "composeApp"
+        outputModuleName = "composeApp"
         browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
@@ -85,8 +85,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.kotlinx.datetime)
-
-
 
         }
 
@@ -141,9 +139,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-}
-dependencies {
-    implementation(libs.androidx.ui.android)
 }
 
 

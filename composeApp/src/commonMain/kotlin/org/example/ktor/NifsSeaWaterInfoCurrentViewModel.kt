@@ -9,7 +9,6 @@ import org.example.ktor.data.NifsRepository
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
 
-
 class NifsSeaWaterInfoCurrentViewModel: ViewModel() {
 
     private val repository: NifsRepository

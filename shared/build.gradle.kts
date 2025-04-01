@@ -58,9 +58,6 @@ kotlin {
             implementation(libs.ktor.client.negotiation)
             implementation(libs.ktor.serialization.json)
 
-
-        //    implementation(libs.ktor.client.cio)
-
         }
 
 

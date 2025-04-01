@@ -31,7 +31,6 @@ dataframe = "0.15.0"
 playServicesMaps = "19.1.0"
 googlemaps = "6.5.2"
 uiAndroid = "1.7.8"
-geotools ="32.2"
 
 
 [libraries]
@@ -91,14 +90,9 @@ google-maps-compose-utils = { group ="com.google.maps.android", name = "maps-com
 google-maps-compose-widgets = { group ="com.google.maps.android", name = "maps-compose-widgets", version.ref = "googlemaps"}
 
 
-
-
-
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 androidx-ui-android = { group = "androidx.compose.ui", name = "ui-android", version.ref = "uiAndroid" }
 
-geotool-shapefile = { group ="org.geotools", name="gt-shapefile", version.ref="geotools"}
-geotool-cql = { group ="org.geotools", name="gt-cql", version.ref="geotools"}
 
 
 [plugins]
