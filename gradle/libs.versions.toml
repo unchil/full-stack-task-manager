@@ -96,6 +96,8 @@ let-plot-compose-android = { group = "org.jetbrains.lets-plot", name = "lets-plo
 ### wasm
 skiko-wasm = { group = "org.jetbrains.skiko", name = "skiko-wasm-js", version = "0.9.4"}
 skiko = { group = "org.jetbrains.skiko", name = "skiko", version = "0.9.4"}
+skiko-js = { group = "org.jetbrains.skiko", name = "skiko-js", version = "0.9.4"}
+
 
 google-maps-compose = { group ="com.google.maps.android", name = "maps-compose", version.ref = "googlemaps"}
 google-maps-compose-utils = { group ="com.google.maps.android", name = "maps-compose-utils", version.ref = "googlemaps"}
