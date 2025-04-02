@@ -22,7 +22,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            NifsAndroid()
+           // NifsAndroid()
+            NifsObservationBoxPlot()
         }
     }
 }
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
 @Preview
 @Composable
 fun AppAndroidPreview() {
-   // NifsAndroid()
+    NifsAndroid()
 }
 
 

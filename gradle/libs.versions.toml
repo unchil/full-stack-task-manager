@@ -4,6 +4,8 @@ android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "34"
 androidx-activityCompose = "1.10.0"
+#android
+#androidx-activityCompose = "1.8.2"
 androidx-appcompat = "1.7.0"
 androidx-constraintlayout = "2.2.0"
 androidx-core-ktx = "1.15.0"
@@ -77,18 +79,27 @@ h2 = { module = "com.h2database:h2", version.ref = "h2-version" }
 exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed-version" }
 exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version.ref = "exposed-version" }
 
+### common
 let-plot-common = { group = "org.jetbrains.lets-plot", name = "lets-plot-common", version = "4.5.2"}
-let-plot-platf-awt = { group = "org.jetbrains.lets-plot", name = "platf-awt", version = "4.5.2"}
-### Note: the latest supported version is lets-plot-skia v2.0.0. The new versions temporarily don't support Android
-let-plot-compose = { group = "org.jetbrains.lets-plot", name = "lets-plot-compose", version = "2.1.1"}
 let-plot-kernel = { group = "org.jetbrains.lets-plot", name = "lets-plot-kotlin-kernel", version = "4.9.3"}
-skiko-android = { group = "org.jetbrains.skiko", name = "skiko-android", version ="0.8.18" }
+#android
+#let-plot-common = { group = "org.jetbrains.lets-plot", name = "lets-plot-common", version = "4.4.1"}
+#let-plot-kernel = { group = "org.jetbrains.lets-plot", name = "lets-plot-kotlin-kernel", version = "4.8.0"}
 
+### desktop
+let-plot-platf-awt = { group = "org.jetbrains.lets-plot", name = "platf-awt", version = "4.5.2"}
+let-plot-compose = { group = "org.jetbrains.lets-plot", name = "lets-plot-compose", version = "2.1.1"}
+### android
+### Note: the latest supported version is lets-plot-skia v2.0.0. The new versions temporarily don't support Android
+skiko-android = { group = "org.jetbrains.skiko", name = "skiko-android", version ="0.8.4" }
+let-plot-compose-android = { group = "org.jetbrains.lets-plot", name = "lets-plot-compose", version = "2.0.0"}
+### wasm
+skiko-wasm = { group = "org.jetbrains.skiko", name = "skiko-wasm-js", version = "0.9.4"}
+skiko = { group = "org.jetbrains.skiko", name = "skiko", version = "0.9.4"}
 
 google-maps-compose = { group ="com.google.maps.android", name = "maps-compose", version.ref = "googlemaps"}
 google-maps-compose-utils = { group ="com.google.maps.android", name = "maps-compose-utils", version.ref = "googlemaps"}
 google-maps-compose-widgets = { group ="com.google.maps.android", name = "maps-compose-widgets", version.ref = "googlemaps"}
-
 
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 androidx-ui-android = { group = "androidx.compose.ui", name = "ui-android", version.ref = "uiAndroid" }

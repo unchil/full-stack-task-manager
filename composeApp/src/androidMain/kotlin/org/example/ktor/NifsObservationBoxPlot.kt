@@ -1,6 +1,7 @@
 package org.example.ktor
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
@@ -96,7 +97,7 @@ fun NifsObservationBoxPlot(modifier: Modifier = Modifier) {
         Row(modifier = Modifier.then(modifier).padding(vertical = 8.dp)) {
 
             PlotPanel(
-                modifier = Modifier.size(width = 600.dp, height = 400.dp),
+                modifier = Modifier.fillMaxSize(),
                 figure = figureBoxPlot,
                 preserveAspectRatio = preserveAspectRatio.value
             ) { computationMessages ->

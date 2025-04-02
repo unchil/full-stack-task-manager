@@ -2,7 +2,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
-
+import com.android.build.gradle.tasks.MergeSourceSetFolders
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -72,6 +72,31 @@ kotlin {
             implementation(libs.google.maps.compose.widgets)
             implementation(libs.google.maps.compose.utils)
 
+            implementation(libs.let.plot.kernel)
+            implementation(libs.let.plot.common)
+
+            implementation(libs.skiko.android)
+            implementation(libs.let.plot.compose.android)
+
+            /*
+            androidx.activity.compose=1.8.2
+            skiko.android.version=0.8.4
+            letsPlot.android.version=4.4.1
+            letsPlotKotlin.android.version=4.8.0
+            letsPlotSkia.android.version=2.0.0
+
+            val androidxActivityCompose = extra["androidx.activity.compose"] as String
+
+            val skikoVersion = extra["skiko.android.version"] as String
+            val letsPlotVersion = extra["letsPlot.android.version"] as String
+            val letsPlotKotlinVersion = extra["letsPlotKotlin.android.version"] as String
+            val letsPlotSkiaVersion = extra["letsPlotSkia.android.version"] as String
+
+            implementation("org.jetbrains.skiko:skiko-android:$skikoVersion")
+            implementation("org.jetbrains.lets-plot:lets-plot-kotlin-kernel:$letsPlotKotlinVersion")
+            implementation("org.jetbrains.lets-plot:lets-plot-common:$letsPlotVersion")
+            implementation("org.jetbrains.lets-plot:lets-plot-compose:$letsPlotSkiaVersion")
+       */
         }
         
         commonMain.dependencies {
@@ -94,15 +119,20 @@ kotlin {
             implementation(libs.logback)
             implementation(libs.ktor.client.cio)
 
-            implementation(libs.let.plot.common)
-            implementation(libs.let.plot.platf.awt)
             implementation(libs.let.plot.kernel)
+            implementation(libs.let.plot.common)
+
+            implementation(libs.let.plot.platf.awt)
             implementation(libs.let.plot.compose)
 
         }
 
         iosMain.dependencies {
             implementation(libs.ktor.client.cio)
+        }
+
+        wasmJsMain.dependencies {
+
         }
 
 
@@ -154,6 +184,70 @@ compose.desktop {
         }
     }
 }
+
+
+////////////////////////////////////////////////////////
+// Include the following code in your Gradle build script
+// to ensure that compatible Skiko binaries are
+// downloaded and included in your project.
+//
+// Without this, you won't be able to run your app
+// in the IDE on a device emulator.
+// //////////////////////////////////////////////////////
+
+val skikoJniLibsReleaseAssetName = "skiko-jni-libs.zip"
+val skikoJniLibsDestDir = file("${project.projectDir}/src/androidMain/jniLibs/")
+
+tasks.register("downloadSkikoJniLibsReleaseAsset") {
+    val repoUrl = "https://github.com/JetBrains/lets-plot-skia"
+    val releaseTag = "v2.0.0"
+
+    doLast {
+        val downloadUrl = "$repoUrl/releases/download/$releaseTag/$skikoJniLibsReleaseAssetName"
+        val outputFile = layout.buildDirectory.file("downloads/$skikoJniLibsReleaseAssetName").get().asFile
+
+        if (outputFile.exists()) {
+            println("File already exists: ${outputFile.absolutePath}")
+            println("Skipping download.")
+        } else {
+            outputFile.parentFile?.mkdirs()
+
+            println("Downloading $skikoJniLibsReleaseAssetName from $downloadUrl")
+            uri(downloadUrl).toURL().openStream().use { input ->
+                outputFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            println("Download completed: ${outputFile.absolutePath}")
+        }
+    }
+}
+
+tasks.register<Copy>("unzipSkikoJniLibsReleaseAsset") {
+    dependsOn("downloadSkikoJniLibsReleaseAsset")
+    from(zipTree(layout.buildDirectory.file("downloads/$skikoJniLibsReleaseAssetName")))
+    into(skikoJniLibsDestDir)
+    doFirst {
+        delete(skikoJniLibsDestDir)
+    }
+}
+
+tasks.register("cleanSkikoJniLibs") {
+    doLast {
+        delete(skikoJniLibsDestDir)
+    }
+}
+
+tasks.named("clean") {
+    dependsOn("cleanSkikoJniLibs")
+}
+
+tasks.withType<MergeSourceSetFolders>().configureEach {
+    dependsOn("unzipSkikoJniLibsReleaseAsset")
+}
+
+////////////////////////////////////////////////////////
+
 
 
 secrets {
