@@ -68,19 +68,6 @@ fun NifsObservationBoxPlot(modifier: Modifier = Modifier) {
                     } +
                   //  scaleYContinuous(limits = Pair(0, 15)) +
                     labs(title="Korea EastSea 수온 일일 통계 정보", y="수온 °C", x="관측지점", color="수온 °C", caption="Nifs") +
-                    theme(
-                        plotTitle= elementText(family="AppleGothic"),
-                        axisText= elementText(family="AppleGothic"),
-                        axisTitle= elementText(family="AppleGothic"),
-                        axisTitleY= elementText(family="AppleGothic"),
-                        axisTitleX= elementText(family="AppleGothic") ,
-                        legendTitle= elementText(family="AppleGothic"),
-                        legendText= elementText(family="AppleGothic"),
-                        axisTooltip= elementText(family="AppleGothic"),
-                        axisTooltipText= elementText(family="AppleGothic"),
-                        tooltip= elementText(family="AppleGothic"),
-                        tooltipText= elementText(family="AppleGothic"),
-                        tooltipTitleText= elementText(family="AppleGothic") ) +
                     ggsize(700, 400)
 
         }

@@ -16,7 +16,7 @@ class NifsRepository {
 
     internal val LOGGER = KtorSimpleLogger( "NifsRepository" )
 
-    private val nifsApi = NifsApi()
+    val nifsApi = NifsApi()
 
     val _seaWaterInfoOneDayStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
         = MutableStateFlow(emptyList())
@@ -69,6 +69,15 @@ class NifsRepository {
         }
     }
 
+    suspend fun getSeaWaterInfoValues(division: String) : List<SeawaterInformationByObservationPoint> {
+        var result: List<SeawaterInformationByObservationPoint> = emptyList()
+        try {
+            result =  nifsApi.getSeaWaterInfo(division)
+        }catch (e:Exception){
+            e.message?.let { LOGGER.error(it) }
+        }
+        return result
+    }
 
 
 }

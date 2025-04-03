@@ -36,6 +36,16 @@ kotlin {
     
     jvm("desktop")
 
+    js(IR) {
+        browser{
+            commonWebpackConfig {
+                outputFileName = "js-frontend-app.js"
+            }
+        }
+        binaries.executable()
+        useEsModules()
+    }
+
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
@@ -78,25 +88,7 @@ kotlin {
             implementation(libs.skiko.android)
             implementation(libs.let.plot.compose.android)
 
-            /*
-            androidx.activity.compose=1.8.2
-            skiko.android.version=0.8.4
-            letsPlot.android.version=4.4.1
-            letsPlotKotlin.android.version=4.8.0
-            letsPlotSkia.android.version=2.0.0
 
-            val androidxActivityCompose = extra["androidx.activity.compose"] as String
-
-            val skikoVersion = extra["skiko.android.version"] as String
-            val letsPlotVersion = extra["letsPlot.android.version"] as String
-            val letsPlotKotlinVersion = extra["letsPlotKotlin.android.version"] as String
-            val letsPlotSkiaVersion = extra["letsPlotSkia.android.version"] as String
-
-            implementation("org.jetbrains.skiko:skiko-android:$skikoVersion")
-            implementation("org.jetbrains.lets-plot:lets-plot-kotlin-kernel:$letsPlotKotlinVersion")
-            implementation("org.jetbrains.lets-plot:lets-plot-common:$letsPlotVersion")
-            implementation("org.jetbrains.lets-plot:lets-plot-compose:$letsPlotSkiaVersion")
-       */
         }
         
         commonMain.dependencies {
@@ -132,12 +124,21 @@ kotlin {
         }
 
         wasmJsMain.dependencies {
+           // implementation(libs.lets.plot.kotlin.js)
+        }
 
+        jsMain.dependencies {
+
+            implementation(libs.lets.plot.kotlin.js)
         }
 
 
     }
 }
+
+
+
+
 
 android {
     namespace = "org.example.ktor"

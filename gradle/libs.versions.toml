@@ -34,6 +34,8 @@ playServicesMaps = "19.1.0"
 googlemaps = "6.5.2"
 uiAndroid = "1.7.8"
 
+decompose = "3.0.0"
+
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -93,10 +95,13 @@ let-plot-compose = { group = "org.jetbrains.lets-plot", name = "lets-plot-compos
 ### Note: the latest supported version is lets-plot-skia v2.0.0. The new versions temporarily don't support Android
 skiko-android = { group = "org.jetbrains.skiko", name = "skiko-android", version ="0.8.4" }
 let-plot-compose-android = { group = "org.jetbrains.lets-plot", name = "lets-plot-compose", version = "2.0.0"}
+
 ### wasm
-skiko-wasm = { group = "org.jetbrains.skiko", name = "skiko-wasm-js", version = "0.9.4"}
-skiko = { group = "org.jetbrains.skiko", name = "skiko", version = "0.9.4"}
-skiko-js = { group = "org.jetbrains.skiko", name = "skiko-js", version = "0.9.4"}
+#skiko-wasm = { group = "org.jetbrains.skiko", name = "skiko-wasm-js", version = "0.9.4"}
+#skiko = { group = "org.jetbrains.skiko", name = "skiko", version = "0.9.4"}
+#skiko-js = { group = "org.jetbrains.skiko", name = "skiko-js", version = "0.9.4"}
+
+lets-plot-kotlin-js = { group = "org.jetbrains.lets-plot", name="lets-plot-kotlin-js", version="4.10.0"}
 
 
 google-maps-compose = { group ="com.google.maps.android", name = "maps-compose", version.ref = "googlemaps"}

@@ -22,24 +22,14 @@ kotlin {
 
     jvm()
 
+    js(IR) {
+        browser()
+        binaries.executable()
+    }
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        outputModuleName = "composeApp"
-        browser {
-            val rootDirPath = project.rootDir.path
-            val projectDirPath = project.projectDir.path
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(rootDirPath)
-                        add(projectDirPath)
-                    }
-                }
-            }
-        }
+        browser ()
         binaries.executable()
     }
 
@@ -57,6 +47,8 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.client.negotiation)
             implementation(libs.ktor.serialization.json)
+
+
 
         }
 

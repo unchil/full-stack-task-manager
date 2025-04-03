@@ -21,6 +21,7 @@ fun main() = application {
         state = state,
     ) {
         NifsCompose()
+      //  NifsApp()
     }
 }
 
