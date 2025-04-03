@@ -17,35 +17,22 @@ import org.jetbrains.letsPlot.pos.positionDodge
 import org.jetbrains.letsPlot.scale.scaleYContinuous
 import org.jetbrains.letsPlot.tooltips.layerTooltips
 
+
 fun main() {
 
     console.log("[console] Hello, Kotlin/JS!")
+    val repository = getPlatform().nifsRepository
 
     window.onload = {
-        getData(getPlatform().nifsRepository){
+        getData(repository, "current"){
             createContent(it)
         }
     }
 }
 
 
-fun getData(repogitory: NifsRepository, completeHandle:(result:List<SeawaterInformationByObservationPoint>)->Unit )
-        = CoroutineScope(Dispatchers.Default).launch {
-    completeHandle(repogitory.getSeaWaterInfoValues("current"))
-}
-
-
- fun createContent(seaWaterInfo: List<SeawaterInformationByObservationPoint>) {
-    console.log("[console] createContent")
-    val contentDiv = document.getElementById("content")
-    val figure = makeFigure(seaWaterInfo)
-    val plotDiv = JsFrontendUtil.createPlotDiv(figure)
-    contentDiv?.appendChild(plotDiv)
-}
-
-
- fun toMap(seaWaterInfo: List<SeawaterInformationByObservationPoint>):Map<String,List<Any>> {
-    console.log("[console] makeData")
+fun List<SeawaterInformationByObservationPoint>.toBarChartData():Map<String,List<Any>> {
+    console.log("[console] toBarChartData")
 
     val sta_nam_kor = mutableListOf<String>()
     val sta_cod = mutableListOf<String>()
@@ -53,9 +40,9 @@ fun getData(repogitory: NifsRepository, completeHandle:(result:List<SeawaterInfo
     val wtr_tmp = mutableListOf<Float>()
     val obs_datetime = mutableListOf<String>()
 
-    console.log("[console] seaWaterInfo[${seaWaterInfo.count()}]")
+    console.log("[console] toBarChartData[${this.count()}]")
 
-     seaWaterInfo.forEach {
+    this.forEach {
 
         sta_cod.add(it.sta_cde)
         obs_datetime.add(it.obs_datetime)
@@ -80,8 +67,23 @@ fun getData(repogitory: NifsRepository, completeHandle:(result:List<SeawaterInfo
 }
 
 
- fun makeFigure(seaWaterInfo: List<SeawaterInformationByObservationPoint>): Plot {
-    return letsPlot(toMap(seaWaterInfo)) {
+fun getData( repository: NifsRepository, division:String,  completeHandle:(result:List<SeawaterInformationByObservationPoint>)->Unit )
+        = CoroutineScope(Dispatchers.Default).launch {
+    completeHandle(repository.getSeaWaterInfoValues(division))
+}
+
+
+ fun createContent(seaWaterInfo: List<SeawaterInformationByObservationPoint>) {
+    console.log("[console] createContent")
+    val contentDiv = document.getElementById("LayerBars")
+    val figure = createBarChart(seaWaterInfo.toBarChartData())
+    val plotDiv = JsFrontendUtil.createPlotDiv(figure)
+    contentDiv?.appendChild(plotDiv)
+}
+
+
+ fun createBarChart(data: Map<String,List<Any>>): Plot {
+    return letsPlot(data) {
         x = "ObservatoryName"
         weight = "Temperature" } +
             geomBar(
@@ -94,7 +96,7 @@ fun getData(repogitory: NifsRepository, completeHandle:(result:List<SeawaterInfo
                     .line("온도|^y °C" )
             ) {
                 fill = "ObservatoryDepth" } +
-            labs( title="Korea EastSea 수온 정보", y="수온 °C", x="관측지점", fill="관측수심", caption="Nifs") +
+            labs( title="수온 정보", y="수온 °C", x="관측지점", fill="관측수심", caption="Nifs") +
             scaleYContinuous(limits = Pair(0, 15)) +
             ggsize(width = 1200, height = 300)
 
