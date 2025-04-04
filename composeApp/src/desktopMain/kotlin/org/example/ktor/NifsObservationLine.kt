@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.byUnicodePattern
+import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.geom.geomLine
 import org.jetbrains.letsPlot.ggsize
 import org.jetbrains.letsPlot.intern.Plot
@@ -30,7 +31,7 @@ fun NifsObservationLine(modifier: Modifier = Modifier) {
             it.gru_nam.equals("동해") and it.obs_lay.equals("1")
         }
         LaunchedEffect(key1 = viewModel){
-            viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh("oneday"))
+            viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.oneday))
         }
 
         var figureLine: Plot by remember { mutableStateOf(letsPlot() + geomLine()) }

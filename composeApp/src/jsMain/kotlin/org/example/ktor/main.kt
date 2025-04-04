@@ -5,6 +5,7 @@ import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.example.ktor.data.DATA_DIVISION
 import org.example.ktor.data.NifsRepository
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
@@ -17,18 +18,19 @@ fun main() {
 
     window.onload = {
 
-        setContent(repository, "current"){
-            createContent("LayerBars", it)
+        setContent(repository, ElementID.ID.LayerBars.division()){
+            createContent(ElementID.ID.LayerBars, it)
         }
-        setContent(repository, "oneday"){
-            createContent("BoxPlot", it)
+        setContent(repository, ElementID.ID.BoxPlot.division()){
+            createContent(ElementID.ID.BoxPlot, it)
         }
 
-        setContent(repository, "oneday"){
-            createContent("Line", it)
+        setContent(repository, ElementID.ID.Line.division()){
+            createContent(ElementID.ID.Line, it)
         }
-        setContent(repository, "stat"){
-            createContent("Ribbon", it)
+
+        setContent(repository, ElementID.ID.Ribbon.division()){
+            createContent(ElementID.ID.Ribbon, it)
         }
     }
 
@@ -37,15 +39,15 @@ fun main() {
 
 fun setContent(
     repository: NifsRepository,
-    division:String,
+    division: DATA_DIVISION,
     completeHandle:(result:List<Any>)->Unit
 ) = CoroutineScope(Dispatchers.Default).launch {
 
     val data = when(division){
-        "current", "oneday" -> {
-            repository.getSeaWaterInfoValues(division)
+        DATA_DIVISION.current, DATA_DIVISION.oneday -> {
+            repository.getSeaWaterInfoValues(division.name)
         }
-        "stat" -> {
+        DATA_DIVISION.statistics -> {
             repository.getSeaWaterInfoStatValues()
         }
         else ->{

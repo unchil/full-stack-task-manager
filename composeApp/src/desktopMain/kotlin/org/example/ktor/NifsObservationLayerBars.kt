@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.geom.geomBar
 import org.jetbrains.letsPlot.ggsize
 import org.jetbrains.letsPlot.intern.Plot
@@ -103,7 +104,7 @@ fun NifsObservationLayerBars(modifier:Modifier = Modifier) {
 
 
         LaunchedEffect(key1 = viewModel){
-            viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh("current"))
+            viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh(DATA_DIVISION.current))
         }
 
 

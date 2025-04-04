@@ -9,8 +9,6 @@ import org.example.ktor.model.SeawaterInformationByObservationPoint
 
 
 fun List<SeawaterInformationByObservationPoint>.toLayerBarsData():Map<String,List<Any>> {
-  //  console.log("[console] toLayerBarsData[${this.count()}]")
-
     val sta_nam_kor = mutableListOf<String>()
     val sta_cod = mutableListOf<String>()
     val obs_lay = mutableListOf<String>()
@@ -42,13 +40,13 @@ fun List<SeawaterInformationByObservationPoint>.toLayerBarsData():Map<String,Lis
 }
 
 fun List<SeawaterInformationByObservationPoint>.toBoxPlotData():Map<String,List<Any>> {
-//    console.log("[console] toBoxPlotData[${this.count()}]")
-
     val sta_nam_kor = mutableListOf<String>()
     val wtr_tmp = mutableListOf<Float>()
     val obs_datetime = mutableListOf<String>()
 
-    this.forEach {
+    this.filter {
+        it.obs_lay.equals("1")
+    }.forEach {
         sta_nam_kor.add(it.sta_nam_kor)
         obs_datetime.add(it.obs_datetime)
         wtr_tmp.add( it.wtr_tmp.trim().toFloat()  )
@@ -61,8 +59,6 @@ fun List<SeawaterInformationByObservationPoint>.toBoxPlotData():Map<String,List<
 
 @OptIn(FormatStringsInDatetimeFormats::class)
 fun List<SeawaterInformationByObservationPoint>.toLineData():Map<String,List<Any>> {
- //   console.log("[console] toLineData[${this.count()}]")
-
     val dateTimeFormatInput = LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm:ss") }
     val dateTimeFormatOuput = LocalDateTime.Format { byUnicodePattern("yy/MM/dd HH:mm") }
 
@@ -84,7 +80,6 @@ fun List<SeawaterInformationByObservationPoint>.toLineData():Map<String,List<Any
 }
 
 fun List<SeaWaterInfoByOneHourStat>.toRibbonData():Map<String,List<Any>> {
-  //  console.log("[console] toRibbonData[${this.count()}]")
     val gru_nam = mutableListOf<String>()
     val sta_cde = mutableListOf<String>()
     val sta_nam_kor = mutableListOf<String>()

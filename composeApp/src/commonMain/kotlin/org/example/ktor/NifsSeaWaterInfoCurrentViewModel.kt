@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.example.ktor.data.DATA_DIVISION
 import org.example.ktor.data.NifsRepository
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
@@ -38,7 +39,7 @@ class NifsSeaWaterInfoCurrentViewModel: ViewModel() {
     }
 
 
-    suspend fun getSeaWaterInfo(division: String){
+    suspend fun getSeaWaterInfo(division: DATA_DIVISION){
         repository.getSeaWaterInfo(division)
     }
 
@@ -48,7 +49,7 @@ class NifsSeaWaterInfoCurrentViewModel: ViewModel() {
 
 
     sealed class Event {
-        data class ObservationRefresh(val division: String) : Event()
+        data class ObservationRefresh(val division: DATA_DIVISION) : Event()
     }
 
 }

@@ -1,11 +1,11 @@
 package org.example.ktor
 
 import kotlinx.browser.document
+import org.example.ktor.data.DATA_DIVISION
 import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 import org.jetbrains.letsPlot.asDiscrete
 import org.jetbrains.letsPlot.frontend.JsFrontendUtil
-import org.jetbrains.letsPlot.frontend.JsFrontendUtil.setInnerHtml
 import org.jetbrains.letsPlot.geom.geomBar
 import org.jetbrains.letsPlot.geom.geomBoxplot
 import org.jetbrains.letsPlot.geom.geomLine
@@ -24,38 +24,54 @@ import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 
 
-fun createContent(elementId: String, data:List<Any>)   {
+
+object ElementID {
+    enum class ID {
+        LayerBars, BoxPlot, Line, Ribbon
+    }
+    val IDs = listOf(
+        ID.LayerBars, ID.BoxPlot, ID.Line, ID.Ribbon
+    )
+}
+
+fun ElementID.ID.division(): DATA_DIVISION {
+    return when(this){
+        ElementID.ID.LayerBars -> DATA_DIVISION.current
+        ElementID.ID.BoxPlot -> DATA_DIVISION.oneday
+        ElementID.ID.Line -> DATA_DIVISION.oneday
+        ElementID.ID.Ribbon -> DATA_DIVISION.statistics
+    }
+}
+
+
+fun createContent(elementId: ElementID.ID, data:List<Any>)   {
     val contentDiv: Element?
     val htmlDiv: HTMLDivElement
 
     when(elementId) {
-        "LayerBars" -> {
-            contentDiv = document.getElementById("LayerBars")
+        ElementID.ID.LayerBars -> {
+            contentDiv = document.getElementById(ElementID.ID.LayerBars.name)
             htmlDiv = JsFrontendUtil.createPlotDiv(
                 createBarChart((data as List<SeawaterInformationByObservationPoint>).toLayerBarsData())
             )
         }
-        "BoxPlot" -> {
-            contentDiv = document.getElementById("BoxPlot")
+        ElementID.ID.BoxPlot -> {
+            contentDiv = document.getElementById(ElementID.ID.BoxPlot.name)
             htmlDiv = JsFrontendUtil.createPlotDiv(
                 createBoxPlotChart((data as List<SeawaterInformationByObservationPoint>).toBoxPlotData())
             )
         }
-        "Line" -> {
-            contentDiv = document.getElementById("Line")
+        ElementID.ID.Line -> {
+            contentDiv = document.getElementById(ElementID.ID.Line.name)
             htmlDiv = JsFrontendUtil.createPlotDiv(
                 createLineChart((data as List<SeawaterInformationByObservationPoint>).toLineData())
             )
         }
-        "Ribbon" -> {
-            contentDiv = document.getElementById("Ribbon")
+        ElementID.ID.Ribbon -> {
+            contentDiv = document.getElementById(ElementID.ID.Ribbon.name)
             htmlDiv = JsFrontendUtil.createPlotDiv(
                 createRibbonChart((data as List<SeaWaterInfoByOneHourStat>).toRibbonData())
             )
-        }
-        else -> {
-            contentDiv = document.getElementById("UnKnown")
-            htmlDiv = setInnerHtml(contentDiv!!, "UnKnown ElementID") as HTMLDivElement
         }
     }
 
@@ -80,6 +96,7 @@ fun createBarChart(data: Map<String,List<Any>>): Plot {
                 fill = "ObservatoryDepth" } +
             labs( title="실시간 수온 정보", y="수온 °C", x="관측지점", fill="관측수심", caption="Nifs") +
             scaleYContinuous(limits = Pair(0, 15)) +
+            theme( axisTextX= elementText( angle=45)) +
             ggsize(width = 1400, height = 400)
 
 }
@@ -95,6 +112,7 @@ fun createBoxPlotChart(data: Map<String,List<Any>>):Plot{
             } +
             //  scaleYContinuous(limits = Pair(0, 15)) +
             labs(title="수온 일일 통계 정보", y="수온 °C", x="관측지점", color="수온 °C", caption="Nifs") +
+            theme( axisTextX= elementText( angle=45)) +
             ggsize(1400, 400)
 }
 
@@ -103,6 +121,7 @@ fun createLineChart(data: Map<String,List<Any>>):Plot {
             geomLine { x="CollectingTime"; y="Temperature"; color="ObservatoryName"} +
             labs( title="Korea EastSea Water Quality Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
             scaleYContinuous(limits=Pair(4,15) ) +
+            theme( axisTextX= elementText( angle=45)) +
             ggsize( width = 1400, height = 400)
 }
 
@@ -117,6 +136,6 @@ fun createRibbonChart(data: Map<String,List<Any>>):Plot {
             geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
             //   scaleYContinuous(limits=Pair(10,12.5) ) +
             labs(title="Korea EastSea Water Quality Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
-
+            theme( axisTextX= elementText( angle=45)) +
             ggsize(1400, 400)
 }

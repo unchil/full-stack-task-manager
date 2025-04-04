@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.example.ktor.data.DATA_DIVISION
 
 
 @Composable
@@ -23,7 +24,7 @@ fun NifsApp() {
         }
 
         LaunchedEffect(key1 = viewModel){
-            viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh("current"))
+            viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh(DATA_DIVISION.current))
         }
 
         val seaWaterInfoCurrent = viewModel._seaWaterInfoCurrentStateFlow.collectAsState().value.filter { it.gru_nam.equals("동해") }

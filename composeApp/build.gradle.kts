@@ -124,11 +124,10 @@ kotlin {
         }
 
         wasmJsMain.dependencies {
-           // implementation(libs.lets.plot.kotlin.js)
+
         }
 
         jsMain.dependencies {
-
             implementation(libs.lets.plot.kotlin.js)
         }
 

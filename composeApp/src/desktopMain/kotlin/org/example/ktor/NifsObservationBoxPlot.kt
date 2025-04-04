@@ -7,6 +7,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.asDiscrete
 import org.jetbrains.letsPlot.geom.geomBoxplot
 import org.jetbrains.letsPlot.ggsize
@@ -29,7 +30,7 @@ fun NifsObservationBoxPlot(modifier: Modifier = Modifier) {
         }
 
         LaunchedEffect(key1 = viewModel){
-            viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh("oneday"))
+            viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.oneday))
         }
 
         var figureBoxPlot: Plot by remember { mutableStateOf(letsPlot() + geomBoxplot()) }
