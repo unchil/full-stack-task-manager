@@ -79,5 +79,15 @@ class NifsRepository {
         return result
     }
 
+    suspend fun getSeaWaterInfoStatValues() : List<SeaWaterInfoByOneHourStat> {
+        var result: List<SeaWaterInfoByOneHourStat> = emptyList()
+        try {
+            result =  nifsApi.getSeaWaterInfoStat()
+        }catch (e:Exception){
+            e.message?.let { LOGGER.error(it) }
+        }
+        return result
+    }
+
 
 }
