@@ -2,8 +2,6 @@ package org.example.ktor
 
 import kotlinx.browser.document
 import org.example.ktor.data.DATA_DIVISION
-import org.example.ktor.model.SeaWaterInfoByOneHourStat
-import org.example.ktor.model.SeawaterInformationByObservationPoint
 import org.jetbrains.letsPlot.asDiscrete
 import org.jetbrains.letsPlot.frontend.JsFrontendUtil
 import org.jetbrains.letsPlot.geom.geomBar
@@ -22,7 +20,6 @@ import org.jetbrains.letsPlot.themes.theme
 import org.jetbrains.letsPlot.tooltips.layerTooltips
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
-
 
 
 object ElementID {
@@ -52,25 +49,25 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
         ElementID.ID.LayerBars -> {
             contentDiv = document.getElementById(ElementID.ID.LayerBars.name)
             htmlDiv = JsFrontendUtil.createPlotDiv(
-                createBarChart((data as List<SeawaterInformationByObservationPoint>).toLayerBarsData())
+                createBarChart(data.toLayerBarsData())
             )
         }
         ElementID.ID.BoxPlot -> {
             contentDiv = document.getElementById(ElementID.ID.BoxPlot.name)
             htmlDiv = JsFrontendUtil.createPlotDiv(
-                createBoxPlotChart((data as List<SeawaterInformationByObservationPoint>).toBoxPlotData())
+                createBoxPlotChart(data.toBoxPlotData())
             )
         }
         ElementID.ID.Line -> {
             contentDiv = document.getElementById(ElementID.ID.Line.name)
             htmlDiv = JsFrontendUtil.createPlotDiv(
-                createLineChart((data as List<SeawaterInformationByObservationPoint>).toLineData())
+                createLineChart(data.toLineData())
             )
         }
         ElementID.ID.Ribbon -> {
             contentDiv = document.getElementById(ElementID.ID.Ribbon.name)
             htmlDiv = JsFrontendUtil.createPlotDiv(
-                createRibbonChart((data as List<SeaWaterInfoByOneHourStat>).toRibbonData())
+                createRibbonChart(data.toRibbonData())
             )
         }
     }

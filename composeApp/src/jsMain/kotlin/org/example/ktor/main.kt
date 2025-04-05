@@ -12,7 +12,6 @@ import org.example.ktor.model.SeawaterInformationByObservationPoint
 
 
 fun main() {
-    console.log("[console] Hello, Kotlin/JS!")
 
     val repository = getPlatform().nifsRepository
 
