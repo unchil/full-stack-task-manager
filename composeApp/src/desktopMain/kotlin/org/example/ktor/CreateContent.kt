@@ -16,6 +16,19 @@ import org.jetbrains.letsPlot.themes.elementText
 import org.jetbrains.letsPlot.themes.theme
 import org.jetbrains.letsPlot.tooltips.layerTooltips
 
+val theme = theme(
+    plotTitle= elementText(),
+    axisTextX= elementText( family="AppleGothic", angle=45),
+    axisTitle= elementText(family="AppleGothic"),
+    axisTitleY= elementText(family="AppleGothic"),
+    axisTitleX= elementText(family="AppleGothic" ) ,
+    legendTitle= elementText(family="AppleGothic"),
+    legendText= elementText(family="AppleGothic"),
+    axisTooltip= elementText(family="AppleGothic"),
+    axisTooltipText= elementText(family="AppleGothic"),
+    tooltip= elementText(family="AppleGothic"),
+    tooltipText= elementText(family="AppleGothic"),
+    tooltipTitleText= elementText(family="AppleGothic") )
 
 fun createBarChart(data: Map<String,List<Any>>): Plot {
     return letsPlot(data) {
@@ -33,20 +46,7 @@ fun createBarChart(data: Map<String,List<Any>>): Plot {
                 fill = "ObservatoryDepth" } +
             labs( title="실시간 수온 정보", y="수온 °C", x="관측지점", fill="관측수심", caption="Nifs") +
             scaleYContinuous(limits = Pair(0, 15)) +
-            theme( ) +
-            theme(
-                plotTitle= elementText(family="AppleGothic"),
-                axisText= elementText(family="AppleGothic", angle=45),
-                axisTitle= elementText(family="AppleGothic"),
-                axisTitleY= elementText(family="AppleGothic"),
-                axisTitleX= elementText(family="AppleGothic") ,
-                legendTitle= elementText(family="AppleGothic"),
-                legendText= elementText(family="AppleGothic"),
-                axisTooltip= elementText(family="AppleGothic"),
-                axisTooltipText= elementText(family="AppleGothic"),
-                tooltip= elementText(family="AppleGothic"),
-                tooltipText= elementText(family="AppleGothic"),
-                tooltipTitleText= elementText(family="AppleGothic") ) +
+            theme +
             ggsize(width = 1400, height = 400)
 
 }
@@ -62,20 +62,7 @@ fun createBoxPlotChart(data: Map<String,List<Any>>): Plot {
             } +
             //  scaleYContinuous(limits = Pair(0, 15)) +
             labs(title="수온 일일 통계 정보", y="수온 °C", x="관측지점", color="수온 °C", caption="Nifs") +
-            theme( axisTextX= elementText( angle=45)) +
-            theme(
-                plotTitle= elementText(family="AppleGothic"),
-                axisText= elementText(family="AppleGothic"),
-                axisTitle= elementText(family="AppleGothic"),
-                axisTitleY= elementText(family="AppleGothic"),
-                axisTitleX= elementText(family="AppleGothic") ,
-                legendTitle= elementText(family="AppleGothic"),
-                legendText= elementText(family="AppleGothic"),
-                axisTooltip= elementText(family="AppleGothic"),
-                axisTooltipText= elementText(family="AppleGothic"),
-                tooltip= elementText(family="AppleGothic"),
-                tooltipText= elementText(family="AppleGothic"),
-                tooltipTitleText= elementText(family="AppleGothic") ) +
+            theme +
             ggsize(1400, 400)
 }
 
@@ -84,19 +71,7 @@ fun createLineChart(data: Map<String,List<Any>>): Plot {
             geomLine { x="CollectingTime"; y="Temperature"; color="ObservatoryName"} +
             labs( title="Korea EastSea Water Quality Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
             scaleYContinuous(limits=Pair(4,15) ) +
-            theme(
-                plotTitle= elementText(),
-                axisTextX= elementText( angle=45),
-                axisTitle= elementText(family="AppleGothic"),
-                axisTitleY= elementText(family="AppleGothic"),
-                axisTitleX= elementText(family="AppleGothic" ) ,
-                legendTitle= elementText(family="AppleGothic"),
-                legendText= elementText(family="AppleGothic"),
-                axisTooltip= elementText(family="AppleGothic"),
-                axisTooltipText= elementText(family="AppleGothic"),
-                tooltip= elementText(family="AppleGothic"),
-                tooltipText= elementText(family="AppleGothic"),
-                tooltipTitleText= elementText(family="AppleGothic") ) +
+            theme +
             ggsize( width = 1400, height = 400)
 }
 
@@ -111,18 +86,6 @@ fun createRibbonChart(data: Map<String,List<Any>>): Plot {
             geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
             //   scaleYContinuous(limits=Pair(10,12.5) ) +
             labs(title="Korea EastSea Water Quality Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
-            theme(
-                plotTitle= elementText(),
-                axisTextX= elementText( angle=45),
-                axisTitle= elementText(family="AppleGothic"),
-                axisTitleY= elementText(family="AppleGothic"),
-                axisTitleX= elementText(family="AppleGothic" ) ,
-                legendTitle= elementText(family="AppleGothic"),
-                legendText= elementText(family="AppleGothic"),
-                axisTooltip= elementText(family="AppleGothic"),
-                axisTooltipText= elementText(family="AppleGothic"),
-                tooltip= elementText(family="AppleGothic"),
-                tooltipText= elementText(family="AppleGothic"),
-                tooltipTitleText= elementText(family="AppleGothic") ) +
+            theme +
             ggsize(1400, 400)
 }
