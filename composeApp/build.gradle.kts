@@ -241,6 +241,9 @@ tasks.register("cleanSkikoJniLibs") {
 tasks.named("clean") {
     dependsOn("cleanSkikoJniLibs")
 }
+dependencies {
+    implementation(libs.androidx.ui.android)
+}
 
 tasks.withType<MergeSourceSetFolders>().configureEach {
     dependsOn("unzipSkikoJniLibsReleaseAsset")

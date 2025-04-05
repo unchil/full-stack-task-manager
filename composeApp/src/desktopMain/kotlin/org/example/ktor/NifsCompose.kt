@@ -1,33 +1,57 @@
 package org.example.ktor
 
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun NifsCompose(){
-
-    val scrollState = rememberScrollState()
-
     MaterialTheme {
 
-        Column (modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
-            Row{
-                NifsObservationBoxPlot(modifier = Modifier.weight(0.5f))
-                NifsObservationLayerBars(modifier = Modifier.weight(0.5f) )
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .background(color = Color(255, 255, 255))
+                .padding(10.dp)
+        ){
+
+            val stateVertical = rememberScrollState(0)
+            val stateHorizontal = rememberScrollState(0)
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(stateVertical)
+                    .padding(end = 12.dp, bottom = 12.dp)
+                    .horizontalScroll(stateHorizontal)
+            ) {
+
+                Column {
+                    NifsObservationBoxPlot(modifier = Modifier.fillMaxWidth())
+                    NifsObservationLayerBars(modifier = Modifier.fillMaxWidth() )
+                    NifsObservationLine(modifier = Modifier.fillMaxWidth() )
+                    NifsObservationRibbon(modifier = Modifier.fillMaxWidth() )
+                }
             }
 
-            NifsObservationLine(modifier = Modifier.fillMaxWidth() )
+            VerticalScrollbar(
+                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                adapter = rememberScrollbarAdapter(
+                    scrollState = stateVertical
+                )
+            )
 
-            NifsObservationRibbon(modifier = Modifier.fillMaxWidth() )
+            HorizontalScrollbar(
+                modifier = Modifier.align(Alignment.BottomStart)
+                    .fillMaxWidth()
+                    .padding(end = 12.dp),
+                adapter = rememberScrollbarAdapter(stateHorizontal)
+            )
+
         }
 
     }
