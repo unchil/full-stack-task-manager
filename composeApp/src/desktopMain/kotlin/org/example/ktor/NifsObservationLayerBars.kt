@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.geom.geomBar
 import org.jetbrains.letsPlot.ggsize
@@ -30,14 +31,19 @@ fun NifsObservationLayerBars(modifier:Modifier = Modifier) {
 
         LaunchedEffect(key1 = viewModel){
             viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh(DATA_DIVISION.current))
+            while(true){
+                delay(1800 * 1000).let {
+                    viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh(DATA_DIVISION.current))
+                }
+            }
         }
 
         val preserveAspectRatio = remember { mutableStateOf(false) }
         var figure: Plot by remember { mutableStateOf(letsPlot() + geomBar()) }
-        val seaWaterInfoCurrent = viewModel._seaWaterInfoCurrentStateFlow.collectAsState().value
+        val seaWaterInfoCurrent = viewModel._seaWaterInfoCurrentStateFlow.collectAsState()
 
-        LaunchedEffect(key1= seaWaterInfoCurrent){
-            figure = createBarChart(seaWaterInfoCurrent.toLayerBarsData())
+        LaunchedEffect(key1= seaWaterInfoCurrent.value){
+            figure = createBarChart(seaWaterInfoCurrent.value.toLayerBarsData())
         }
 
         Row(modifier = Modifier.then(modifier).padding(vertical = 8.dp)) {

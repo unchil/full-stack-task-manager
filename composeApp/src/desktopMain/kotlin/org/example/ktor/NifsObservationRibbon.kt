@@ -8,6 +8,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.geom.geomLine
 import org.jetbrains.letsPlot.geom.geomRibbon
 import org.jetbrains.letsPlot.intern.Plot
@@ -26,14 +28,19 @@ fun NifsObservationRibbon(modifier: Modifier = Modifier) {
 
         LaunchedEffect(key1 = viewModel){
             viewModel.onEvent(NifsSeaWaterInfoStatViewModel.Event.ObservationStatRefresh)
+            while(true){
+                delay(1800 * 1000).let {
+                    viewModel.onEvent(NifsSeaWaterInfoStatViewModel.Event.ObservationStatRefresh)
+                }
+            }
         }
 
         var figureLine: Plot by remember { mutableStateOf(letsPlot() + geomRibbon()) }
         val preserveAspectRatio = remember { mutableStateOf(false) }
-        val seaWaterInfoStat = viewModel._seaWaterInfoStatStateFlow.collectAsState().value
+        val seaWaterInfoStat = viewModel._seaWaterInfoStatStateFlow.collectAsState()
 
-        LaunchedEffect(key1= seaWaterInfoStat){
-            figureLine = createRibbonChart(seaWaterInfoStat.toRibbonData())
+        LaunchedEffect(key1= seaWaterInfoStat.value){
+            figureLine = createRibbonChart(seaWaterInfoStat.value.toRibbonData())
         }
 
         Row(modifier = Modifier.then(modifier).padding(vertical = 8.dp)) {

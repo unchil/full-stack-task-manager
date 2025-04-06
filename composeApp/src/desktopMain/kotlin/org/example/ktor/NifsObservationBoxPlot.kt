@@ -7,6 +7,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.asDiscrete
 import org.jetbrains.letsPlot.geom.geomBoxplot
@@ -27,14 +28,20 @@ fun NifsObservationBoxPlot(modifier: Modifier = Modifier) {
 
         LaunchedEffect(key1 = viewModel){
             viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.oneday))
+
+            while(true){
+                delay(1800 * 1000).let {
+                    viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.oneday))
+                }
+            }
         }
 
         var figureBoxPlot: Plot by remember { mutableStateOf(letsPlot() + geomBoxplot()) }
         val preserveAspectRatio = remember { mutableStateOf(false) }
-        val seaWaterInfoOneday = viewModel._seaWaterInfoOneDayStateFlow.collectAsState().value
+        val seaWaterInfoOneday = viewModel._seaWaterInfoOneDayStateFlow.collectAsState()
 
-        LaunchedEffect(key1= seaWaterInfoOneday){
-            figureBoxPlot = createBoxPlotChart(seaWaterInfoOneday.toBoxPlotData())
+        LaunchedEffect(key1= seaWaterInfoOneday.value){
+            figureBoxPlot = createBoxPlotChart(seaWaterInfoOneday.value.toBoxPlotData())
         }
 
         Row(modifier = Modifier.then(modifier).padding(vertical = 8.dp)) {

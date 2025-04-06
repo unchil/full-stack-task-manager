@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.byUnicodePattern
@@ -30,14 +31,19 @@ fun NifsObservationLine(modifier: Modifier = Modifier) {
 
         LaunchedEffect(key1 = viewModel){
             viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.oneday))
+            while(true){
+                delay(1800 * 1000).let {
+                    viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.oneday))
+                }
+            }
         }
 
         var figureLine: Plot by remember { mutableStateOf(letsPlot() + geomLine()) }
         val preserveAspectRatio = remember { mutableStateOf(false) }
-        val seaWaterInfoOneday = viewModel._seaWaterInfoOneDayStateFlow.collectAsState().value
+        val seaWaterInfoOneday = viewModel._seaWaterInfoOneDayStateFlow.collectAsState()
 
-        LaunchedEffect(key1= seaWaterInfoOneday){
-            figureLine = createLineChart(seaWaterInfoOneday.toLineData()   )
+        LaunchedEffect(key1= seaWaterInfoOneday.value){
+            figureLine = createLineChart(seaWaterInfoOneday.value.toLineData()   )
         }
 
         Row(modifier = Modifier.then(modifier).padding(vertical = 8.dp)) {
