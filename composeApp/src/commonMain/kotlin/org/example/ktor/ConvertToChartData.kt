@@ -16,8 +16,9 @@ fun List<*>.toLayerBarsData():Map<String,List<Any>> {
     val wtr_tmp = mutableListOf<Float>()
     val obs_datetime = mutableListOf<String>()
 
+
     this.forEach {
-        if( it is SeawaterInformationByObservationPoint) {
+        if( it is SeawaterInformationByObservationPoint && it.gru_nam.equals("동해")) {
             sta_cod.add(it.sta_cde)
             obs_datetime.add(it.obs_datetime)
             sta_nam_kor.add(it.sta_nam_kor)

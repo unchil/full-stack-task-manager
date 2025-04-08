@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.example.ktor.data.DATA_DIVISION
 import org.example.ktor.data.NifsRepository
-import org.example.ktor.model.SeawaterInformationByObservationPoint
+
 
 
 

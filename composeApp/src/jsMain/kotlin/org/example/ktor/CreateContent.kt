@@ -45,6 +45,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
     val contentDiv: Element?
     val htmlDiv: HTMLDivElement
 
+
     when(elementId) {
         ElementID.ID.LayerBars -> {
             contentDiv = document.getElementById(ElementID.ID.LayerBars.name)
@@ -94,7 +95,7 @@ fun createBarChart(data: Map<String,List<Any>>): Plot {
             labs( title="실시간 수온 정보", y="수온 °C", x="관측지점", fill="관측수심", caption="Nifs") +
             scaleYContinuous(limits = Pair(0, 15)) +
             theme +
-            ggsize(width = 1400, height = 400)
+            ggsize(width = 600, height = 400)
 
 }
 
