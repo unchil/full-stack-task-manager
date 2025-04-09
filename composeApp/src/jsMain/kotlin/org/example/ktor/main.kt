@@ -5,17 +5,13 @@ import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.html.*
+import kotlinx.html.dom.append
 import org.example.ktor.data.DATA_DIVISION
 import org.example.ktor.data.NifsRepository
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 import kotlin.js.Json
 import kotlin.js.json
-
-
-import kotlinx.browser.window
-import kotlinx.html.*
-import kotlinx.html.dom.append
-import kotlinx.html.dom.create
 
 fun List<*>.toGridData():MutableList<Json>{
     val rowData = mutableListOf<Json>()
@@ -40,8 +36,6 @@ fun List<*>.toGridData():MutableList<Json>{
 
 fun main() {
 
-
-
     val repository = getPlatform().nifsRepository
 
     window.onload = {
@@ -62,27 +56,26 @@ fun main() {
             setContent(repository, ElementID.ID.Ribbon.division()){
                 createContent(ElementID.ID.Ribbon, it)
             }
-        }
 
-
-        setGrid(repository) { data ->
-            val columnDefs = arrayOf(
-                json( "field" to "sta_cde", "width" to 150),
-                json( "field" to "sta_nam_kor", "width" to 150),
-                json( "field" to "obs_datetime", "width" to 200),
-                json( "field" to "obs_lay", "width" to 150),
-                json( "field" to "wtr_tmp", "width" to 150),
-                json( "field" to "obs_lay", "width" to 150),
-                json( "field" to "gru_nam", "width" to 150),
-                json( "field" to "lon", "width" to 150),
-                json( "field" to "lat", "width" to 150)
-            )
-            val gridDiv = document.getElementById("AgGrid")
-            val gridOptions:dynamic = js("({})")
-            gridOptions["columnDefs"] = columnDefs
-            gridOptions["rowData"] = data.toGridData().toTypedArray()
-            gridOptions["pagination"] = true
-            js("new agGrid.createGrid(gridDiv, gridOptions)")
+            setGrid(repository) { data ->
+                val columnDefs = arrayOf(
+                    json( "field" to "sta_cde", "width" to 150),
+                    json( "field" to "sta_nam_kor", "width" to 150),
+                    json( "field" to "obs_datetime", "width" to 200),
+                    json( "field" to "obs_lay", "width" to 150),
+                    json( "field" to "wtr_tmp", "width" to 150),
+                    json( "field" to "obs_lay", "width" to 150),
+                    json( "field" to "gru_nam", "width" to 150),
+                    json( "field" to "lon", "width" to 150),
+                    json( "field" to "lat", "width" to 150)
+                )
+                val gridDiv = document.getElementById("AgGrid")
+                val gridOptions:dynamic = js("({})")
+                gridOptions["columnDefs"] = columnDefs
+                gridOptions["rowData"] = data.toGridData().toTypedArray()
+                gridOptions["pagination"] = true
+                js("new agGrid.createGrid(gridDiv, gridOptions)")
+            }
         }
     }
 
