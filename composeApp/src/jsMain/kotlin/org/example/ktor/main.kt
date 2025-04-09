@@ -12,6 +12,11 @@ import kotlin.js.Json
 import kotlin.js.json
 
 
+import kotlinx.browser.window
+import kotlinx.html.*
+import kotlinx.html.dom.append
+import kotlinx.html.dom.create
+
 fun List<*>.toGridData():MutableList<Json>{
     val rowData = mutableListOf<Json>()
     this.forEach {
@@ -35,29 +40,32 @@ fun List<*>.toGridData():MutableList<Json>{
 
 fun main() {
 
+
+
     val repository = getPlatform().nifsRepository
 
     window.onload = {
 
-        setContent(repository, ElementID.ID.LayerBars.division()){
-            createContent(ElementID.ID.LayerBars, it)
-        }
-        setContent(repository, ElementID.ID.BoxPlot.division()){
-            createContent(ElementID.ID.BoxPlot, it)
+        createLayOut{
+
+            setContent(repository, ElementID.ID.LayerBars.division()){
+                createContent(ElementID.ID.LayerBars, it)
+            }
+            setContent(repository, ElementID.ID.BoxPlot.division()){
+                createContent(ElementID.ID.BoxPlot, it)
+            }
+
+            setContent(repository, ElementID.ID.Line.division()){
+                createContent(ElementID.ID.Line, it)
+            }
+
+            setContent(repository, ElementID.ID.Ribbon.division()){
+                createContent(ElementID.ID.Ribbon, it)
+            }
         }
 
-        setContent(repository, ElementID.ID.Line.division()){
-            createContent(ElementID.ID.Line, it)
-        }
-
-        setContent(repository, ElementID.ID.Ribbon.division()){
-            createContent(ElementID.ID.Ribbon, it)
-        }
-
-        val rowData = mutableListOf<Any>()
 
         setGrid(repository) { data ->
-
             val columnDefs = arrayOf(
                 json( "field" to "sta_cde", "width" to 150),
                 json( "field" to "sta_nam_kor", "width" to 150),
@@ -69,20 +77,42 @@ fun main() {
                 json( "field" to "lon", "width" to 150),
                 json( "field" to "lat", "width" to 150)
             )
-
             val gridDiv = document.getElementById("AgGrid")
             val gridOptions:dynamic = js("({})")
             gridOptions["columnDefs"] = columnDefs
             gridOptions["rowData"] = data.toGridData().toTypedArray()
             gridOptions["pagination"] = true
-          //  gridOptions["theme"] = "themeAlpine"
             js("new agGrid.createGrid(gridDiv, gridOptions)")
-
         }
-
     }
 
 }
+
+fun createLayOut( completeHandle:()->Unit) {
+    val body = document.body ?: error("No body")
+    body.append {
+
+        h1 { +"Nifs Sea Water Temperature Infomation"; style="text-align:center;" }
+
+        h3 {+"Nifs Sea Water Temperature Current Data"}
+
+        div {
+            id = "AgGrid";
+            style="width: 1340px;height: 300px";
+        }
+
+        div { id = "LayerBars"}
+
+        div { id = "BoxPlot"}
+
+        div { id = "Line"}
+
+        div { id = "Ribbon"}
+
+    }
+    completeHandle()
+}
+
 
 fun setGrid(
     repository: NifsRepository,

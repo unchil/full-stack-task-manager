@@ -21,9 +21,7 @@ import org.jetbrains.letsPlot.themes.theme
 import org.jetbrains.letsPlot.tooltips.layerTooltips
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
-import kotlin.js.json
 
-import kotlinx.html.div
 
 object ElementID {
     enum class ID {

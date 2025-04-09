@@ -9,7 +9,6 @@ import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
 
-
 fun List<*>.toLayerBarsData():Map<String,List<Any>> {
     val sta_nam_kor = mutableListOf<String>()
     val sta_cod = mutableListOf<String>()
