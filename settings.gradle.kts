@@ -6,6 +6,7 @@ pluginManagement {
     repositories {
         maven{
             url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+
         }
 
 
@@ -27,8 +28,12 @@ dependencyResolutionManagement {
     repositories {
         maven{
             url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+            url = uri("https://repo.clojars.org/")
         }
 
+        maven{
+            url = uri("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven/")
+        }
 
         google()
         mavenCentral()

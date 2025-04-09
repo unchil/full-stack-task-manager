@@ -2,6 +2,7 @@ package org.example.ktor
 
 import kotlinx.browser.document
 import org.example.ktor.data.DATA_DIVISION
+import org.example.ktor.model.SeawaterInformationByObservationPoint
 import org.jetbrains.letsPlot.asDiscrete
 import org.jetbrains.letsPlot.frontend.JsFrontendUtil
 import org.jetbrains.letsPlot.geom.geomBar
@@ -20,7 +21,9 @@ import org.jetbrains.letsPlot.themes.theme
 import org.jetbrains.letsPlot.tooltips.layerTooltips
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
+import kotlin.js.json
 
+import kotlinx.html.div
 
 object ElementID {
     enum class ID {
@@ -71,10 +74,15 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
                 createRibbonChart(data.toRibbonData())
             )
         }
+
+
     }
 
     contentDiv?.appendChild(htmlDiv)
 }
+
+
+
 
 val theme = theme( axisTextX= elementText( angle=45))
 
@@ -95,7 +103,7 @@ fun createBarChart(data: Map<String,List<Any>>): Plot {
             labs( title="실시간 수온 정보", y="수온 °C", x="관측지점", fill="관측수심", caption="Nifs") +
             scaleYContinuous(limits = Pair(0, 15)) +
             theme +
-            ggsize(width = 600, height = 400)
+            ggsize(width = 1400, height = 400)
 
 }
 

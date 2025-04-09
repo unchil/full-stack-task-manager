@@ -7,11 +7,6 @@ import org.jetbrains.kotlinx.dataframe.io.*
 import kotlin.io.path.Path
 
 
-/*
-df.toStandaloneHTML(DisplayConfiguration(rowsLimit = null)).openInBrowser()
-df.toStandaloneHTML(DisplayConfiguration(rowsLimit = null)).writeHTML(File("/path/to/file"))
-df.toStandaloneHTML(DisplayConfiguration(rowsLimit = null)).writeHTML(Path("/path/to/file"))
- */
 
 
 suspend fun main() {

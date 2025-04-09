@@ -1,4 +1,5 @@
 [versions]
+agGridCommunity = "25.0.1-1"
 agp = "8.7.3"
 android-compileSdk = "35"
 android-minSdk = "24"
@@ -17,6 +18,7 @@ compose-multiplatform = "1.7.1"
 junit = "4.13.2"
 kotlin = "2.1.20"
 kotlinx-coroutines = "1.10.1"
+kotlinxHtmlJs = "0.10.0"
 ktor = "3.0.3"
 logback = "1.5.16"
 
@@ -38,6 +40,7 @@ decompose = "3.0.0"
 
 
 [libraries]
+ag-grid-community = { module = "cljsjs:ag-grid-community", version.ref = "agGridCommunity" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -50,6 +53,8 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+kotlinx-html = { module = "org.jetbrains.kotlinx:kotlinx-html", version.ref = "kotlinxHtmlJs" }
+kotlinx-html-js = { module = "org.jetbrains.kotlinx:kotlinx-html-js", version.ref = "kotlinxHtmlJs" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }

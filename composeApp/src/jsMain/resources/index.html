@@ -5,31 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KotlinProject</title>
     <script src="skiko.js"> </script>
+    <link rel="stylesheet" href="ag-grid.css">
+    <link rel="stylesheet" href="ag-theme-alpine.css">
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
 </head>
 <body >
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/JetBrains/lets-plot@v4.6.1/js-package/distr/lets-plot.min.js"></script>
 <script type="application/javascript" src="js-frontend-app.js"></script>
 
+
 <div >
     <h1 style="text-align:center;" >Nifs Sea Water Temperature Infomation</h1>
 </div>
 
-
+<!--
 <div id="DataGrid" >
     <h3 >Nifs Sea Water Temperature Current Data</h3>
     <iframe src="df_rendering.html" style="height:300px;width:600px;border:none;" ></iframe>
 </div>
+-->
 
+<h3 >Nifs Sea Water Temperature Current Data</h3>
+<div id="AgGrid" style="width: 1340px;height: 300px"></div>
+<BR>
 <div id="LayerBars"></div>
-
+<BR>
 <div id="BoxPlot"></div>
-
+<BR>
 <div id="Line"></div>
+<BR>
 <div id="Ribbon"></div>
 
 <div id="UnKnown"></div>
-
-
 
 </body>
 </html>

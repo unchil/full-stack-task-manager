@@ -4,6 +4,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
+
 import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
@@ -18,7 +19,7 @@ fun List<*>.toLayerBarsData():Map<String,List<Any>> {
 
 
     this.forEach {
-        if( it is SeawaterInformationByObservationPoint && it.gru_nam.equals("동해")) {
+        if( it is SeawaterInformationByObservationPoint ) {
             sta_cod.add(it.sta_cde)
             obs_datetime.add(it.obs_datetime)
             sta_nam_kor.add(it.sta_nam_kor)
