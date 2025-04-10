@@ -40,7 +40,7 @@ decompose = "3.0.0"
 
 
 [libraries]
-ag-grid-community = { module = "cljsjs:ag-grid-community", version.ref = "agGridCommunity" }
+
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

@@ -130,7 +130,6 @@ kotlin {
             implementation(libs.kotlinx.serialization)
             implementation(libs.ktor.serialization.json)
             implementation(libs.lets.plot.kotlin.js)
-            implementation(libs.ag.grid.community)
             implementation(libs.kotlinx.html.js)
         }
 
