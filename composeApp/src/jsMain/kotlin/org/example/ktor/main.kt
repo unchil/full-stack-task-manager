@@ -19,21 +19,11 @@ fun main() {
 
     window.onload = {
         createLayOut{
-            setContent(repository, ElementID.ID.LayerBars){
-                createContent(ElementID.ID.LayerBars, it)
-            }
-            setContent(repository, ElementID.ID.BoxPlot){
-                createContent(ElementID.ID.BoxPlot, it)
-            }
-            setContent(repository, ElementID.ID.Line){
-                createContent(ElementID.ID.Line, it)
-            }
-            setContent(repository, ElementID.ID.Ribbon){
-                createContent(ElementID.ID.Ribbon, it)
-            }
-            setContent(repository, ElementID.ID.AgGridCurrent){
-                createContent(ElementID.ID.AgGridCurrent, it)
-            }
+            setContent(repository, ElementID.ID.LayerBars)
+            setContent(repository, ElementID.ID.BoxPlot)
+            setContent(repository, ElementID.ID.Line)
+            setContent(repository, ElementID.ID.Ribbon)
+            setContent(repository, ElementID.ID.AgGridCurrent)
         }
     }
 
@@ -67,8 +57,7 @@ fun createLayOut( completeHandle:()->Unit) {
 
 fun setContent(
     repository: NifsRepository,
-    id: ElementID.ID,
-    completeHandle:(result:List<Any>)->Unit
+    id: ElementID.ID
 ) = CoroutineScope(Dispatchers.Default).launch {
 
     val data = when(id.division()){
@@ -83,7 +72,8 @@ fun setContent(
         }
     }
 
-    completeHandle(data)
+    createContent(id, data)
+
 }
 
 fun List<*>.toGridData():MutableList<Json>{

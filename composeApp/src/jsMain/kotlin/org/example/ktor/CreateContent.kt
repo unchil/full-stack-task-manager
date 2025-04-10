@@ -2,7 +2,6 @@ package org.example.ktor
 
 import kotlinx.browser.document
 import org.example.ktor.data.DATA_DIVISION
-import org.example.ktor.model.SeawaterInformationByObservationPoint
 import org.jetbrains.letsPlot.asDiscrete
 import org.jetbrains.letsPlot.frontend.JsFrontendUtil
 import org.jetbrains.letsPlot.geom.geomBar
@@ -20,7 +19,6 @@ import org.jetbrains.letsPlot.themes.elementText
 import org.jetbrains.letsPlot.themes.theme
 import org.jetbrains.letsPlot.tooltips.layerTooltips
 import org.w3c.dom.Element
-import org.w3c.dom.HTMLDivElement
 import kotlin.js.Json
 import kotlin.js.json
 
@@ -44,49 +42,48 @@ fun ElementID.ID.division(): DATA_DIVISION {
     }
 }
 
-
 fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
     when(elementId) {
 
-            ElementID.ID.LayerBars -> {
-                document.getElementById(ElementID.ID.LayerBars.name)?.appendChild(
-                    JsFrontendUtil.createPlotDiv(
-                        createBarChart(data.toLayerBarsData())
-                    )
+        ElementID.ID.LayerBars -> {
+            document.getElementById(ElementID.ID.LayerBars.name)?.appendChild(
+                JsFrontendUtil.createPlotDiv(
+                    createBarChart(data.toLayerBarsData())
                 )
-            }
+            )
+        }
 
-            ElementID.ID.BoxPlot -> {
-                document.getElementById(ElementID.ID.BoxPlot.name)?.appendChild(
-                    JsFrontendUtil.createPlotDiv(
-                        createBoxPlotChart(data.toBoxPlotData())
-                    )
+        ElementID.ID.BoxPlot -> {
+            document.getElementById(ElementID.ID.BoxPlot.name)?.appendChild(
+                JsFrontendUtil.createPlotDiv(
+                    createBoxPlotChart(data.toBoxPlotData())
                 )
-            }
+            )
+        }
 
-            ElementID.ID.Line -> {
-                document.getElementById(ElementID.ID.Line.name)?.appendChild(
-                    JsFrontendUtil.createPlotDiv(
-                        createLineChart(data.toLineData())
-                    )
+        ElementID.ID.Line -> {
+            document.getElementById(ElementID.ID.Line.name)?.appendChild(
+                JsFrontendUtil.createPlotDiv(
+                    createLineChart(data.toLineData())
                 )
-            }
+            )
+        }
 
-            ElementID.ID.Ribbon -> {
-                document.getElementById(ElementID.ID.Ribbon.name)?.appendChild(
-                    JsFrontendUtil.createPlotDiv(
-                        createRibbonChart(data.toRibbonData())
-                    )
+        ElementID.ID.Ribbon -> {
+            document.getElementById(ElementID.ID.Ribbon.name)?.appendChild(
+                JsFrontendUtil.createPlotDiv(
+                    createRibbonChart(data.toRibbonData())
                 )
-            }
+            )
+        }
 
-            ElementID.ID.AgGridCurrent -> {
-                document.getElementById(ElementID.ID.AgGridCurrent.name)?.let {
-                    createGrid(it, data.toGridData().toTypedArray())
-                }
+        ElementID.ID.AgGridCurrent -> {
+            document.getElementById(ElementID.ID.AgGridCurrent.name)?.let {
+                createGrid(it, data.toGridData().toTypedArray())
             }
         }
+    }
 
 }
 
