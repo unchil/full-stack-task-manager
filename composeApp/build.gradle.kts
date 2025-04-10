@@ -39,7 +39,7 @@ kotlin {
     js(IR) {
         browser{
             commonWebpackConfig {
-                outputFileName = "js-frontend-app.js"
+                outputFileName = "compose-app.js"
             }
         }
         binaries.executable()
