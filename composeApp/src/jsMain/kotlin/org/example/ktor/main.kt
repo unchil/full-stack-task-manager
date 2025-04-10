@@ -35,11 +35,11 @@ fun createLayOut( completeHandle:()->Unit) {
 
         h1 { +"Nifs Sea Water Temperature Infomation"; style="text-align:center;" }
 
-        h3 {+"Nifs Sea Water Temperature Current Data"}
+        h3 {+"Nifs Sea Water Temperature OneDay Data"}
 
         div {
             id = ElementID.ID.AgGridCurrent.name
-            style="width: 1360px;height: 300px";
+            style="width: 1360px;height: 300px"
         }
 
         div { id = ElementID.ID.LayerBars.name}

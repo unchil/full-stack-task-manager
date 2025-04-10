@@ -38,7 +38,7 @@ fun ElementID.ID.division(): DATA_DIVISION {
         ElementID.ID.BoxPlot -> DATA_DIVISION.oneday
         ElementID.ID.Line -> DATA_DIVISION.oneday
         ElementID.ID.Ribbon -> DATA_DIVISION.statistics
-        ElementID.ID.AgGridCurrent -> DATA_DIVISION.current
+        ElementID.ID.AgGridCurrent -> DATA_DIVISION.oneday
     }
 }
 
@@ -94,20 +94,21 @@ fun createGrid(gridDiv:Element, data:Array<Json>)  {
         json( "field" to "sta_cde", "width" to 150),
         json( "field" to "sta_nam_kor", "width" to 150),
         json( "field" to "obs_datetime", "width" to 200),
-        json( "field" to "obs_lay", "width" to 150),
-        json( "field" to "wtr_tmp", "width" to 150),
-        json( "field" to "obs_lay", "width" to 150),
-        json( "field" to "gru_nam", "width" to 150),
+        json( "field" to "obs_lay",  "width" to 150),
+        json( "field" to "wtr_tmp","width" to 150),
+        json( "field" to "gru_nam",  "width" to 150),
         json( "field" to "lon", "width" to 150),
         json( "field" to "lat", "width" to 150)
     )
 
     val gridOptions:dynamic = js("({})")
     gridOptions["columnDefs"] = columnDefs
+    gridOptions["defaultColDef"] = json("filter" to true)
     gridOptions["rowData"] = data
     gridOptions["pagination"] = true
     gridOptions["paginationPageSize"] = 20
     gridOptions["paginationPageSizeSelector"] = arrayOf(20, 100, 1000)
+
 
     js("new agGrid.createGrid(gridDiv, gridOptions)")
 }
