@@ -21,14 +21,16 @@ import org.jetbrains.letsPlot.themes.theme
 import org.jetbrains.letsPlot.tooltips.layerTooltips
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
+import kotlin.js.Json
+import kotlin.js.json
 
 
 object ElementID {
     enum class ID {
-        LayerBars, BoxPlot, Line, Ribbon
+        LayerBars, BoxPlot, Line, Ribbon, AgGridCurrent
     }
     val IDs = listOf(
-        ID.LayerBars, ID.BoxPlot, ID.Line, ID.Ribbon
+        ID.LayerBars, ID.BoxPlot, ID.Line, ID.Ribbon, ID.AgGridCurrent
     )
 }
 
@@ -38,47 +40,80 @@ fun ElementID.ID.division(): DATA_DIVISION {
         ElementID.ID.BoxPlot -> DATA_DIVISION.oneday
         ElementID.ID.Line -> DATA_DIVISION.oneday
         ElementID.ID.Ribbon -> DATA_DIVISION.statistics
+        ElementID.ID.AgGridCurrent -> DATA_DIVISION.current
     }
 }
 
 
 fun createContent(elementId: ElementID.ID, data:List<Any>)   {
-    val contentDiv: Element?
-    val htmlDiv: HTMLDivElement
-
 
     when(elementId) {
-        ElementID.ID.LayerBars -> {
-            contentDiv = document.getElementById(ElementID.ID.LayerBars.name)
-            htmlDiv = JsFrontendUtil.createPlotDiv(
-                createBarChart(data.toLayerBarsData())
-            )
-        }
-        ElementID.ID.BoxPlot -> {
-            contentDiv = document.getElementById(ElementID.ID.BoxPlot.name)
-            htmlDiv = JsFrontendUtil.createPlotDiv(
-                createBoxPlotChart(data.toBoxPlotData())
-            )
-        }
-        ElementID.ID.Line -> {
-            contentDiv = document.getElementById(ElementID.ID.Line.name)
-            htmlDiv = JsFrontendUtil.createPlotDiv(
-                createLineChart(data.toLineData())
-            )
-        }
-        ElementID.ID.Ribbon -> {
-            contentDiv = document.getElementById(ElementID.ID.Ribbon.name)
-            htmlDiv = JsFrontendUtil.createPlotDiv(
-                createRibbonChart(data.toRibbonData())
-            )
+
+            ElementID.ID.LayerBars -> {
+                document.getElementById(ElementID.ID.LayerBars.name)?.appendChild(
+                    JsFrontendUtil.createPlotDiv(
+                        createBarChart(data.toLayerBarsData())
+                    )
+                )
+            }
+
+            ElementID.ID.BoxPlot -> {
+                document.getElementById(ElementID.ID.BoxPlot.name)?.appendChild(
+                    JsFrontendUtil.createPlotDiv(
+                        createBoxPlotChart(data.toBoxPlotData())
+                    )
+                )
+            }
+
+            ElementID.ID.Line -> {
+                document.getElementById(ElementID.ID.Line.name)?.appendChild(
+                    JsFrontendUtil.createPlotDiv(
+                        createLineChart(data.toLineData())
+                    )
+                )
+            }
+
+            ElementID.ID.Ribbon -> {
+                document.getElementById(ElementID.ID.Ribbon.name)?.appendChild(
+                    JsFrontendUtil.createPlotDiv(
+                        createRibbonChart(data.toRibbonData())
+                    )
+                )
+            }
+
+            ElementID.ID.AgGridCurrent -> {
+                document.getElementById(ElementID.ID.AgGridCurrent.name)?.let {
+                    createGrid(it, data.toGridData().toTypedArray())
+                }
+            }
         }
 
-
-    }
-
-    contentDiv?.appendChild(htmlDiv)
 }
 
+
+fun createGrid(gridDiv:Element, data:Array<Json>)  {
+
+    val columnDefs = arrayOf(
+        json( "field" to "sta_cde", "width" to 150),
+        json( "field" to "sta_nam_kor", "width" to 150),
+        json( "field" to "obs_datetime", "width" to 200),
+        json( "field" to "obs_lay", "width" to 150),
+        json( "field" to "wtr_tmp", "width" to 150),
+        json( "field" to "obs_lay", "width" to 150),
+        json( "field" to "gru_nam", "width" to 150),
+        json( "field" to "lon", "width" to 150),
+        json( "field" to "lat", "width" to 150)
+    )
+
+    val gridOptions:dynamic = js("({})")
+    gridOptions["columnDefs"] = columnDefs
+    gridOptions["rowData"] = data
+    gridOptions["pagination"] = true
+    gridOptions["paginationPageSize"] = 20
+    gridOptions["paginationPageSizeSelector"] = arrayOf(20, 100, 1000)
+
+    js("new agGrid.createGrid(gridDiv, gridOptions)")
+}
 
 
 
