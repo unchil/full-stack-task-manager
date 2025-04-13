@@ -1,5 +1,7 @@
 package org.example.ktor
 
+
+
 import kotlinx.browser.document
 import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.asDiscrete
@@ -21,8 +23,6 @@ import org.jetbrains.letsPlot.tooltips.layerTooltips
 import org.w3c.dom.Element
 import kotlin.js.Json
 import kotlin.js.json
-
-
 
 object ElementID {
     enum class ID {
@@ -81,6 +81,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
         ElementID.ID.AgGridCurrent -> {
             document.getElementById(ElementID.ID.AgGridCurrent.name)?.let {
+
                 createGrid(it, data.toGridData().toTypedArray())
             }
         }
@@ -88,9 +89,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
 }
 
-
 fun createGrid(gridDiv:Element, data:Array<Json>)  {
-
     val columnDefs = arrayOf(
         json( "field" to "sta_cde", "width" to 150),
         json( "field" to "sta_nam_kor", "width" to 150),
@@ -101,7 +100,6 @@ fun createGrid(gridDiv:Element, data:Array<Json>)  {
         json( "field" to "lon", "width" to 150),
         json( "field" to "lat", "width" to 150)
     )
-
     val gridOptions:dynamic = js("({})")
     gridOptions["columnDefs"] = columnDefs
     gridOptions["defaultColDef"] = json("filter" to true)
@@ -110,11 +108,9 @@ fun createGrid(gridDiv:Element, data:Array<Json>)  {
     gridOptions["paginationPageSize"] = 20
     gridOptions["paginationPageSizeSelector"] = arrayOf(20, 100, 1000)
 
+    js( " gridApi = agGrid.createGrid(gridDiv, gridOptions)")
 
-    js("agGrid.createGrid(gridDiv, gridOptions)")
 }
-
-
 
 val theme = theme( axisTextX= elementText( angle=45))
 
@@ -136,7 +132,6 @@ fun createBarChart(data: Map<String,List<Any>>): Plot {
             scaleYContinuous(limits = Pair(0, 15)) +
             theme +
             ggsize(width = 1400, height = 400)
-
 }
 
 fun createBoxPlotChart(data: Map<String,List<Any>>):Plot{

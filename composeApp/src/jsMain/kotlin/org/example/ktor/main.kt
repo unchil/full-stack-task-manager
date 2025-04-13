@@ -77,9 +77,19 @@ fun setContent(
 }
 
 fun List<*>.toGridData():MutableList<Json>{
-    val rowData = mutableListOf<Json>()
+
+    val rawData = mutableListOf<SeawaterInformationByObservationPoint>()
+
     this.forEach {
-        if (it is SeawaterInformationByObservationPoint ) {
+        if(it is SeawaterInformationByObservationPoint){
+            rawData.add(it)
+        }
+    }
+
+    val jsonData = mutableListOf<Json>()
+
+    rawData.sortedByDescending { it.obs_datetime }
+        .forEach {
             val item = json(
                 "sta_cde" to it.sta_cde,
                 "sta_nam_kor" to it.sta_nam_kor,
@@ -90,8 +100,9 @@ fun List<*>.toGridData():MutableList<Json>{
                 "lon" to it.lon,
                 "lat" to it.lat
             )
-            rowData.add(item)
+            jsonData.add(item)
+
         }
-    }
-    return rowData
+
+    return jsonData
 }
