@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import com.android.build.gradle.tasks.MergeSourceSetFolders
+import org.gradle.kotlin.dsl.implementation
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -11,7 +12,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.secretsGradle)
-
+    alias(libs.plugins.dataframe)
 }
 
 
@@ -102,6 +103,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.kotlinx.datetime)
+
         }
 
         desktopMain.dependencies {
@@ -115,8 +117,9 @@ kotlin {
 
             implementation(libs.let.plot.platf.awt)
             implementation(libs.let.plot.compose)
-
+            implementation(libs.kotlinx.dataframe)
         }
+
 
         iosMain.dependencies {
             implementation(libs.ktor.client.cio)

@@ -39,8 +39,10 @@ fun createLayOut( completeHandle:()->Unit) {
 
         div {
             id = ElementID.ID.AgGridCurrent.name
-            style="width: 1360px;height: 300px"
+            style="width: 1360px;height: 600px"
         }
+
+        br{}
 
         div { id = ElementID.ID.LayerBars.name}
 

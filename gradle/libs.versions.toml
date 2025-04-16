@@ -37,10 +37,10 @@ googlemaps = "6.5.2"
 uiAndroid = "1.7.8"
 
 decompose = "3.0.0"
-
+material3 = "1.4.0-alpha12"
 
 [libraries]
-
+material-desktop = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

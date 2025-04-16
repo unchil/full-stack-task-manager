@@ -34,16 +34,20 @@ fun NifsCompose(){
                     .horizontalScroll(stateHorizontal)
             ) {
 
-                Column {
+                Column(modifier=Modifier.fillMaxSize()) {
+
                     Text("Nifs Sea Water Temperature Infomation",
-                        modifier=Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
+                        modifier=Modifier.fillMaxWidth().align(Alignment.CenterHorizontally).padding(vertical = 20.dp),
                         fontSize=20.sp ,
                         fontWeight= FontWeight.Bold
                     )
+
+                    NifsObservationGrid(modifier = Modifier.fillMaxSize())
                     NifsObservationBoxPlot(modifier = Modifier.fillMaxWidth())
                     NifsObservationLayerBars(modifier = Modifier.fillMaxWidth() )
                     NifsObservationLine(modifier = Modifier.fillMaxWidth() )
                     NifsObservationRibbon(modifier = Modifier.fillMaxWidth() )
+
                 }
             }
 

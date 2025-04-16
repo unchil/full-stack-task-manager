@@ -24,7 +24,7 @@ fun NifsObservationBoxPlot(modifier: Modifier = Modifier) {
 
     MaterialTheme {
 
-        val viewModel = remember { NifsSeaWaterInfoOneDayViewModel() }
+        val viewModel =   NifsSeaWaterInfoOneDayViewModel()
         val seaWaterInfoOneday = viewModel._seaWaterInfoOneDayStateFlow.collectAsState().value.filter {
             it.gru_nam.equals("동해") and it.obs_lay.equals("1")
         }
