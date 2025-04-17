@@ -2,6 +2,7 @@ package org.example.ktor
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -143,14 +144,59 @@ fun DataGridRow(modifier: Modifier = Modifier, data:SeawaterInformationByObserva
             horizontalArrangement = Arrangement.SpaceAround
 
         ) {
-            Text(data.obs_datetime, modifier = Modifier.fillMaxWidth(0.2f))
-            Text(data.gru_nam, modifier = Modifier.fillMaxWidth(0.1f))
-            Text(data.sta_nam_kor, modifier = Modifier.fillMaxWidth(0.1f))
-            Text(data.sta_cde, modifier = Modifier.fillMaxWidth(0.1f))
-            Text(obs_lay_Kor, modifier = Modifier.fillMaxWidth(0.1f))
-            Text(data.wtr_tmp, modifier = Modifier.fillMaxWidth(0.1f))
-            Text(data.lat.toString(), modifier = Modifier.fillMaxWidth(0.15f))
-            Text(data.lon.toString(), modifier = Modifier.fillMaxWidth(0.15f))
+
+
+            Row( modifier = Modifier.fillMaxWidth(0.16f),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(data.obs_datetime )
+            }
+
+
+            Row( modifier = Modifier.fillMaxWidth(0.1f),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(data.gru_nam )
+            }
+
+
+            Row( modifier = Modifier.fillMaxWidth(0.1f),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(data.sta_nam_kor )
+            }
+
+
+            Row( modifier = Modifier.fillMaxWidth(0.1f),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(data.sta_cde )
+            }
+
+            Row( modifier = Modifier.fillMaxWidth(0.1f),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(obs_lay_Kor)
+            }
+
+
+            Row( modifier = Modifier.fillMaxWidth(0.1f),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(data.wtr_tmp)
+            }
+
+            Row( modifier = Modifier.fillMaxWidth(0.15f),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(data.lat.toString())
+            }
+
+            Row( modifier = Modifier.fillMaxWidth(0.15f),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(data.lon.toString())
+            }
         }
     }
 }
@@ -158,18 +204,59 @@ fun DataGridRow(modifier: Modifier = Modifier, data:SeawaterInformationByObserva
 @Composable
 fun HeaderGridRow(modifier: Modifier = Modifier, sortOrderHandler:(columnName:String, orderBy: String)->Unit) {
 
-    var gruNameImageVector: ImageVector by remember { mutableStateOf(Icons.Default.KeyboardArrowDown) }
+    val sortOrderGruNam = remember { mutableStateOf(0) }
+    val sortOrderStaNam = remember { mutableStateOf(0) }
+    val sortOrderWtrTmp = remember { mutableStateOf(0) }
+    val sortOrderLat = remember { mutableStateOf(0) }
+    val sortOrderLon = remember { mutableStateOf(0) }
+    val sortOrderDateTime = remember { mutableStateOf(0) }
+    val sortOrderObsLay = remember { mutableStateOf(0) }
+    val sortOrderStaCde = remember { mutableStateOf(0) }
 
-
-    val onClickEvent = {
-        if (gruNameImageVector.equals(Icons.Default.KeyboardArrowDown)) {
-            gruNameImageVector = Icons.Default.KeyboardArrowUp
-            sortOrderHandler("gru_nam", "DESC")
-        } else {
-            gruNameImageVector = Icons.Default.KeyboardArrowDown
-            sortOrderHandler("gru_nam", "ASC")
+    val setSortOrder:(colunmName:String, value:Int)->Unit = { columnName, value ->
+        when(columnName){
+            "gru_nam" -> sortOrderGruNam.value = value
+            "sta_nam_kor" -> sortOrderStaNam.value = value
+            "wtr_tmp" -> sortOrderWtrTmp.value = value
+            "lat_tmp" -> sortOrderLat.value = value
+            "lon_tmp" -> sortOrderLon.value = value
+            "obs_datetime" ->sortOrderDateTime.value = value
+            "obs_lay" -> sortOrderObsLay.value = value
+            "sta_cde" -> sortOrderStaCde.value = value
+            else -> { 0}
         }
     }
+    val onClickEvent:(colunmName:String)->Unit =  { columnName ->
+        val sortOrder = when(columnName){
+            "gru_nam" -> sortOrderGruNam.value
+            "sta_nam_kor" -> sortOrderStaNam.value
+            "wtr_tmp" -> sortOrderWtrTmp.value
+            "lat_tmp" -> sortOrderLat.value
+            "lon_tmp" -> sortOrderLon.value
+            "obs_datetime" ->sortOrderDateTime.value
+            "obs_lay" -> sortOrderObsLay.value
+            "sta_cde" -> sortOrderStaCde.value
+            else -> { 0}
+        }
+
+        when(sortOrder) {
+            0 -> {
+                sortOrderHandler(columnName, "DESC")
+                setSortOrder(columnName, 1)
+            }
+            1 -> {
+                sortOrderHandler(columnName, "ASC")
+                setSortOrder(columnName, 2)
+            }
+            2 -> {
+                sortOrderHandler(columnName, "ORG")
+                setSortOrder(columnName, 0)
+            }
+        }
+
+    }
+
+
 
     Card(
         modifier = then(modifier).fillMaxWidth().height(60.dp).padding(2.dp),
@@ -184,28 +271,112 @@ fun HeaderGridRow(modifier: Modifier = Modifier, sortOrderHandler:(columnName:St
             horizontalArrangement = Arrangement.SpaceAround
 
         ){
-            Text ( "수집시간" , modifier = Modifier.fillMaxWidth(0.2f))
 
-            Row (
-                modifier = Modifier.fillMaxWidth(0.1f),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Text ( "해역" )
-                IconButton( onClick = onClickEvent ) {
-                    Icon(gruNameImageVector, contentDescription = "Sort")
+            IconButton(
+                modifier = Modifier.fillMaxWidth(0.16f),
+                onClick = { onClickEvent("obs_datetime") }
+            ) {
+                Row( modifier = then(modifier).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text ( "수집시간")
                 }
             }
 
-            Text ( "관측지점" , modifier = Modifier.fillMaxWidth(0.1f))
+
+
+            IconButton(
+                modifier = Modifier.fillMaxWidth(0.1f),
+                onClick = { onClickEvent("gru_nam") }
+            ) {
+                Row( modifier = then(modifier).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text ( "해역")
+                }
+            }
 
 
 
-            Text ( "지점코드" , modifier = Modifier.fillMaxWidth(0.1f))
-            Text ( "수심" , modifier = Modifier.fillMaxWidth(0.1f))
-            Text ( "수온 °C" , modifier = Modifier.fillMaxWidth(0.1f))
-            Text ( "경도", modifier = Modifier.fillMaxWidth(0.15f))
-            Text ( "위도" , modifier = Modifier.fillMaxWidth(0.15f))
+            IconButton(
+                modifier = Modifier.fillMaxWidth(0.1f),
+                onClick = { onClickEvent("sta_nam_kor") }
+            ) {
+                Row( modifier = then(modifier).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text ( "관측지점")
+                }
+            }
+
+
+            IconButton(
+                modifier = Modifier.fillMaxWidth(0.1f),
+                onClick = { onClickEvent("sta_cde") }
+            ) {
+                Row( modifier = then(modifier).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text ( "지점코드")
+                }
+            }
+
+
+            IconButton(
+                modifier = Modifier.fillMaxWidth(0.1f),
+                onClick = { onClickEvent("obs_lay") }
+            ) {
+                Row( modifier = then(modifier).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text ( "수심")
+                }
+            }
+
+
+
+
+            IconButton(
+                modifier = Modifier.fillMaxWidth(0.1f),
+                onClick = { onClickEvent("wtr_tmp") }
+            ) {
+                Row( modifier = then(modifier).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text ( "수온 °C")
+                }
+            }
+
+
+
+
+            IconButton(
+                modifier = Modifier.fillMaxWidth(0.15f),
+                onClick = {
+                //onClickEvent("lon")
+                }
+            ) {
+                Row( modifier = then(modifier).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text ( "경도")
+                }
+            }
+
+
+
+            IconButton(
+                modifier = Modifier.fillMaxWidth(0.15f),
+                onClick = {
+                //onClickEvent("lat")
+                }
+            ) {
+                Row( modifier = then(modifier).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text ( "위도")
+                }
+            }
 
         }
 
