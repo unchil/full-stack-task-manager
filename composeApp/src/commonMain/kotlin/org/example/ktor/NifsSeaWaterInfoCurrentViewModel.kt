@@ -35,6 +35,14 @@ class NifsSeaWaterInfoCurrentViewModel: ViewModel() {
             is Event.ObservationRefresh -> {
                 getSeaWaterInfo(event.division)
             }
+
+            is Event.SortOrder -> {
+                when (event.columnName) {
+                    "gru_nam" -> sortOrderGruNam(event.sortOrder)
+                    else -> {}
+                }
+
+            }
         }
     }
 
@@ -43,13 +51,29 @@ class NifsSeaWaterInfoCurrentViewModel: ViewModel() {
         repository.getSeaWaterInfo(division)
     }
 
-
+    suspend fun sortOrderGruNam( sortOrder:String) {
+          val sortedData = when(sortOrder){
+            "ASC" -> {
+                _seaWaterInfoCurrentStateFlow.value.map {
+                    it to it.gru_nam
+                }.toList().sortedBy { it.second }.map { it.first }
+            }
+            "DESC" -> {
+                _seaWaterInfoCurrentStateFlow.value.map {
+                    it to it.gru_nam
+                }.toList().sortedByDescending { it.second }.map { it.first }
+            }
+            else -> {_seaWaterInfoCurrentStateFlow.value}
+        }
+        _seaWaterInfoCurrentStateFlow.emit(sortedData)
+    }
 
 
 
 
     sealed class Event {
         data class ObservationRefresh(val division: DATA_DIVISION) : Event()
+        data class SortOrder(val columnName: String, val sortOrder:String) : Event()
     }
 
 }

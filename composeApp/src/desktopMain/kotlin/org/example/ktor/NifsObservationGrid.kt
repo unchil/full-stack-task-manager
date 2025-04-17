@@ -62,6 +62,7 @@ import org.example.ktor.model.SeawaterInformationByObservationPoint
 fun NifsObservationGrid(modifier:Modifier = Modifier) {
 
     val viewModel = remember { NifsSeaWaterInfoCurrentViewModel() }
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = viewModel){
         viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh(DATA_DIVISION.current))
@@ -76,6 +77,18 @@ fun NifsObservationGrid(modifier:Modifier = Modifier) {
 
     val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
 
+    LaunchedEffect (key1= seaWaterInfoCurrent.value){
+        lazyListState.animateScrollToItem(0)
+    }
+
+
+    val sortOrderHandler:(colunmName:String, sortOrder: String)->Unit = { columnName, sortOrder ->
+        coroutineScope.launch {
+            viewModel.onEvent( NifsSeaWaterInfoCurrentViewModel.Event.SortOrder(columnName, sortOrder) )
+
+        }
+    }
+
     MaterialTheme {
 
         Box(
@@ -87,7 +100,7 @@ fun NifsObservationGrid(modifier:Modifier = Modifier) {
         ){
             Column(modifier = then(modifier)) {
 
-                HeaderGridRow(modifier = Modifier.fillMaxWidth())
+                HeaderGridRow(modifier = Modifier.fillMaxWidth(), sortOrderHandler)
 
 
                 LazyColumn (
@@ -143,9 +156,20 @@ fun DataGridRow(modifier: Modifier = Modifier, data:SeawaterInformationByObserva
 }
 
 @Composable
-fun HeaderGridRow(modifier: Modifier = Modifier) {
+fun HeaderGridRow(modifier: Modifier = Modifier, sortOrderHandler:(columnName:String, orderBy: String)->Unit) {
 
     var gruNameImageVector: ImageVector by remember { mutableStateOf(Icons.Default.KeyboardArrowDown) }
+
+
+    val onClickEvent = {
+        if (gruNameImageVector.equals(Icons.Default.KeyboardArrowDown)) {
+            gruNameImageVector = Icons.Default.KeyboardArrowUp
+            sortOrderHandler("gru_nam", "DESC")
+        } else {
+            gruNameImageVector = Icons.Default.KeyboardArrowDown
+            sortOrderHandler("gru_nam", "ASC")
+        }
+    }
 
     Card(
         modifier = then(modifier).fillMaxWidth().height(60.dp).padding(2.dp),
@@ -168,15 +192,7 @@ fun HeaderGridRow(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text ( "해역" )
-                IconButton(
-                    onClick = {
-                        gruNameImageVector = if (gruNameImageVector.equals(Icons.Default.KeyboardArrowDown)) {
-                            Icons.Default.KeyboardArrowUp
-                        } else {
-                            Icons.Default.KeyboardArrowDown
-                        }
-                    }
-                ) {
+                IconButton( onClick = onClickEvent ) {
                     Icon(gruNameImageVector, contentDescription = "Sort")
                 }
             }
