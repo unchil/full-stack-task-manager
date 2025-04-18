@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier.Companion.then
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.example.ktor.data.DATA_DIVISION
@@ -65,6 +67,12 @@ fun NifsObservationGrid(modifier:Modifier = Modifier) {
         }
     }
 
+    val onRefreshHandler:()-> Unit = {
+        coroutineScope.launch {
+            viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh(DATA_DIVISION.current))
+        }
+    }
+
 
 
     MaterialTheme {
@@ -93,7 +101,12 @@ fun NifsObservationGrid(modifier:Modifier = Modifier) {
                     }
                 }
 
-                FooterGridRow(modifier = Modifier.fillMaxWidth(), seaWaterInfoCurrent.value.size, lazyListState)
+                FooterGridRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    seaWaterInfoCurrent.value.size,
+                    lazyListState,
+                    onRefreshHandler
+                )
             }
         }
 
@@ -265,59 +278,53 @@ fun HeaderGridRow(
             }
 
 
-            Row (
-                modifier = Modifier.fillMaxWidth(0.1f),
+            Row ( modifier = Modifier.fillMaxWidth(0.1f),
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ){
-                IconButton(
-                    onClick = { onClickEvent("gru_nam") }
-                ) {
-                    Text ( "해역")
-                }
+                IconButton(onClick = {onClickEvent("gru_nam")}) {Text ( "해역")}
+                FilterBox{ onFilterHandler("gru_nam", it)}
+            }
+
+
+
+            Row ( modifier = Modifier.fillMaxWidth(0.1f),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                IconButton(onClick = {onClickEvent("sta_nam_kor")}) {Text ( "관측지점")}
+                FilterBox{ onFilterHandler("sta_nam_kor", it)}
+            }
+
+
+            Row ( modifier = Modifier.fillMaxWidth(0.1f),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                IconButton(onClick = {onClickEvent("sta_cde")}) {Text ( "지점코드")}
+                FilterBox{ onFilterHandler("sta_cde", it)}
+            }
+
+
+
+            Row ( modifier = Modifier.fillMaxWidth(0.1f),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                IconButton(onClick = {onClickEvent("obs_lay")}) {Text ( "수심")}
 
                 FilterBox{
-                    onFilterHandler("gru_nam", it)
+                    onFilterHandler(
+                        "obs_lay",
+                        when(it) {
+                            "표층" -> "1"
+                            "중층" -> "2"
+                            "저층" -> "3"
+                            else ->"1"
+                        }
+                    )
                 }
             }
-
-
-
-            IconButton(
-                modifier = Modifier.fillMaxWidth(0.1f),
-                onClick = { onClickEvent("sta_nam_kor") }
-            ) {
-                Row( modifier = then(modifier).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text ( "관측지점")
-                }
-            }
-
-
-            IconButton(
-                modifier = Modifier.fillMaxWidth(0.1f),
-                onClick = { onClickEvent("sta_cde") }
-            ) {
-                Row( modifier = then(modifier).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text ( "지점코드")
-                }
-            }
-
-
-            IconButton(
-                modifier = Modifier.fillMaxWidth(0.1f),
-                onClick = { onClickEvent("obs_lay") }
-            ) {
-                Row( modifier = then(modifier).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text ( "수심")
-                }
-            }
-
 
 
 
@@ -345,7 +352,12 @@ fun HeaderGridRow(
 }
 
 @Composable
-fun FooterGridRow(modifier: Modifier = Modifier, dataCnt:Int, listState: LazyListState) {
+fun FooterGridRow(
+    modifier: Modifier = Modifier,
+    dataCnt: Int,
+    listState: LazyListState,
+    onRefresh:()->Unit
+) {
 
     val coroutineScope = rememberCoroutineScope()
     val pageCount: MutableState<Int> = remember { mutableStateOf(20) }
@@ -381,7 +393,23 @@ fun FooterGridRow(modifier: Modifier = Modifier, dataCnt:Int, listState: LazyLis
                 Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Goto First Page")
             }
 
-            Text ( "Total Count : ${dataCnt}", )
+
+
+            IconButton(
+                modifier = Modifier.width(160.dp),
+                onClick = {
+                    coroutineScope.launch {
+                        onRefresh()
+                    }
+                }
+            ) {
+                Row(horizontalArrangement = Arrangement.SpaceBetween){
+                    Text ( "Total Count : ${dataCnt}", )
+                    Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                }
+            }
+
+
             IconButton(
                 modifier = Modifier.width(100.dp),
                 enabled = listState.canScrollForward == true,

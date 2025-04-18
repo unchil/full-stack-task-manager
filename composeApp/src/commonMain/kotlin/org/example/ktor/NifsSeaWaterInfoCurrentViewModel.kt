@@ -18,18 +18,14 @@ class NifsSeaWaterInfoCurrentViewModel: ViewModel() {
     private val repository: NifsRepository
         = getPlatform().nifsRepository
 
-
     val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
             = MutableStateFlow(emptyList())
 
-
     init {
         viewModelScope.launch {
-
             repository._seaWaterInfoCurrentStateFlow.collectLatest {
                 _seaWaterInfoCurrentStateFlow.value = it
             }
-
         }
     }
 
@@ -40,250 +36,106 @@ class NifsSeaWaterInfoCurrentViewModel: ViewModel() {
             }
 
             is Event.SortOrder -> {
-                when (event.columnName) {
-                    "gru_nam" -> sortOrderGruNam(event.sortOrder)
-                    "sta_nam_kor" -> sortOrderStaNam(event.sortOrder)
-                    "obs_datetime" -> sortOrderDateTime(event.sortOrder)
-                    "obs_lay" -> sortOrderObsLay(event.sortOrder)
-                    "wtr_tmp" -> sortOrderWtrTmp(event.sortOrder)
-                    "lon" -> sortOrderLon(event.sortOrder)
-                    "lat" -> sortOrderLat(event.sortOrder)
-                    "sta_cde" -> sortOrderStaCde(event.sortOrder)
-                    else -> {}
+                when(event.columnName){
+                    "wtr_tmp" -> sortOrderDouble(event.columnName, event.sortOrder)
+                    else -> sortOrderString(event.columnName, event.sortOrder)
                 }
-
             }
 
             is Event.SearchData -> searchData(event.columnName, event.searchText)
         }
     }
 
-
     suspend fun getSeaWaterInfo(division: DATA_DIVISION){
         repository.getSeaWaterInfo(division)
+        repository._seaWaterInfoCurrentStateFlow.collectLatest {
+            _seaWaterInfoCurrentStateFlow.value = it
+        }
     }
 
     suspend fun searchData(columnName: String, searchText: String){
-
-        val result = repository.getSeaWaterInfoValues("current").filter {
-            it.gru_nam == searchText
+        val result = when(columnName){
+            "gru_nam" -> { repository.getSeaWaterInfoValues("current").filter {
+                it.gru_nam == searchText } }
+            "sta_nam_kor" -> {  repository.getSeaWaterInfoValues("current").filter {
+                it.sta_nam_kor == searchText } }
+            "obs_lay" -> { repository.getSeaWaterInfoValues("current").filter {
+                it.obs_lay == searchText } }
+            "sta_cde" -> { repository.getSeaWaterInfoValues("current").filter {
+                it.sta_cde == searchText } }
+            else -> {repository.getSeaWaterInfoValues("current")}
         }
         _seaWaterInfoCurrentStateFlow.value = result
     }
 
-
-    suspend fun sortOrderStaCde( sortOrder:String) {
-
-        when(sortOrder){
-            "ASC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.sta_cde
-                }.toList().sortedBy { it.second }.map { it.first }
-                _seaWaterInfoCurrentStateFlow.value = result
-            }
-            "DESC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.sta_cde
-                }.toList().sortedByDescending { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
-            }
-            else -> {
-                repository._seaWaterInfoCurrentStateFlow.collectLatest {
-                    _seaWaterInfoCurrentStateFlow.value = it
-                }
-            }
-        }
-
-    }
-    suspend fun sortOrderDateTime( sortOrder:String) {
-
-        when(sortOrder){
-            "ASC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.obs_datetime
-                }.toList().sortedBy { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
-            }
-            "DESC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.obs_datetime
-                }.toList().sortedByDescending { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
-            }
-            else -> {
-                repository._seaWaterInfoCurrentStateFlow.collectLatest {
-                    _seaWaterInfoCurrentStateFlow.value = it
-                }
-            }
-        }
-
-    }
-    suspend fun sortOrderObsLay( sortOrder:String) {
-
-        when(sortOrder){
-            "ASC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.obs_lay
-                }.toList().sortedBy { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
-            }
-            "DESC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.obs_lay
-                }.toList().sortedByDescending { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
-            }
-            else -> {
-                repository._seaWaterInfoCurrentStateFlow.collectLatest {
-                    _seaWaterInfoCurrentStateFlow.value = it
-                }
-            }
-        }
-
-    }
-    suspend fun sortOrderWtrTmp( sortOrder:String) {
-
-        when(sortOrder){
-            "ASC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.wtr_tmp
-                }.toList().sortedBy { it.second.toDouble() }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
-            }
-            "DESC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.wtr_tmp
-                }.toList().sortedByDescending { it.second.toDouble() }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
-            }
-            else -> {
-                repository._seaWaterInfoCurrentStateFlow.collectLatest {
-                    _seaWaterInfoCurrentStateFlow.value = it
-                }
-            }
-        }
-
-    }
-
-    suspend fun sortOrderLon(sortOrder:String) {
-
-        when(sortOrder){
-            "ASC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.lon
-                }.toList().sortedBy { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
-
-            }
-            "DESC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.lon
-                }.toList().sortedByDescending { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
-            }
-            else -> {
-                repository._seaWaterInfoCurrentStateFlow.collectLatest {
-                    _seaWaterInfoCurrentStateFlow.value = it
-                }
-            }
-        }
-
-    }
-
-    suspend fun sortOrderLat(sortOrder:String) {
-
-        when(sortOrder){
-            "ASC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.lat
-                }.toList().sortedBy { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
-            }
-            "DESC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.lat
-                }.toList().sortedByDescending { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
-            }
-            else -> {
-                repository._seaWaterInfoCurrentStateFlow.collectLatest {
-                    _seaWaterInfoCurrentStateFlow.value = it
-                }
-            }
-        }
-
-    }
-
-
-
-
-
-    suspend fun sortOrderGruNam(sortOrder:String) {
-
-          when(sortOrder){
-            "ASC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
+    suspend fun sortOrderString(columnName: String, sortOrder:String){
+        val data = when(columnName){
+            "gru_nam" -> {
+                _seaWaterInfoCurrentStateFlow.value.map {
                     it to it.gru_nam
-                }.toList().sortedBy { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
+                }.toList()
             }
-            "DESC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.gru_nam
-                }.toList().sortedByDescending { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
+            "sta_nam_kor" -> {
+                _seaWaterInfoCurrentStateFlow.value.map {
+                    it to it.sta_nam_kor
+                }.toList()
+            }
+            "obs_lay" -> {
+                _seaWaterInfoCurrentStateFlow.value.map {
+                    it to it.obs_lay
+                }.toList()
+            }
+            "sta_cde" -> {
+                _seaWaterInfoCurrentStateFlow.value.map {
+                    it to it.sta_cde
+                }.toList()
             }
             else -> {
-                repository._seaWaterInfoCurrentStateFlow.collectLatest {
-                    _seaWaterInfoCurrentStateFlow.value = it
-                }
+                _seaWaterInfoCurrentStateFlow.value.map {
+                    it to it.obs_datetime
+                }.toList()
             }
         }
 
+       when(sortOrder){
+            "ASC" -> {
+                _seaWaterInfoCurrentStateFlow.value = data.sortedBy { it.second }.map { it.first }
+            }
+            "DESC" -> {
+                _seaWaterInfoCurrentStateFlow.value = data.sortedByDescending { it.second }.map { it.first }
+            }
+            else -> {
+                getSeaWaterInfo(DATA_DIVISION.current)
+            }
+        }
     }
 
+    suspend fun sortOrderDouble(columnName: String, sortOrder:String){
+        val data = when(columnName){
+            "wtr_tmp" -> {
+                _seaWaterInfoCurrentStateFlow.value.map {
+                    it to it.wtr_tmp.toDouble()
+                }.toList()
+            }
+            else -> {
+                _seaWaterInfoCurrentStateFlow.value.map {
+                    it to it.wtr_tmp.toDouble()
+                }.toList()
+            }
 
-    suspend fun sortOrderStaNam(sortOrder:String) {
-
+        }
         when(sortOrder){
             "ASC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.sta_nam_kor
-                }.toList().sortedBy { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
+                _seaWaterInfoCurrentStateFlow.value = data.sortedBy { it.second }.map { it.first }
             }
             "DESC" -> {
-                val result = _seaWaterInfoCurrentStateFlow.value.map {
-                    it to it.sta_nam_kor
-                }.toList().sortedByDescending { it.second }.map { it.first }
-
-                _seaWaterInfoCurrentStateFlow.value = result
+                _seaWaterInfoCurrentStateFlow.value = data.sortedByDescending { it.second }.map { it.first }
             }
             else -> {
-                repository._seaWaterInfoCurrentStateFlow.collectLatest {
-                    _seaWaterInfoCurrentStateFlow.value = it
-                }
+                getSeaWaterInfo(DATA_DIVISION.current)
             }
         }
-
     }
-
-
-
 
 
     sealed class Event {
