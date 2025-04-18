@@ -1,62 +1,33 @@
 package org.example.ktor
 
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-
-
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Modifier.Companion.then
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.example.ktor.data.DATA_DIVISION
 import org.example.ktor.model.SeawaterInformationByObservationPoint
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -82,13 +53,19 @@ fun NifsObservationGrid(modifier:Modifier = Modifier) {
         lazyListState.animateScrollToItem(0)
     }
 
-
     val sortOrderHandler:(colunmName:String, sortOrder: String)->Unit = { columnName, sortOrder ->
         coroutineScope.launch {
             viewModel.onEvent( NifsSeaWaterInfoCurrentViewModel.Event.SortOrder(columnName, sortOrder) )
-
         }
     }
+
+    val onFilterHandler:(columnName:String, searchText:String) -> Unit = { columnName, searchText ->
+        coroutineScope.launch {
+            viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.SearchData(columnName, searchText))
+        }
+    }
+
+
 
     MaterialTheme {
 
@@ -101,7 +78,7 @@ fun NifsObservationGrid(modifier:Modifier = Modifier) {
         ){
             Column(modifier = then(modifier)) {
 
-                HeaderGridRow(modifier = Modifier.fillMaxWidth(), sortOrderHandler)
+                HeaderGridRow(modifier = Modifier.fillMaxWidth(), sortOrderHandler, onFilterHandler)
 
 
                 LazyColumn (
@@ -202,7 +179,11 @@ fun DataGridRow(modifier: Modifier = Modifier, data:SeawaterInformationByObserva
 }
 
 @Composable
-fun HeaderGridRow(modifier: Modifier = Modifier, sortOrderHandler:(columnName:String, orderBy: String)->Unit) {
+fun HeaderGridRow(
+    modifier: Modifier = Modifier,
+    sortOrderHandler:(columnName:String, orderBy: String)->Unit,
+    onFilterHandler:(columnName:String, searchText: String)->Unit
+) {
 
     val sortOrderGruNam = remember { mutableStateOf(0) }
     val sortOrderStaNam = remember { mutableStateOf(0) }
@@ -213,7 +194,7 @@ fun HeaderGridRow(modifier: Modifier = Modifier, sortOrderHandler:(columnName:St
     val sortOrderObsLay = remember { mutableStateOf(0) }
     val sortOrderStaCde = remember { mutableStateOf(0) }
 
-    val setSortOrder:(colunmName:String, value:Int)->Unit = { columnName, value ->
+    val setSortOrder:(columnName:String, value:Int)->Unit = { columnName, value ->
         when(columnName){
             "gru_nam" -> sortOrderGruNam.value = value
             "sta_nam_kor" -> sortOrderStaNam.value = value
@@ -226,7 +207,7 @@ fun HeaderGridRow(modifier: Modifier = Modifier, sortOrderHandler:(columnName:St
             else -> { 0}
         }
     }
-    val onClickEvent:(colunmName:String)->Unit =  { columnName ->
+    val onClickEvent:(columnName:String)->Unit =  { columnName ->
         val sortOrder = when(columnName){
             "gru_nam" -> sortOrderGruNam.value
             "sta_nam_kor" -> sortOrderStaNam.value
@@ -284,15 +265,19 @@ fun HeaderGridRow(modifier: Modifier = Modifier, sortOrderHandler:(columnName:St
             }
 
 
-
-            IconButton(
+            Row (
                 modifier = Modifier.fillMaxWidth(0.1f),
-                onClick = { onClickEvent("gru_nam") }
-            ) {
-                Row( modifier = then(modifier).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                IconButton(
+                    onClick = { onClickEvent("gru_nam") }
                 ) {
                     Text ( "해역")
+                }
+
+                FilterBox{
+                    onFilterHandler("gru_nam", it)
                 }
             }
 
@@ -348,35 +333,10 @@ fun HeaderGridRow(modifier: Modifier = Modifier, sortOrderHandler:(columnName:St
             }
 
 
+            Text ( "경도", modifier = Modifier.fillMaxWidth(0.15f))
+            Text ( "위도", modifier = Modifier.fillMaxWidth(0.15f))
 
 
-            IconButton(
-                modifier = Modifier.fillMaxWidth(0.15f),
-                onClick = {
-                //onClickEvent("lon")
-                }
-            ) {
-                Row( modifier = then(modifier).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text ( "경도")
-                }
-            }
-
-
-
-            IconButton(
-                modifier = Modifier.fillMaxWidth(0.15f),
-                onClick = {
-                //onClickEvent("lat")
-                }
-            ) {
-                Row( modifier = then(modifier).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text ( "위도")
-                }
-            }
 
         }
 
@@ -418,7 +378,7 @@ fun FooterGridRow(modifier: Modifier = Modifier, dataCnt:Int, listState: LazyLis
                     }
                 }
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Goto First Page")
+                Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Goto First Page")
             }
 
             Text ( "Total Count : ${dataCnt}", )
@@ -431,7 +391,7 @@ fun FooterGridRow(modifier: Modifier = Modifier, dataCnt:Int, listState: LazyLis
                     }
                 }
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Goto Last Page")
+                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Goto Last Page")
             }
 
 
@@ -440,54 +400,53 @@ fun FooterGridRow(modifier: Modifier = Modifier, dataCnt:Int, listState: LazyLis
 }
 
 @Composable
-fun MinimalDropdownMenu(pageCount: MutableState<Int>) {
+fun FilterBox( onFilter: ((String)-> Unit)? = null ) {
 
     var expanded by remember { mutableStateOf(false) }
- //   var pageCount by remember { mutableStateOf("20") }
-    val pageCountList = listOf("20", "100", "1000")
+    val focusManager = LocalFocusManager.current
+    val filterText = remember { mutableStateOf("") }
 
+    Box(  contentAlignment = Alignment.Center, ){
+        IconButton(
+            onClick = { expanded = !expanded }
+        ) {
+            Icon(Icons.Default.ArrowDropDown, contentDescription = "Filter")
+        }
 
-
-    Box(
-        modifier = Modifier.fillMaxHeight(0.7f).width(80.dp)
-            .border( BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.6f)), RoundedCornerShape(6.dp)),
-        contentAlignment = Alignment.Center,
-
-    ){
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+        DropdownMenu(
+            modifier =  Modifier.clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = {
+                    focusManager.clearFocus()
+                    expanded = false
+                    onFilter?.invoke(filterText.value.trim())
+                    filterText.value = ""
+                },
+            ),
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+                filterText.value = ""
+            }
         ) {
 
-            Text(pageCount.value.toString())
-
-            IconButton(
-                onClick = { expanded = !expanded }
-            ) {
-                Icon(Icons.Default.ArrowDropDown, contentDescription = "Page Size")
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-
-                pageCountList.forEach {
-                    DropdownMenuItem(onClick = {
-                        pageCount.value = it.toInt()
-                        expanded = false
-                    }){
-                        Text(text = it)
-                    }
-                }
-
-            }
-
+            OutlinedTextField(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                value = filterText.value,
+                onValueChange = {
+                    filterText.value = it
+                },
+                label = { Text("Filter...")  },
+                leadingIcon = {Icon(Icons.Default.Search, contentDescription = "Search")},
+                singleLine = true,
+            )
 
         }
+
 
     }
 
 
 }
+
