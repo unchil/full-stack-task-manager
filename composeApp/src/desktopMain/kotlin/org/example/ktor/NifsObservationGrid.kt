@@ -394,20 +394,15 @@ fun FooterGridRow(
             }
 
 
+            Text ( "Total Count : ${dataCnt}",Modifier.width(140.dp) )
 
             IconButton(
-                modifier = Modifier.width(160.dp),
                 onClick = {
                     coroutineScope.launch {
                         onRefresh()
                     }
                 }
-            ) {
-                Row(horizontalArrangement = Arrangement.SpaceBetween){
-                    Text ( "Total Count : ${dataCnt}", )
-                    Icon(Icons.Default.Refresh, contentDescription = "Refresh")
-                }
-            }
+            ) {  Icon(Icons.Default.Refresh, contentDescription = "Refresh")  }
 
 
             IconButton(
