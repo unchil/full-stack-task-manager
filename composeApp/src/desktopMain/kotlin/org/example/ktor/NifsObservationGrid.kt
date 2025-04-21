@@ -31,6 +31,9 @@ import kotlinx.coroutines.launch
 import org.example.ktor.data.DATA_DIVISION
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
+
+
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NifsObservationGrid(modifier:Modifier = Modifier) {
@@ -74,7 +77,6 @@ fun NifsObservationGrid(modifier:Modifier = Modifier) {
     }
 
 
-
     MaterialTheme {
 
         Box(
@@ -87,7 +89,6 @@ fun NifsObservationGrid(modifier:Modifier = Modifier) {
             Column(modifier = then(modifier)) {
 
                 HeaderGridRow(modifier = Modifier.fillMaxWidth(), sortOrderHandler, onFilterHandler)
-
 
                 LazyColumn (
                     modifier =  Modifier.fillMaxWidth().height(400.dp),

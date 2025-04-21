@@ -21,10 +21,14 @@ class NifsSeaWaterInfoCurrentViewModel: ViewModel() {
     val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
             = MutableStateFlow(emptyList())
 
+    val _gridDataStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
+            = MutableStateFlow(emptyList())
+
     init {
         viewModelScope.launch {
             repository._seaWaterInfoCurrentStateFlow.collectLatest {
                 _seaWaterInfoCurrentStateFlow.value = it
+                _gridDataStateFlow.value = it
             }
         }
     }

@@ -119,3 +119,26 @@ fun List<*>.toRibbonData():Map<String,List<Any>> {
 
 }
 
+fun SeawaterInformationByObservationPoint.toList(): List<Any> {
+    val convertList = mutableListOf<Any>()
+    convertList.add(this.obs_datetime)
+    convertList.add(this.gru_nam)
+    convertList.add(this.sta_nam_kor)
+    convertList.add(this.sta_cde)
+    convertList.add(this.obs_lay)
+    convertList.add(this.wtr_tmp)
+    convertList.add(this.lon.toString())
+    convertList.add(this.lat.toString())
+    return convertList
+}
+
+data class ColumnInfo(val columnType: String, val sortOrder: Int, val filterText: String)
+
+fun makeColInfo(columnNames: List<String>, firstData: List<Any>): Map<String, ColumnInfo> {
+    val colInfo = mutableMapOf<String, ColumnInfo>()
+
+    columnNames.forEachIndexed{ index, columnName ->
+        colInfo.put(columnName, ColumnInfo(firstData[index]::class.simpleName.toString(), 0, ""))
+    }
+    return colInfo
+}

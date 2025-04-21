@@ -20,8 +20,9 @@ fun main() = application {
         title = "NIFS SeaWater Infomation",
         state = state,
     ) {
-        NifsCompose()
+       // NifsCompose()
       //  NifsApp()
+        NifsSeaWaterInfoDataGrid()
     }
 }
 
