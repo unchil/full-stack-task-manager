@@ -132,13 +132,3 @@ fun SeawaterInformationByObservationPoint.toList(): List<Any> {
     return convertList
 }
 
-data class ColumnInfo(val columnType: String, val sortOrder: Int, val filterText: String)
-
-fun makeColInfo(columnNames: List<String>, firstData: List<Any>): Map<String, ColumnInfo> {
-    val colInfo = mutableMapOf<String, ColumnInfo>()
-
-    columnNames.forEachIndexed{ index, columnName ->
-        colInfo.put(columnName, ColumnInfo(firstData[index]::class.simpleName.toString(), 0, ""))
-    }
-    return colInfo
-}

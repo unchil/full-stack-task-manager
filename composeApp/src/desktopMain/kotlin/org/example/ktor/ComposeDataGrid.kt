@@ -2,121 +2,48 @@ package org.example.ktor
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Modifier.Companion.then
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.example.ktor.data.DATA_DIVISION
-
-
-@Composable
-fun NifsSeaWaterInfoDataGrid() {
-
-    val viewModel = remember { NifsSeaWaterInfoCurrentViewModel() }
-
-    val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(key1 = viewModel){
-        viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh(DATA_DIVISION.current))
-        while(true){
-            delay(1800 * 1000).let {
-                viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh(DATA_DIVISION.current))
-            }
-        }
-    }
-
-    val seaWaterInfoCurrent = viewModel._gridDataStateFlow.collectAsState()
-    val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
-
-
-    LaunchedEffect (key1= seaWaterInfoCurrent.value){
-        lazyListState.animateScrollToItem(0)
-    }
-
-    val sortOrder:(columnName:String)->Unit = { columnName ->
-        coroutineScope.launch {
-
-        }
-    }
-
-    val onFilter:(columnName:String) -> Unit = { columnName ->
-        coroutineScope.launch {
-
-        }
-    }
-
-    val onRefresh:()-> Unit = {
-        coroutineScope.launch {
-
-        }
-    }
-
-
-    if(seaWaterInfoCurrent.value.isNotEmpty()){
-
-        val columnNames = listOf<String>("수집시간", "해역", "관측지점", "지점코드", "수심", "수온", "경도", "위도")
-        val firstData = seaWaterInfoCurrent.value.first().toList()
-        val columnInfo = remember { mutableStateOf(makeColInfo(columnNames, firstData)) }
-        val data = seaWaterInfoCurrent.value.map { it.toList() }
-
-        ComposeDataGrid( colInfo = columnInfo, data = data,sortOrder, onFilter = onFilter, onRefresh = onRefresh )
-
-    }
-}
 
 
 @Composable
 fun ComposeDataGrid(
-    colInfo:MutableState<Map<String, ColumnInfo>> = remember { mutableStateOf(emptyMap()) },
-    data:List<Any?>,
-    onSortOrder:(String) -> Unit,
-    onFilter:(String) -> Unit,
-    onRefresh:() -> Unit
+    columnNames:List<String>,
+    data:List<List<Any>>,
 ){
+
+    val columnInfo = remember { mutableStateOf(makeColInfo(columnNames, data.first() as List<Any>) ) }
+
+    val presentData: MutableState<List<Any>> =  mutableStateOf(data)
+
+    val onSortOrder:(columnName:String, colInfo:ColumnInfo)->Unit = { columnName, columnInfo ->
+
+    }
+
+    val onFilter:(columnName:String, colInfo:ColumnInfo) -> Unit = { columnName, columnInfo  ->
+
+    }
+
+    val onRefresh:()-> Unit = {
+        presentData.value = data
+    }
+
     Column(
         modifier = Modifier.fillMaxSize().padding(10.dp).background(color = Color.LightGray),
         verticalArrangement = Arrangement.SpaceBetween,
@@ -124,10 +51,11 @@ fun ComposeDataGrid(
 
     ) {
         val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
-        ComposeDataGridHeader( modifier = Modifier.fillMaxWidth(), colInfo, onSortOrder, onFilter)
-        ComposeDataGridRows( modifier= Modifier.fillMaxWidth(), lazyListState,  data)
-        ComposeDataGridFooter(  modifier = Modifier.fillMaxWidth(), lazyListState ,  data.size,  onRefresh)
+        ComposeDataGridHeader( modifier = Modifier.fillMaxWidth(), columnInfo, onSortOrder, onFilter)
+        ComposeDataGridRows( modifier= Modifier.fillMaxWidth(), lazyListState,  presentData.value)
+        ComposeDataGridFooter(  modifier = Modifier.fillMaxWidth(), lazyListState ,  presentData.value.size,  onRefresh)
     }
+
 }
 
 
@@ -178,8 +106,8 @@ fun ComposeDataGridRow(  data:List<Any?>) {
 fun ComposeDataGridHeader(
     modifier: Modifier = Modifier,
     columnInfo: MutableState<Map<String, ColumnInfo>>,
-    onSortOrder:(String) -> Unit,
-    onFilter:(String) -> Unit
+    onSortOrder:((String, ColumnInfo) -> Unit)? = null,
+    onFilter:((String, ColumnInfo) -> Unit)? = null,
 ) {
     Card(
         modifier =  Modifier.fillMaxWidth().height(60.dp),
@@ -197,8 +125,8 @@ fun ComposeDataGridHeader(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    IconButton( onClick = { onSortOrder(key) } ) { Text ( key) }
-                    FilterMenu{ onFilter(key)}
+                    IconButton( onClick = { onSortOrder?.invoke(key, value) } ) { Text ( key) }
+                    FilterMenu{ onFilter?.invoke(key, value)}
                 }
 
             }
@@ -213,7 +141,7 @@ fun ComposeDataGridFooter(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState,
     dataCnt: Int,
-    onRefresh:()->Unit
+    onRefresh:(()->Unit)? = null,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -249,7 +177,7 @@ fun ComposeDataGridFooter(
             IconButton(
                 onClick = {
                     coroutineScope.launch {
-                        onRefresh()
+                        onRefresh?.invoke()
                     }
                 }
             ) {  Icon(Icons.Default.Refresh, contentDescription = "Refresh")  }
@@ -313,4 +241,15 @@ fun FilterMenu( onFilter: ((String)-> Unit)? = null ) {
             )
         }
     }
+}
+
+data class ColumnInfo(val columnType: String, val sortOrder: Int, val filterText: String)
+
+fun makeColInfo(columnNames: List<String>, firstData: List<Any>): Map<String, ColumnInfo> {
+    val colInfo = mutableMapOf<String, ColumnInfo>()
+
+    columnNames.forEachIndexed{ index, columnName ->
+        colInfo.put(columnName, ColumnInfo(firstData[index]::class.simpleName.toString(), 0, ""))
+    }
+    return colInfo
 }
