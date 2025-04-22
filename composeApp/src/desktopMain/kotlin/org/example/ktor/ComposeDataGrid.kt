@@ -2,6 +2,7 @@ package org.example.ktor
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -82,8 +83,6 @@ fun ComposeDataGrid(
         }
     }
 
-
-
     Scaffold(
         modifier = then(modifier).fillMaxSize()
             .padding(2.dp)
@@ -105,65 +104,54 @@ fun ComposeDataGrid(
             )
         },
     ){
-        ComposeDataGridRows(
-            modifier= Modifier.fillMaxSize()
-                .padding(it),
-            columnInfo,
-            lazyListState,
-            presentData.value
-        )
-    }
+        LazyColumn (
+            modifier =  Modifier.fillMaxSize().padding(it),
+            state = lazyListState,
+            contentPadding = PaddingValues(1.dp),
+            userScrollEnabled = true
+        ){
+            items(presentData.value.size){
 
-}
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text((it+1).toString(), Modifier.padding(horizontal = 10.dp))
+                    ComposeDataGridRow( columnInfo, presentData.value[it] as List<Any?>)
+                }
 
-
-@Composable
-fun ComposeDataGridRows(modifier:Modifier, columnInfo:MutableState<Map<String, ColumnInfo>>,  lazyListState: LazyListState,  data:List<Any?>) {
-    LazyColumn (
-        modifier =  Modifier.fillMaxSize(),
-        state = lazyListState,
-        contentPadding = PaddingValues(1.dp),
-        userScrollEnabled = true
-    ){
-        items(data.size){
-            ComposeDataGridRow( columnInfo, data[it] as List<Any?>)
+            }
         }
     }
+
 }
+
 
 @Composable
 fun ComposeDataGridRow(  columnInfo:MutableState<Map<String, ColumnInfo>>, data:List<Any?>) {
 
     val density = LocalDensity.current.density
+    var widthInDp by remember { mutableStateOf(0.dp) }
 
-    Card(
-        modifier = Modifier.fillMaxWidth().height(40.dp),
-        elevation = 0.dp,
-        shape = RoundedCornerShape(1.dp),
-        border = BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f)),
-        backgroundColor = MaterialTheme.colors.surface
+    Row (
+        modifier = Modifier.fillMaxWidth().height(40.dp)
+            .onGloballyPositioned { layoutResult ->
+                widthInDp =  ( layoutResult.size.width / density).dp
+            },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround,
     ) {
-        var widthInDp by remember { mutableStateOf(0.dp) }
-
-        Row (
-            modifier = Modifier.fillMaxWidth()
-                .onGloballyPositioned { layoutResult ->
-                    widthInDp =  ( layoutResult.size.width / density).dp
-                },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround,
-        ) {
-            data.forEach {
-                Row(
-                    modifier = Modifier.width(widthInDp/ columnInfo.value.size) ,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text( it.toString())
-                }
+        data.forEach {
+            Row(
+                modifier = Modifier.width(widthInDp/ columnInfo.value.size) ,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text( it.toString())
             }
         }
-
     }
+
 }
 
 
@@ -180,9 +168,9 @@ fun ComposeDataGridHeader(
 
     Card(
         modifier = then(modifier).fillMaxWidth().height(60.dp),
-        elevation = 0.dp,
         shape = RoundedCornerShape(2.dp),
-        backgroundColor  = MaterialTheme.colors.surface,
+        border = BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.4f)),
+        backgroundColor = MaterialTheme.colors.surface
     ) {
 
         var widthInDp by remember { mutableStateOf(0.dp) }
@@ -196,24 +184,18 @@ fun ComposeDataGridHeader(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
         ){
-
             columnInfo.value.forEach { (key, value) ->
-
                 Row (
                     modifier = Modifier.width(widthInDp/columnInfo.value.size) ,
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ){
-                    IconButton(
-                        onClick = { onSortOrder?.invoke(key, value) }
-                    ) { Text ( key) }
-
+                    IconButton( onClick = { onSortOrder?.invoke(key, value) } ) { Text ( key) }
                     FilterMenu(key, onFilter)
                 }
-
             }
-
         }
+
     }
 }
 
@@ -231,7 +213,7 @@ fun ComposeDataGridFooter(
         modifier =  Modifier.fillMaxWidth().height(60.dp),
         elevation = 0.dp,
         shape = RoundedCornerShape(2.dp),
-        border = BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.6f)),
+        border = BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.4f)),
         backgroundColor = MaterialTheme.colors.surface
     ) {
         Row (
@@ -242,41 +224,22 @@ fun ComposeDataGridFooter(
         ){
 
             IconButton(
-                modifier = Modifier.width(100.dp),
+                modifier = Modifier,
                 enabled =  lazyListState.firstVisibleItemIndex != 0,
-                onClick = {
-                    coroutineScope.launch {
-                        lazyListState.animateScrollToItem(0)
-                    }
-                }
-            ) {
-                Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Goto First Page")
-            }
+                onClick = { coroutineScope.launch { lazyListState.animateScrollToItem(0)  }  }
+            ) {  Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Goto First Page") }
 
-
-            Text ( "Total Count : ${dataCnt}",Modifier.width(140.dp) )
+            Text ( "Total Count : $dataCnt" )
 
             IconButton(
-                onClick = {
-                    coroutineScope.launch {
-                        onRefresh?.invoke()
-                    }
-                }
+                modifier = Modifier,
+                enabled = lazyListState.canScrollForward,
+                onClick = {  coroutineScope.launch { lazyListState.animateScrollToItem(dataCnt-1) } }
+            ) { Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Goto Last Page") }
+
+            IconButton(
+                onClick = { coroutineScope.launch { onRefresh?.invoke() } }
             ) {  Icon(Icons.Default.Refresh, contentDescription = "Refresh")  }
-
-
-            IconButton(
-                modifier = Modifier.width(100.dp),
-                enabled = lazyListState.canScrollForward == true,
-                onClick = {
-                    coroutineScope.launch {
-                        lazyListState.animateScrollToItem(dataCnt-1)
-                    }
-                }
-            ) {
-                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Goto Last Page")
-            }
-
 
         }
     }
