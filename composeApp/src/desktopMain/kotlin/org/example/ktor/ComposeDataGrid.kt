@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier.Companion.then
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 
@@ -28,21 +29,53 @@ fun ComposeDataGrid(
     data:List<List<Any>>,
 ){
 
+    val coroutineScope = rememberCoroutineScope()
+
     val columnInfo = remember { mutableStateOf(makeColInfo(columnNames, data.first() as List<Any>) ) }
 
-    val presentData: MutableState<List<Any>> =  mutableStateOf(data)
+    val presentData: MutableState<List<Any>>  =  remember { mutableStateOf(data) }
 
     val onSortOrder:(columnName:String, colInfo:ColumnInfo)->Unit = { columnName, columnInfo ->
 
+        columnInfo.sortOrder = when(columnInfo.sortOrder){
+            0 -> 1
+            1 -> -1
+            else -> 0
+        }
+
+        when(columnInfo.columnType){
+            "String" -> {
+                when(columnInfo.sortOrder){
+                    1 -> presentData.value = data.sortedBy { (it[columnNames.indexOf(columnName)] as String) }
+                    -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as String) }
+                    else -> presentData.value = data
+                }
+            }
+            "Double" -> {
+                when(columnInfo.sortOrder){
+                    1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Double) }
+                    -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Double) }
+                    else -> presentData.value =  data
+                }
+            }
+            else -> {
+                presentData.value = data
+            }
+        }
+
     }
 
-    val onFilter:(columnName:String, colInfo:ColumnInfo) -> Unit = { columnName, columnInfo  ->
-
+    val onFilter:(columnName:String, searchText:String) -> Unit = { columnName, searchText  ->
+        presentData.value =  data.filter {
+            it[columnNames.indexOf(columnName)] == searchText
+        }
     }
 
     val onRefresh:()-> Unit = {
         presentData.value = data
     }
+
+
 
     Column(
         modifier = Modifier.fillMaxSize().padding(10.dp).background(color = Color.LightGray),
@@ -107,7 +140,7 @@ fun ComposeDataGridHeader(
     modifier: Modifier = Modifier,
     columnInfo: MutableState<Map<String, ColumnInfo>>,
     onSortOrder:((String, ColumnInfo) -> Unit)? = null,
-    onFilter:((String, ColumnInfo) -> Unit)? = null,
+    onFilter:((String, String) -> Unit)? = null,
 ) {
     Card(
         modifier =  Modifier.fillMaxWidth().height(60.dp),
@@ -125,8 +158,12 @@ fun ComposeDataGridHeader(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    IconButton( onClick = { onSortOrder?.invoke(key, value) } ) { Text ( key) }
-                    FilterMenu{ onFilter?.invoke(key, value)}
+                    IconButton(
+                        onClick = {
+                            onSortOrder?.invoke(key, value)
+                        }
+                    ) { Text ( key) }
+                    FilterMenu(key, onFilter)
                 }
 
             }
@@ -203,7 +240,7 @@ fun ComposeDataGridFooter(
 
 
 @Composable
-fun FilterMenu( onFilter: ((String)-> Unit)? = null ) {
+fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) {
     var expanded by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val filterText = remember { mutableStateOf("") }
@@ -219,7 +256,7 @@ fun FilterMenu( onFilter: ((String)-> Unit)? = null ) {
                 onClick = {
                     focusManager.clearFocus()
                     expanded = false
-                    onFilter?.invoke(filterText.value.trim())
+                    onFilter?.invoke(columnName, filterText.value.trim())
                     filterText.value = ""
                 },
             ),
@@ -243,7 +280,7 @@ fun FilterMenu( onFilter: ((String)-> Unit)? = null ) {
     }
 }
 
-data class ColumnInfo(val columnType: String, val sortOrder: Int, val filterText: String)
+data class ColumnInfo(val columnType: String, var sortOrder: Int, var filterText: String)
 
 fun makeColInfo(columnNames: List<String>, firstData: List<Any>): Map<String, ColumnInfo> {
     val colInfo = mutableMapOf<String, ColumnInfo>()
