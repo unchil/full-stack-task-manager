@@ -8,7 +8,6 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 
-
 val state = WindowState(
     size = DpSize(1400.dp, 800.dp),
     position = WindowPosition(Alignment.Center)
@@ -20,10 +19,7 @@ fun main() = application {
         title = "NIFS SeaWater Infomation",
         state = state,
     ) {
-       // NifsCompose()
-      //  NifsApp()
-        NifsSeaWaterInfoDataGrid()
+        NifsCompose()
     }
 }
-
 

@@ -1,17 +1,15 @@
 package org.example.ktor
 
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.example.ktor.data.DATA_DIVISION
 
 @Composable
-fun NifsSeaWaterInfoDataGrid() {
+fun NifsSeaWaterInfoDataGrid(modifier:Modifier = Modifier) {
 
     val viewModel = remember { NifsSeaWaterInfoCurrentViewModel() }
 
@@ -32,6 +30,7 @@ fun NifsSeaWaterInfoDataGrid() {
         val data = seaWaterInfoCurrent.value.map { it.toList() }
 
         ComposeDataGrid(
+            modifier = modifier,
             columnNames = columnNames,
             data = data,
         )

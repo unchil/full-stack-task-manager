@@ -17,14 +17,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Modifier.Companion.then
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun ComposeDataGrid(
+    modifier:Modifier = Modifier,
     columnNames:List<String>,
     data:List<List<Any>>,
 ){
@@ -71,43 +73,68 @@ fun ComposeDataGrid(
         }
     }
 
+    val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
+
     val onRefresh:()-> Unit = {
-        presentData.value = data
+        coroutineScope.launch {
+            presentData.value = data
+            lazyListState.animateScrollToItem(0)
+        }
     }
 
 
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(10.dp).background(color = Color.LightGray),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment= Alignment.CenterHorizontally,
-
-    ) {
-        val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
-        ComposeDataGridHeader( modifier = Modifier.fillMaxWidth(), columnInfo, onSortOrder, onFilter)
-        ComposeDataGridRows( modifier= Modifier.fillMaxWidth(), lazyListState,  presentData.value)
-        ComposeDataGridFooter(  modifier = Modifier.fillMaxWidth(), lazyListState ,  presentData.value.size,  onRefresh)
+    Scaffold(
+        modifier = then(modifier).fillMaxSize()
+            .padding(2.dp)
+            .background(color = Color.LightGray),
+        topBar = {
+            ComposeDataGridHeader(
+                modifier = Modifier.fillMaxWidth(),
+                columnInfo,
+                onSortOrder,
+                onFilter
+            )
+        },
+        bottomBar = {
+            ComposeDataGridFooter(
+                modifier = Modifier.fillMaxWidth(),
+                lazyListState ,
+                presentData.value.size,
+                onRefresh
+            )
+        },
+    ){
+        ComposeDataGridRows(
+            modifier= Modifier.fillMaxSize()
+                .padding(it),
+            columnInfo,
+            lazyListState,
+            presentData.value
+        )
     }
 
 }
 
 
 @Composable
-fun ComposeDataGridRows(modifier:Modifier, lazyListState: LazyListState,  data:List<Any?>) {
+fun ComposeDataGridRows(modifier:Modifier, columnInfo:MutableState<Map<String, ColumnInfo>>,  lazyListState: LazyListState,  data:List<Any?>) {
     LazyColumn (
-        modifier =  Modifier.fillMaxWidth().height((800-60-60-42).dp),
+        modifier =  Modifier.fillMaxSize(),
         state = lazyListState,
         contentPadding = PaddingValues(1.dp),
         userScrollEnabled = true
     ){
         items(data.size){
-            ComposeDataGridRow( data[it] as List<Any?>)
+            ComposeDataGridRow( columnInfo, data[it] as List<Any?>)
         }
     }
 }
 
 @Composable
-fun ComposeDataGridRow(  data:List<Any?>) {
+fun ComposeDataGridRow(  columnInfo:MutableState<Map<String, ColumnInfo>>, data:List<Any?>) {
+
+    val density = LocalDensity.current.density
 
     Card(
         modifier = Modifier.fillMaxWidth().height(40.dp),
@@ -116,16 +143,22 @@ fun ComposeDataGridRow(  data:List<Any?>) {
         border = BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f)),
         backgroundColor = MaterialTheme.colors.surface
     ) {
+        var widthInDp by remember { mutableStateOf(0.dp) }
+
         Row (
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .onGloballyPositioned { layoutResult ->
+                    widthInDp =  ( layoutResult.size.width / density).dp
+                },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround,
         ) {
             data.forEach {
                 Row(
-                    horizontalArrangement = Arrangement.Start
+                    modifier = Modifier.width(widthInDp/ columnInfo.value.size) ,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(it.toString())
+                    Text( it.toString())
                 }
             }
         }
@@ -142,27 +175,39 @@ fun ComposeDataGridHeader(
     onSortOrder:((String, ColumnInfo) -> Unit)? = null,
     onFilter:((String, String) -> Unit)? = null,
 ) {
+
+    val density = LocalDensity.current.density
+
     Card(
-        modifier =  Modifier.fillMaxWidth().height(60.dp),
+        modifier = then(modifier).fillMaxWidth().height(60.dp),
         elevation = 0.dp,
         shape = RoundedCornerShape(2.dp),
-        backgroundColor = MaterialTheme.colors.surface
+        backgroundColor  = MaterialTheme.colors.surface,
     ) {
+
+        var widthInDp by remember { mutableStateOf(0.dp) }
+
         Row (
+            modifier =  Modifier.fillMaxWidth()
+                .padding(2.dp)
+                .onGloballyPositioned { layoutResult ->
+                    widthInDp =  ( layoutResult.size.width / density).dp
+                },
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceAround
         ){
 
             columnInfo.value.forEach { (key, value) ->
+
                 Row (
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.width(widthInDp/columnInfo.value.size) ,
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ){
                     IconButton(
-                        onClick = {
-                            onSortOrder?.invoke(key, value)
-                        }
+                        onClick = { onSortOrder?.invoke(key, value) }
                     ) { Text ( key) }
+
                     FilterMenu(key, onFilter)
                 }
 
