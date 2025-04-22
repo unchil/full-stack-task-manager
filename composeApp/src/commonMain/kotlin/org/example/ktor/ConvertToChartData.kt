@@ -125,10 +125,17 @@ fun SeawaterInformationByObservationPoint.toList(): List<Any> {
     convertList.add(this.gru_nam)
     convertList.add(this.sta_nam_kor)
     convertList.add(this.sta_cde)
-    convertList.add(this.obs_lay)
-    convertList.add(this.wtr_tmp)
-    convertList.add(this.lon.toString())
-    convertList.add(this.lat.toString())
+    convertList.add(
+        when(this.obs_lay) {
+            "1" -> "표층"
+            "2" -> "중층"
+            "3" -> "저층"
+            else -> {""}
+        }
+    )
+    convertList.add(this.wtr_tmp.toDouble())
+    convertList.add(this.lon)
+    convertList.add(this.lat)
     return convertList
 }
 
