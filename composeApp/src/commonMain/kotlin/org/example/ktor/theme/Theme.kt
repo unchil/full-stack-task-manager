@@ -14,6 +14,7 @@ import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
 import org.jetbrains.compose.resources.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
@@ -23,8 +24,14 @@ import androidx.compose.ui.unit.sp
 fun AppTheme(content: @Composable () -> Unit) {
 
     val AppleGothic = FontFamily(
+        Font(Res.font.AppleGothic, FontWeight.Bold),
+        Font(Res.font.AppleGothic, FontWeight.SemiBold),
+        Font(Res.font.AppleGothic, FontWeight.ExtraBold),
+        Font(Res.font.AppleGothic, FontWeight.Medium),
         Font(Res.font.AppleGothic, FontWeight.Normal),
-        Font(Res.font.AppleGothic, FontWeight.Bold)
+        Font(Res.font.AppleGothic, FontWeight.Black),
+        Font(Res.font.AppleGothic, FontWeight.Thin)
+
     )
 
     val AppTypography = Typography(
@@ -58,9 +65,13 @@ fun AppTheme(content: @Composable () -> Unit) {
         ),
         body1 = TextStyle(
             fontFamily = AppleGothic,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 12.sp
         ),
         body2 = TextStyle(
             fontFamily = AppleGothic,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 12.sp
         ),
         button = TextStyle(
             fontFamily = AppleGothic,

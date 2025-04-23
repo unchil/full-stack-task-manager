@@ -11,7 +11,7 @@ data class Observation(
     val obs_tim: String,
     val repair_gbn: String,
     val obs_lay: String,
-    val wtr_tmp: String,
+    val wtr_tmp: String?,
     val dox: String?,
     val sal: String?,
 )
