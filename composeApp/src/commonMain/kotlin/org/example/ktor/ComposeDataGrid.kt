@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -119,7 +120,7 @@ fun ComposeDataGrid(
                         .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text((it+1).toString(), Modifier.padding(horizontal = 10.dp))
+                    Text((it+1).toString(),Modifier.width( 30.dp), textAlign= TextAlign.Center)
                     ComposeDataGridRow( columnInfo, presentData.value[it] as List<Any?>)
                 }
             }
@@ -137,7 +138,7 @@ fun ComposeDataGridRow(  columnInfo:MutableState<Map<String, ColumnInfo>>, data:
     var widthInDp by remember { mutableStateOf(0.dp) }
 
     Row (
-        modifier = Modifier.fillMaxWidth().height(40.dp)
+        modifier = Modifier.fillMaxWidth().height(50.dp)
             .onGloballyPositioned { layoutResult ->
                 widthInDp =  ( layoutResult.size.width / density).dp
             },
@@ -174,7 +175,7 @@ fun ComposeDataGridHeader(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ){
-        Text("", Modifier.padding(horizontal = 10.dp))
+        Text("", Modifier.width( 30.dp))
         ComposeColumnRow(columnInfo, onSortOrder, onFilter)
     }
 

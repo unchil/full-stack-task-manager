@@ -29,7 +29,7 @@ fun NifsCompose(){
             fontWeight= FontWeight.Bold
         )
 
-        NifsSeaWaterInfoDataGrid(modifier = Modifier.fillMaxWidth().height(400.dp ))
+        NifsSeaWaterInfoDataGrid(modifier = Modifier.fillMaxWidth().height(600.dp ))
         NifsObservationBoxPlot(modifier = Modifier.fillMaxWidth())
         NifsObservationLayerBars(modifier = Modifier.fillMaxWidth() )
         NifsObservationLine(modifier = Modifier.fillMaxWidth() )

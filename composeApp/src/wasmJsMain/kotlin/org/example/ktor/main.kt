@@ -14,7 +14,7 @@ import org.example.ktor.theme.AppTheme
 fun main() {
     ComposeViewport(document.body!!) {
         AppTheme {
-            NifsSeaWaterInfoDataGrid(modifier = Modifier.fillMaxWidth().height(400.dp ))
+            NifsSeaWaterInfoDataGrid(modifier = Modifier.fillMaxWidth().height(600.dp ))
         }
     }
 }
