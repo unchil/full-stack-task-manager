@@ -37,11 +37,13 @@ googlemaps = "6.5.2"
 uiAndroid = "1.7.8"
 
 decompose = "3.0.0"
-material3 = "1.4.0-alpha12"
+
 material3Android = "1.3.2"
+uiTextAndroid = "1.7.8"
+
 
 [libraries]
-material-desktop = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -117,6 +119,7 @@ google-maps-compose-widgets = { group ="com.google.maps.android", name = "maps-c
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 androidx-ui-android = { group = "androidx.compose.ui", name = "ui-android", version.ref = "uiAndroid" }
 androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
+androidx-ui-text-android = { group = "androidx.compose.ui", name = "ui-text-android", version.ref = "uiTextAndroid" }
 
 
 

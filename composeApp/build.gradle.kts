@@ -249,6 +249,7 @@ tasks.named("clean") {
 dependencies {
     implementation(libs.androidx.ui.android)
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.ui.text.android)
 }
 
 tasks.withType<MergeSourceSetFolders>().configureEach {
