@@ -110,6 +110,7 @@ fun ComposeDataGrid(
             contentPadding = PaddingValues(1.dp),
             userScrollEnabled = true
         ){
+
             items(presentData.value.size){
 
                 Row(
@@ -120,8 +121,8 @@ fun ComposeDataGrid(
                     Text((it+1).toString(), Modifier.padding(horizontal = 10.dp))
                     ComposeDataGridRow( columnInfo, presentData.value[it] as List<Any?>)
                 }
-
             }
+
         }
     }
 
@@ -164,38 +165,47 @@ fun ComposeDataGridHeader(
     onFilter:((String, String) -> Unit)? = null,
 ) {
 
+    Row (
+        modifier =  then(modifier).fillMaxWidth().height(60.dp)
+            .padding(2.dp)
+            .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.4f)), RoundedCornerShape(6.dp))
+            .background( MaterialTheme.colors.surface),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ){
+        Text("", Modifier.padding(horizontal = 10.dp))
+        ComposeColumnRow(columnInfo, onSortOrder, onFilter)
+    }
+
+}
+
+@Composable
+fun ComposeColumnRow(
+    columnInfo: MutableState<Map<String, ColumnInfo>>,
+    onSortOrder:((String, ColumnInfo) -> Unit)? = null,
+    onFilter:((String, String) -> Unit)? = null,
+){
     val density = LocalDensity.current.density
+    var widthInDp by remember { mutableStateOf(0.dp) }
 
-    Card(
-        modifier = then(modifier).fillMaxWidth().height(60.dp),
-        shape = RoundedCornerShape(2.dp),
-        border = BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.4f)),
-        backgroundColor = MaterialTheme.colors.surface
+    Row (
+        modifier = Modifier.fillMaxWidth().height(60.dp)
+            .onGloballyPositioned { layoutResult ->
+                widthInDp =  ( layoutResult.size.width / density).dp
+            },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround,
     ) {
-
-        var widthInDp by remember { mutableStateOf(0.dp) }
-
-        Row (
-            modifier =  Modifier.fillMaxWidth()
-                .padding(2.dp)
-                .onGloballyPositioned { layoutResult ->
-                    widthInDp =  ( layoutResult.size.width / density).dp
-                },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
-        ){
-            columnInfo.value.forEach { (key, value) ->
-                Row (
-                    modifier = Modifier.width(widthInDp/columnInfo.value.size) ,
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ){
-                    IconButton( onClick = { onSortOrder?.invoke(key, value) } ) { Text ( key) }
-                    FilterMenu(key, onFilter)
-                }
+        columnInfo.value.forEach { (key, value) ->
+            Row(
+                modifier = Modifier.width(widthInDp / (columnInfo.value.size)),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                IconButton(onClick = { onSortOrder?.invoke(key, value) }) { Text(key) }
+                FilterMenu(key, onFilter)
             }
         }
-
     }
 }
 
