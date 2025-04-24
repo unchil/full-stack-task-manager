@@ -30,58 +30,18 @@ fun AppTheme(content: @Composable () -> Unit) {
         Font(Res.font.AppleGothic, FontWeight.Medium),
         Font(Res.font.AppleGothic, FontWeight.Normal),
         Font(Res.font.AppleGothic, FontWeight.Black),
-        Font(Res.font.AppleGothic, FontWeight.Thin)
-
+        Font(Res.font.AppleGothic, FontWeight.Thin),
+        Font(Res.font.AppleGothic, FontWeight.ExtraLight),
+        Font(Res.font.AppleGothic, FontWeight.Light)
     )
 
     val AppTypography = Typography(
-        h1 = TextStyle(
-            fontFamily = AppleGothic,
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp
-        ),
-        h2 = TextStyle(
-            fontFamily = AppleGothic,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        ),
-        h3 = TextStyle(
-            fontFamily = AppleGothic,
-        ),
-        h4 = TextStyle(
-            fontFamily = AppleGothic,
-        ),
-        h5 = TextStyle(
-            fontFamily = AppleGothic,
-        ),
-        h6 = TextStyle(
-            fontFamily = AppleGothic,
-        ),
-        subtitle1 = TextStyle(
-            fontFamily = AppleGothic,
-        ),
-        subtitle2 = TextStyle(
-            fontFamily = AppleGothic,
-        ),
+
+        defaultFontFamily = AppleGothic,
         body1 = TextStyle(
-            fontFamily = AppleGothic,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 12.sp
-        ),
-        body2 = TextStyle(
-            fontFamily = AppleGothic,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 12.sp
-        ),
-        button = TextStyle(
-            fontFamily = AppleGothic,
-        ),
-        caption = TextStyle(
-            fontFamily = AppleGothic,
-        ),
-        overline = TextStyle(
-            fontFamily = AppleGothic,
-        ),
+            fontSize = 15.sp,
+        )
+
     )
 
     MaterialTheme(typography = AppTypography) {

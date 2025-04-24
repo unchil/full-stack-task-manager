@@ -1,16 +1,15 @@
 package org.example.ktor
 
+//noinspection UsingMaterialAndMaterial3Libraries
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -19,13 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Modifier.Companion.then
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-
 
 @Composable
 fun ComposeDataGrid(
@@ -265,21 +264,19 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
     val focusManager = LocalFocusManager.current
     val filterText = remember { mutableStateOf("") }
 
+    val onDone: () -> Unit = {
+        focusManager.clearFocus()
+        onFilter?.invoke(columnName, filterText.value)
+        expanded = false
+        filterText.value = ""
+    }
+
     Box(  contentAlignment = Alignment.Center, ){
-        IconButton( onClick = { expanded = !expanded }  ) {
-            Icon(Icons.Default.ArrowDropDown, contentDescription = "Filter")
-        }
+
+        IconButton( onClick = {  expanded = !expanded } ){
+            Icon(Icons.Default.ArrowDropDown, contentDescription = "Filter")  }
+
         DropdownMenu(
-            modifier =  Modifier.clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = {
-                    focusManager.clearFocus()
-                    expanded = false
-                    onFilter?.invoke(columnName, filterText.value.trim())
-                    filterText.value = ""
-                },
-            ),
             expanded = expanded,
             onDismissRequest = {
                 expanded = false
@@ -287,13 +284,26 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
             }
         ) {
             OutlinedTextField(
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier.padding(horizontal = 8.dp).onKeyEvent { event ->
+                    if (event.key.equals(Key.Enter) && event.type.equals(KeyEventType.KeyUp) ) {
+                        onDone()
+                        true
+                    }else{
+                        false
+                    }
+                },
                 value = filterText.value,
                 onValueChange = {
                     filterText.value = it
                 },
                 label = { Text("Filter...")  },
-                leadingIcon = {Icon(Icons.Default.Search, contentDescription = "Search")},
+                trailingIcon = {
+                    IconButton(
+                        onClick = { onDone()  },
+                    ) {
+                        Icon(Icons.Default.Search, contentDescription = "Search",  tint = Color.Blue)
+                    }
+                },
                 singleLine = true,
             )
         }
