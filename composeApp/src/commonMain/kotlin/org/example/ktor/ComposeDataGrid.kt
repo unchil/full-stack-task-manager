@@ -265,7 +265,7 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
     val filterText = remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
 
-    val onDone: () -> Unit = {
+    val onSearch: () -> Unit = {
         onFilter?.invoke(columnName, filterText.value)
         expanded = false
         filterText.value = ""
@@ -287,7 +287,7 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
             OutlinedTextField(
                 modifier = Modifier.padding(horizontal = 8.dp).onKeyEvent { event ->
                     if (event.key.equals(Key.Enter) && event.type.equals(KeyEventType.KeyUp) ) {
-                        onDone()
+                        onSearch()
                         true
                     }else{
                         false
@@ -302,7 +302,7 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
                 label = { Text("Filter...")  },
                 trailingIcon = {
                     IconButton(
-                        onClick = { onDone()  },
+                        onClick = { onSearch()  },
                         enabled = isFocused,
                     ) {
                         Icon(Icons.Default.Search,
