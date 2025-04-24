@@ -39,7 +39,8 @@ fun AppTheme(content: @Composable () -> Unit) {
 
         defaultFontFamily = AppleGothic,
         body1 = TextStyle(
-            fontSize = 15.sp,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Black,
         )
 
     )

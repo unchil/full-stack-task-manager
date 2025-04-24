@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -87,7 +86,7 @@ fun ComposeDataGrid(
 
     Scaffold(
         modifier = then(modifier).fillMaxSize()
-            .padding(2.dp)
+            .padding(0.dp).border(BorderStroke(width = 1.dp, color = Color.LightGray), RoundedCornerShape(6.dp))
             .background(color = Color.LightGray),
         topBar = {
             ComposeDataGridHeader(
@@ -107,7 +106,9 @@ fun ComposeDataGrid(
         },
     ){
         LazyColumn (
-            modifier =  Modifier.fillMaxSize().padding(it),
+            modifier =  Modifier.fillMaxSize() .padding(it)
+
+               ,
             state = lazyListState,
             contentPadding = PaddingValues(1.dp),
             userScrollEnabled = true
@@ -169,8 +170,8 @@ fun ComposeDataGridHeader(
 
     Row (
         modifier =  then(modifier).fillMaxWidth().height(60.dp)
-            .padding(2.dp)
-            .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.4f)), RoundedCornerShape(6.dp))
+            .padding(0.dp)
+            .border(BorderStroke(width = 1.dp, color = Color.LightGray), RoundedCornerShape(6.dp))
             .background( MaterialTheme.colors.surface),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
@@ -221,40 +222,37 @@ fun ComposeDataGridFooter(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    Card(
-        modifier =  Modifier.fillMaxWidth().height(60.dp),
-        elevation = 0.dp,
-        shape = RoundedCornerShape(2.dp),
-        border = BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.4f)),
-        backgroundColor = MaterialTheme.colors.surface
-    ) {
-        Row (
-            modifier = then(modifier).fillMaxWidth().padding(horizontal = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+    Row (
+        modifier = then(modifier).fillMaxWidth()
+            .padding(horizontal = 0.dp)
+            .background(MaterialTheme.colors.surface)
+            .border(BorderStroke(width = 1.dp, color = Color.LightGray), RoundedCornerShape(6.dp))
+        ,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
 
-        ){
+    ){
 
-            IconButton(
-                modifier = Modifier,
-                enabled =  lazyListState.firstVisibleItemIndex != 0,
-                onClick = { coroutineScope.launch { lazyListState.animateScrollToItem(0)  }  }
-            ) {  Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Goto First Page") }
+        IconButton(
+            modifier = Modifier,
+            enabled =  lazyListState.firstVisibleItemIndex != 0,
+            onClick = { coroutineScope.launch { lazyListState.animateScrollToItem(0)  }  }
+        ) {  Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Goto First Page") }
 
-            Text ( "Total Count : $dataCnt" )
+        Text ( "Total Count : $dataCnt" )
 
-            IconButton(
-                modifier = Modifier,
-                enabled = lazyListState.canScrollForward,
-                onClick = {  coroutineScope.launch { lazyListState.animateScrollToItem(dataCnt-1) } }
-            ) { Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Goto Last Page") }
+        IconButton(
+            modifier = Modifier,
+            enabled = lazyListState.canScrollForward,
+            onClick = {  coroutineScope.launch { lazyListState.animateScrollToItem(dataCnt-1) } }
+        ) { Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Goto Last Page") }
 
-            IconButton(
-                onClick = { coroutineScope.launch { onRefresh?.invoke() } }
-            ) {  Icon(Icons.Default.Refresh, contentDescription = "Refresh")  }
+        IconButton(
+            onClick = { coroutineScope.launch { onRefresh?.invoke() } }
+        ) {  Icon(Icons.Default.Refresh, contentDescription = "Refresh")  }
 
-        }
     }
+
 }
 
 
