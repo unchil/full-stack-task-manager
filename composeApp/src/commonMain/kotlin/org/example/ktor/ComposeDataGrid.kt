@@ -264,7 +264,6 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
     var expanded by remember { mutableStateOf(false) }
     val filterText = remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
-    var isEnabled by remember { mutableStateOf(false) }
 
     val onDone: () -> Unit = {
         onFilter?.invoke(columnName, filterText.value)
@@ -295,7 +294,6 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
                     }
                 }.onFocusChanged { focusState ->
                     isFocused = focusState.isFocused
-                    isEnabled = isFocused
                 },
                 value = filterText.value,
                 onValueChange = {
@@ -305,7 +303,7 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
                 trailingIcon = {
                     IconButton(
                         onClick = { onDone()  },
-                        enabled = isEnabled,
+                        enabled = isFocused,
                     ) {
                         Icon(Icons.Default.Search,
                             contentDescription = "Search",
