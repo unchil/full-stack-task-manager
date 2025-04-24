@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Modifier.Companion.then
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -261,15 +262,16 @@ fun ComposeDataGridFooter(
 @Composable
 fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) {
     var expanded by remember { mutableStateOf(false) }
-    val focusManager = LocalFocusManager.current
     val filterText = remember { mutableStateOf("") }
+    var isFocused by remember { mutableStateOf(false) }
+    var isEnabled by remember { mutableStateOf(false) }
 
     val onDone: () -> Unit = {
-        focusManager.clearFocus()
         onFilter?.invoke(columnName, filterText.value)
         expanded = false
         filterText.value = ""
     }
+
 
     Box(  contentAlignment = Alignment.Center, ){
 
@@ -291,6 +293,9 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
                     }else{
                         false
                     }
+                }.onFocusChanged { focusState ->
+                    isFocused = focusState.isFocused
+                    isEnabled = isFocused
                 },
                 value = filterText.value,
                 onValueChange = {
@@ -300,8 +305,12 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
                 trailingIcon = {
                     IconButton(
                         onClick = { onDone()  },
+                        enabled = isEnabled,
                     ) {
-                        Icon(Icons.Default.Search, contentDescription = "Search",  tint = Color.Blue)
+                        Icon(Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = if (isFocused) { Color(128,65,217)} else Color.LightGray
+                        )
                     }
                 },
                 singleLine = true,
