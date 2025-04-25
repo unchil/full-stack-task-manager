@@ -5,6 +5,8 @@ package org.example.ktor
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -71,7 +73,7 @@ fun ComposeDataGrid(
 
     val onFilter:(columnName:String, searchText:String) -> Unit = { columnName, searchText  ->
         presentData.value =  data.filter {
-            it[columnNames.indexOf(columnName)] == searchText
+            it[columnNames.indexOf(columnName)].toString().contains(searchText)
         }
     }
 
@@ -263,10 +265,19 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
     val filterText = remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
     val onSearch: () -> Unit = {
         onFilter?.invoke(columnName, filterText.value)
         expanded = false
         filterText.value = ""
+    }
+
+    LaunchedEffect(isPressed){
+        if(isPressed) {
+            onSearch()
+        }
     }
 
 
@@ -300,7 +311,10 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
                 label = { Text("Filter...")  },
                 trailingIcon = {
                     IconButton(
-                        onClick = { onSearch()  },
+                        onClick = {
+                            onSearch()
+                        },
+                        interactionSource = interactionSource,
                         enabled = isFocused,
                     ) {
                         Icon(Icons.Default.Search,
