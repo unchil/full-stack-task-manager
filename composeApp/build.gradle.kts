@@ -250,6 +250,8 @@ dependencies {
     implementation(libs.androidx.ui.android)
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.ui.text.android)
+    implementation(libs.androidx.runtime.android)
+    implementation(libs.androidx.foundation.android)
 }
 
 tasks.withType<MergeSourceSetFolders>().configureEach {

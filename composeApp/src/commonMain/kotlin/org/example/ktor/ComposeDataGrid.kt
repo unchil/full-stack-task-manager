@@ -5,6 +5,7 @@ package org.example.ktor
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
@@ -179,6 +180,7 @@ fun ComposeDataGridHeader(
         horizontalArrangement = Arrangement.Start
     ){
         Text("", Modifier.width( 30.dp))
+
         ComposeColumnRow(columnInfo, onSortOrder, onFilter)
     }
 
@@ -209,7 +211,17 @@ fun ComposeColumnRow(
             ) {
                 IconButton(onClick = { onSortOrder?.invoke(key, value) }) { Text(key) }
                 FilterMenu(key, onFilter)
+
             }
+
+            Divider(
+                modifier = Modifier
+                    .padding(horizontal = 0.dp)
+                    .height(40.dp).width(1.dp)
+                ,
+                color = Color.LightGray,
+            )
+
         }
     }
 }
