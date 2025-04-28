@@ -57,7 +57,7 @@ fun ComposeDataGrid(
 
             val columnType:String = data.first { it[columnNames.indexOf(columnName)] != null }[columnNames.indexOf(columnName)]?.let {
                 it::class.simpleName.toString()
-            }?: "String"
+            }?: "Null"
 
             when(columnType){
                 "Double" -> {
@@ -87,6 +87,9 @@ fun ComposeDataGrid(
                         }
                         else -> presentData.value = data
                     }
+                }
+                "Null" -> {
+                    presentData.value = data
                 }
             }
 
