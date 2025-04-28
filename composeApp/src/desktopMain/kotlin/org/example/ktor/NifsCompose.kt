@@ -34,6 +34,5 @@ fun NifsCompose(){
         NifsObservationLayerBars(modifier = Modifier.fillMaxWidth() )
         NifsObservationLine(modifier = Modifier.fillMaxWidth() )
         NifsObservationRibbon(modifier = Modifier.fillMaxWidth() )
-
     }
 }

@@ -5,7 +5,9 @@ package org.example.ktor
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
@@ -28,6 +30,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 @Composable
 fun ComposeDataGrid(
@@ -138,25 +141,24 @@ fun ComposeDataGrid(
 @Composable
 fun ComposeDataGridRow(  columnInfo:MutableState<Map<String, ColumnInfo>>, data:List<Any?>) {
 
-    val density = LocalDensity.current.density
-    var widthInDp by remember { mutableStateOf(0.dp) }
+    val columnInfoList = columnInfo.value.toList()
 
     Row (
-        modifier = Modifier.fillMaxWidth().height(50.dp)
-            .onGloballyPositioned { layoutResult ->
-                widthInDp =  ( layoutResult.size.width / density).dp
-            },
+        modifier = Modifier.fillMaxWidth().height(50.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
-        data.forEach {
+
+        columnInfoList.forEachIndexed { index, (key, columnInfo) ->
             Row(
-                modifier = Modifier.width(widthInDp/ columnInfo.value.size) ,
+                modifier = Modifier.weight(columnInfo.widthWeigth.value),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text( it.toString())
+                Text( data[index].toString())
             }
+
         }
+
     }
 
 }
@@ -181,7 +183,7 @@ fun ComposeDataGridHeader(
     ){
         Text("", Modifier.width( 30.dp))
 
-        ComposeColumnRow(columnInfo, onSortOrder, onFilter)
+        ComposeColumnRow( columnInfo, onSortOrder, onFilter)
     }
 
 }
@@ -190,41 +192,121 @@ fun ComposeDataGridHeader(
 fun ComposeColumnRow(
     columnInfo: MutableState<Map<String, ColumnInfo>>,
     onSortOrder:((String, ColumnInfo) -> Unit)? = null,
-    onFilter:((String, String) -> Unit)? = null,
-){
-    val density = LocalDensity.current.density
-    var widthInDp by remember { mutableStateOf(0.dp) }
+    onFilter:((String, String) -> Unit)? = null, ) {
 
-    Row (
-        modifier = Modifier.fillMaxWidth().height(60.dp)
+    require(columnInfo.value.size >= 2) { "column must be at least 2" }
+
+    val columnCount = columnInfo.value.size
+    val columnInfoList = columnInfo.value.toList()
+
+    val dividerPositions = remember { MutableList(columnCount - 1) { 0.dp } }
+    val density = LocalDensity.current.density
+    var rowWidthInDp by remember { mutableStateOf(0.dp) }
+    val dividerThickness = 2.dp
+    val interactionSources = remember { List(columnCount - 1) { MutableInteractionSource() } }
+    val totalWidth = rowWidthInDp - (dividerThickness * (columnCount - 1))
+    val draggableStates = (0 until columnCount - 1).map { index ->
+
+        rememberDraggableState { delta ->
+
+            val newPositionDp = ( dividerPositions[index] + (delta/density).dp  ).coerceIn(0.dp, totalWidth)
+
+            dividerPositions[index] = newPositionDp
+
+            val newWeightBefore = (newPositionDp / totalWidth)
+            val newWeightAfter = 1f - newWeightBefore
+
+            var oldSumBefore = 0f
+
+            for (i in 0 until index + 1){
+                oldSumBefore += columnInfoList[i].second.widthWeigth.value
+            }
+            val oldSumAfter = 1f - oldSumBefore
+
+            // Standard
+            columnInfoList[index].second.widthWeigth.value = (newWeightBefore / oldSumBefore) * columnInfoList[index].second.widthWeigth.value
+
+            // After
+            for (i in index + 1 until columnCount) {
+                columnInfoList[i].second.widthWeigth.value = (newWeightAfter / oldSumAfter) *columnInfoList[i].second.widthWeigth.value
+            }
+
+            // Ensure weights don't go below a minimum value (e.g., 0.1f)
+            for (i in 0 until columnCount) {
+                columnInfoList[i].second.widthWeigth.value = max(columnInfoList[i].second.widthWeigth.value, 0.01f)
+            }
+
+
+            var sum = 0f
+            columnInfoList.forEach {
+                sum += it.second.widthWeigth.value
+            }
+
+            // Normalize weights to ensure they sum to 1
+            columnInfoList.forEach {
+                it.second.widthWeigth.value /= sum
+            }
+
+        }
+
+    }
+
+    LaunchedEffect(rowWidthInDp) {
+        if (rowWidthInDp > 0.dp) {
+            val initialPosition = (rowWidthInDp / columnCount)
+            for (i in 0 until columnCount - 1) {
+                dividerPositions[i] = initialPosition * (i + 1) - (dividerThickness * (i + 1) / 2)
+            }
+        }
+    }
+
+
+
+    Row(
+        Modifier
+            .fillMaxSize()
             .onGloballyPositioned { layoutResult ->
-                widthInDp =  ( layoutResult.size.width / density).dp
-            },
+                rowWidthInDp = (layoutResult.size.width / density).dp
+            }
+            //     .border(BorderStroke(width = 1.dp, color = Color.LightGray), RoundedCornerShape(6.dp))
+            .background( MaterialTheme.colors.surface),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround,
     ) {
-        columnInfo.value.forEach { (key, value) ->
+
+
+        columnInfoList.forEachIndexed { index, (key, columnInfo) ->
+
             Row(
-                modifier = Modifier.width(widthInDp / (columnInfo.value.size)),
+                modifier = Modifier.weight(columnInfo.widthWeigth.value),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                IconButton(onClick = { onSortOrder?.invoke(key, value) }) { Text(key) }
+                IconButton(onClick = { onSortOrder?.invoke(key, columnInfo) }) { Text(key) }
                 FilterMenu(key, onFilter)
 
             }
 
-            Divider(
-                modifier = Modifier
-                    .padding(horizontal = 0.dp)
-                    .height(40.dp).width(1.dp)
-                ,
-                color = Color.LightGray,
-            )
+            if ( index < columnCount - 1) {
+                Divider(
+                    Modifier
+                        .width(dividerThickness)
+                        .height(40.dp).width(1.dp)
+                        .draggable(
+                            orientation = Orientation.Horizontal,
+                            state = draggableStates[index],
+                            interactionSource = interactionSources[index]
+                        ),
+                    color = Color.LightGray,
+                    thickness = dividerThickness
+                )
+            }
 
         }
+
     }
 }
+
+
 
 
 @Composable
@@ -341,13 +423,19 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
     }
 }
 
-data class ColumnInfo(val columnType: String, var sortOrder: Int)
+data class ColumnInfo(val columnType: String, var sortOrder: Int, val widthWeigth: MutableState<Float>)
 
 fun makeColInfo(columnNames: List<String>, firstData: List<Any>): Map<String, ColumnInfo> {
     val colInfo = mutableMapOf<String, ColumnInfo>()
-
     columnNames.forEachIndexed{ index, columnName ->
-        colInfo.put(columnName, ColumnInfo(firstData[index]::class.simpleName.toString(), 0))
+        colInfo.put(
+            columnName,
+            ColumnInfo(
+                firstData[index]::class.simpleName.toString(),
+                0,
+                mutableStateOf(1f / columnNames.size)
+            )
+        )
     }
     return colInfo
 }
