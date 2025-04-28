@@ -36,42 +36,49 @@ import kotlin.math.max
 fun ComposeDataGrid(
     modifier:Modifier = Modifier,
     columnNames:List<String>,
-    data:List<List<Any>>,
+    data:List<List<Any?>>,
 ){
 
     val coroutineScope = rememberCoroutineScope()
 
-    val columnInfo = remember { mutableStateOf(makeColInfo(columnNames, data.first() as List<Any>) ) }
+    val columnInfo = remember { mutableStateOf(makeColInfo(columnNames, data) ) }
 
-    val presentData: MutableState<List<Any>>  =  remember { mutableStateOf(data) }
+    val presentData: MutableState<List<Any?>>  =  remember { mutableStateOf(data) }
 
-    val onSortOrder:(columnName:String, colInfo:ColumnInfo)->Unit = { columnName, columnInfo ->
+    val onSortOrder:(columnName:String, colInfo:ColumnInfo)->Unit = { columnName, colInfo ->
 
-        columnInfo.sortOrder = when(columnInfo.sortOrder){
+        colInfo.sortOrder = when(colInfo.sortOrder){
             0 -> 1
             1 -> -1
             else -> 0
         }
 
-        when(columnInfo.columnType){
-            "String" -> {
-                when(columnInfo.sortOrder){
-                    1 -> presentData.value = data.sortedBy { (it[columnNames.indexOf(columnName)] as String) }
-                    -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as String) }
-                    else -> presentData.value = data
+        if(colInfo.isContainNull){
+
+            presentData.value = data
+
+        }else{
+            when(colInfo.columnType){
+                "String" -> {
+                    when(colInfo.sortOrder){
+                        1 -> presentData.value = data.sortedBy { (it[columnNames.indexOf(columnName)] as String) }
+                        -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as String) }
+                        else -> presentData.value = data
+                    }
                 }
-            }
-            "Double" -> {
-                when(columnInfo.sortOrder){
-                    1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Double) }
-                    -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Double) }
-                    else -> presentData.value =  data
+                "Double" -> {
+                    when(colInfo.sortOrder){
+                        1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Double) }
+                        -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Double) }
+                        else -> presentData.value =  data
+                    }
                 }
-            }
-            else -> {
-                presentData.value = data
+                else -> {
+                    presentData.value = data
+                }
             }
         }
+
 
     }
 
@@ -127,7 +134,7 @@ fun ComposeDataGrid(
                         .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text((it+1).toString(),Modifier.width( 30.dp), textAlign= TextAlign.Center)
+                    Text((it+1).toString(),Modifier.width( 40.dp), textAlign= TextAlign.Center)
                     ComposeDataGridRow( columnInfo, presentData.value[it] as List<Any?>)
                 }
             }
@@ -181,7 +188,7 @@ fun ComposeDataGridHeader(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ){
-        Text("", Modifier.width( 30.dp))
+        Text("", Modifier.width( 40.dp))
 
         ComposeColumnRow( columnInfo, onSortOrder, onFilter)
     }
@@ -423,19 +430,33 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
     }
 }
 
-data class ColumnInfo(val columnType: String, var sortOrder: Int, val widthWeigth: MutableState<Float>)
+data class ColumnInfo(val columnType: String, var sortOrder: Int, val widthWeigth: MutableState<Float>, val isContainNull:Boolean = false)
 
-fun makeColInfo(columnNames: List<String>, firstData: List<Any>): Map<String, ColumnInfo> {
+fun makeColInfo(columnNames: List<String>, data: List<List<Any?>>): Map<String, ColumnInfo> {
+
+    val isContainNull = columnNames.map { false }.toMutableList()
+    data.forEach{
+        it.forEachIndexed {  index, any ->
+            if(!isContainNull[index].equals(null)){
+                isContainNull[index] = (any == null)
+            }
+        }
+    }
+
     val colInfo = mutableMapOf<String, ColumnInfo>()
+
     columnNames.forEachIndexed{ index, columnName ->
         colInfo.put(
             columnName,
             ColumnInfo(
-                firstData[index]::class.simpleName.toString(),
+                if (isContainNull[index]) {"String"} else  {data.first()[index]!!::class.simpleName.toString()},
                 0,
-                mutableStateOf(1f / columnNames.size)
+                mutableStateOf(1f / columnNames.size),
+                isContainNull[index]
             )
         )
     }
     return colInfo
 }
+
+

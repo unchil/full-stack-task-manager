@@ -119,8 +119,8 @@ fun List<*>.toRibbonData():Map<String,List<Any>> {
 
 }
 
-fun SeawaterInformationByObservationPoint.toList(): List<Any> {
-    val convertList = mutableListOf<Any>()
+fun SeawaterInformationByObservationPoint.toList(): List<Any?> {
+    val convertList = mutableListOf<Any?>()
     convertList.add(this.obs_datetime)
     convertList.add(this.gru_nam)
     convertList.add(this.sta_nam_kor)
@@ -136,6 +136,8 @@ fun SeawaterInformationByObservationPoint.toList(): List<Any> {
     convertList.add(this.wtr_tmp.toDouble())
     convertList.add(this.lon)
     convertList.add(this.lat)
+    convertList.add(this.dox)
+
     return convertList
 }
 

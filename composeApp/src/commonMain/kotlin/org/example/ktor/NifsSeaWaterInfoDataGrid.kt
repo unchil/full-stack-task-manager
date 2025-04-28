@@ -30,7 +30,7 @@ fun NifsSeaWaterInfoDataGrid(modifier: Modifier = Modifier) {
 
     if(seaWaterInfoCurrent.value.isNotEmpty()){
 
-            val columnNames = listOf("수집시간", "해역", "관측지점", "지점코드", "수심", "수온", "경도", "위도")
+            val columnNames = listOf("수집시간", "해역", "관측지점", "지점코드", "수심", "수온", "경도", "위도", "용존산소")
             val data = seaWaterInfoCurrent.value.map { it.toList() }
 
             ComposeDataGrid(
