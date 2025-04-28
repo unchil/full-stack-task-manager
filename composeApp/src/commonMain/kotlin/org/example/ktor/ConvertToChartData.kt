@@ -133,10 +133,10 @@ fun SeawaterInformationByObservationPoint.toList(): List<Any?> {
             else -> {""}
         }
     )
-    convertList.add(this.wtr_tmp.toDouble())
+    convertList.add(this.wtr_tmp?.toDouble())
     convertList.add(this.lon)
     convertList.add(this.lat)
-    convertList.add(this.dox)
+    convertList.add(this.dox?.toDouble())
 
     return convertList
 }

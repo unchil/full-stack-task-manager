@@ -55,7 +55,42 @@ fun ComposeDataGrid(
 
         if(colInfo.isContainNull){
 
-            presentData.value = data
+            val columnType:String = data.first { it[columnNames.indexOf(columnName)] != null }[columnNames.indexOf(columnName)]?.let {
+                it::class.simpleName.toString()
+            }?: "String"
+
+            when(columnType){
+                "Double" -> {
+                    when(colInfo.sortOrder){
+                        1 -> {
+                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString().toDouble()} +
+                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                        }
+                        -1 -> {
+                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedByDescending { it[columnNames.indexOf(columnName)].toString().toDouble()} +
+                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                        }
+                        else -> presentData.value = data
+                    }
+
+                }
+
+                "String" -> {
+                    when(colInfo.sortOrder){
+                        1 -> {
+                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString()} +
+                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                        }
+                        -1 -> {
+                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedByDescending { it[columnNames.indexOf(columnName)].toString()} +
+                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                        }
+                        else -> presentData.value = data
+                    }
+                }
+            }
+
+
 
         }else{
             when(colInfo.columnType){
