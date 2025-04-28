@@ -55,11 +55,7 @@ fun ComposeDataGrid(
 
         if(colInfo.isContainNull){
 
-            val columnType:String = data.first { it[columnNames.indexOf(columnName)] != null }[columnNames.indexOf(columnName)]?.let {
-                it::class.simpleName.toString()
-            }?: "Null"
-
-            when(columnType){
+            when(colInfo.columnType){
                 "Double" -> {
                     when(colInfo.sortOrder){
                         1 -> {
@@ -88,7 +84,7 @@ fun ComposeDataGrid(
                         else -> presentData.value = data
                     }
                 }
-                "Null" -> {
+                else -> {
                     presentData.value = data
                 }
             }
@@ -481,13 +477,17 @@ fun makeColInfo(columnNames: List<String>, data: List<List<Any?>>): Map<String, 
         }
     }
 
+
+
+
     val colInfo = mutableMapOf<String, ColumnInfo>()
 
     columnNames.forEachIndexed{ index, columnName ->
+
         colInfo.put(
             columnName,
             ColumnInfo(
-                if (isContainNull[index]) {"String"} else  {data.first()[index]!!::class.simpleName.toString()},
+                data.first { it[index] != null }[index]?.let {  it::class.simpleName.toString() }?: "NULL",
                 0,
                 mutableStateOf(1f / columnNames.size),
                 isContainNull[index]
