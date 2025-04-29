@@ -1,23 +1,14 @@
 package org.example.ktor.theme
 
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import full_stack_task_manager.composeapp.generated.resources.AppleGothic
 import full_stack_task_manager.composeapp.generated.resources.Res
-
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.MaterialTheme
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.Typography
-
-import androidx.compose.ui.text.TextStyle
 import org.jetbrains.compose.resources.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-
 
 
 @Composable
@@ -35,17 +26,29 @@ fun AppTheme(content: @Composable () -> Unit) {
         Font(Res.font.AppleGothic, FontWeight.Light)
     )
 
-    val AppTypography = Typography(
 
-        defaultFontFamily = AppleGothic,
-        body1 = TextStyle(
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Black,
-        )
 
+    val typography = Typography(
+        displayLarge = Typography().displayLarge.copy(fontFamily = AppleGothic),
+        displayMedium = Typography().displayMedium.copy(fontFamily = AppleGothic),
+        displaySmall = Typography().displaySmall.copy(fontFamily = AppleGothic),
+        headlineLarge = Typography().headlineLarge.copy(fontFamily = AppleGothic),
+        headlineMedium = Typography().headlineMedium.copy(fontFamily = AppleGothic),
+        headlineSmall = Typography().headlineSmall.copy(fontFamily = AppleGothic),
+        titleLarge = Typography().titleLarge.copy(fontFamily = AppleGothic),
+        titleMedium = Typography().titleMedium.copy(fontFamily = AppleGothic),
+        titleSmall = Typography().titleSmall.copy(fontFamily = AppleGothic),
+        bodyLarge = Typography().bodyLarge.copy(fontFamily = AppleGothic),
+        bodyMedium = Typography().bodyMedium.copy(fontFamily = AppleGothic),
+        bodySmall = Typography().bodySmall.copy(fontFamily = AppleGothic),
+        labelLarge = Typography().labelLarge.copy(fontFamily = AppleGothic),
+        labelMedium = Typography().labelMedium.copy(fontFamily = AppleGothic),
+        labelSmall = Typography().labelSmall.copy(fontFamily = AppleGothic)
     )
 
-    MaterialTheme(typography = AppTypography) {
+
+
+    MaterialTheme(typography = typography) {
         content()
     }
 

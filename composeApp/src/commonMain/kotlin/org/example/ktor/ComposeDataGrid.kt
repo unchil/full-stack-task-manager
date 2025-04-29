@@ -1,7 +1,5 @@
 package org.example.ktor
 
-//noinspection UsingMaterialAndMaterial3Libraries
-
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,9 +13,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlin.math.max
+
 
 @Composable
 fun ComposeDataGrid(
@@ -70,6 +78,49 @@ fun ComposeDataGrid(
                     }
 
                 }
+                "Float" -> {
+                    when(colInfo.sortOrder){
+                        1 -> {
+                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString().toFloat()} +
+                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                        }
+                        -1 -> {
+                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedByDescending { it[columnNames.indexOf(columnName)].toString().toFloat()} +
+                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                        }
+                        else -> presentData.value = data
+                    }
+
+                }
+                "Int" -> {
+                    when(colInfo.sortOrder){
+                        1 -> {
+                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString().toInt()} +
+                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                        }
+                        -1 -> {
+                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedByDescending { it[columnNames.indexOf(columnName)].toString().toInt()} +
+                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                        }
+                        else -> presentData.value = data
+                    }
+
+                }
+                "Long" -> {
+                    when(colInfo.sortOrder){
+                        1 -> {
+                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString().toLong()} +
+                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                        }
+                        -1 -> {
+                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedByDescending { it[columnNames.indexOf(columnName)].toString().toLong()} +
+                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                        }
+                        else -> presentData.value = data
+                    }
+
+                }
+
 
                 "String" -> {
                     when(colInfo.sortOrder){
@@ -104,6 +155,27 @@ fun ComposeDataGrid(
                     when(colInfo.sortOrder){
                         1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Double) }
                         -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Double) }
+                        else -> presentData.value =  data
+                    }
+                }
+                "Float" -> {
+                    when(colInfo.sortOrder){
+                        1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Float) }
+                        -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Float) }
+                        else -> presentData.value =  data
+                    }
+                }
+                "Int" -> {
+                    when(colInfo.sortOrder){
+                        1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Int) }
+                        -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Int) }
+                        else -> presentData.value =  data
+                    }
+                }
+                "Long" -> {
+                    when(colInfo.sortOrder){
+                        1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Long) }
+                        -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Long) }
                         else -> presentData.value =  data
                     }
                 }
@@ -152,28 +224,29 @@ fun ComposeDataGrid(
             )
         },
     ){
-        LazyColumn (
-            modifier =  Modifier.fillMaxSize() .padding(it)
 
-               ,
-            state = lazyListState,
-            contentPadding = PaddingValues(1.dp),
-            userScrollEnabled = true
-        ){
 
-            items(presentData.value.size){
+            LazyColumn (
+                modifier =  Modifier.fillMaxSize() .padding(it),
+                state = lazyListState,
+                contentPadding = PaddingValues(1.dp),
+                userScrollEnabled = true,
 
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text((it+1).toString(),Modifier.width( 40.dp), textAlign= TextAlign.Center)
-                    ComposeDataGridRow( columnInfo, presentData.value[it] as List<Any?>)
+                ){
+
+                items(presentData.value.size){
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.onPrimary)
+                            .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text((it+1).toString(),Modifier.width( 40.dp), textAlign= TextAlign.Center)
+                        ComposeDataGridRow( columnInfo, presentData.value[it] as List<Any?>)
+                    }
                 }
             }
 
-        }
     }
 
 }
@@ -218,7 +291,7 @@ fun ComposeDataGridHeader(
         modifier =  then(modifier).fillMaxWidth().height(60.dp)
             .padding(0.dp)
             .border(BorderStroke(width = 1.dp, color = Color.LightGray), RoundedCornerShape(6.dp))
-            .background( MaterialTheme.colors.surface),
+            .background( MaterialTheme.colorScheme.onPrimary),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ){
@@ -308,9 +381,7 @@ fun ComposeColumnRow(
             .fillMaxSize()
             .onGloballyPositioned { layoutResult ->
                 rowWidthInDp = (layoutResult.size.width / density).dp
-            }
-            //     .border(BorderStroke(width = 1.dp, color = Color.LightGray), RoundedCornerShape(6.dp))
-            .background( MaterialTheme.colors.surface),
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
@@ -322,16 +393,20 @@ fun ComposeColumnRow(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                IconButton(onClick = { onSortOrder?.invoke(key, columnInfo) }) { Text(key) }
-                FilterMenu(key, onFilter)
 
+                TextButton(
+                    onClick = { onSortOrder?.invoke(key, columnInfo) },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Black),
+                ) { Text(key,) }
+
+
+                FilterMenu(key, onFilter)
             }
 
             if ( index < columnCount - 1) {
-                Divider(
+                VerticalDivider(
                     Modifier
-                        .width(dividerThickness)
-                        .height(40.dp).width(1.dp)
+                        .height(40.dp)
                         .draggable(
                             orientation = Orientation.Horizontal,
                             state = draggableStates[index],
@@ -362,7 +437,7 @@ fun ComposeDataGridFooter(
     Row (
         modifier = then(modifier).fillMaxWidth()
             .padding(horizontal = 0.dp)
-            .background(MaterialTheme.colors.surface)
+            .background(MaterialTheme.colorScheme.onPrimary)
             .border(BorderStroke(width = 1.dp, color = Color.LightGray), RoundedCornerShape(6.dp))
         ,
         verticalAlignment = Alignment.CenterVertically,
