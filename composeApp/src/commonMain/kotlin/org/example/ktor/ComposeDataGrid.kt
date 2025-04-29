@@ -206,7 +206,7 @@ fun ComposeDataGrid(
     Scaffold(
         modifier = then(modifier).fillMaxSize()
             .padding(0.dp).border(BorderStroke(width = 1.dp, color = Color.LightGray), RoundedCornerShape(6.dp))
-            .background(color = Color.LightGray),
+                ,
         topBar = {
             ComposeDataGridHeader(
                 modifier = Modifier.fillMaxWidth(),
@@ -216,15 +216,13 @@ fun ComposeDataGrid(
             )
         },
         bottomBar = {
-            ComposeDataGridFooter(
-                modifier = Modifier.fillMaxWidth(),
-                lazyListState ,
-                presentData.value.size,
-                onRefresh
-            )
+
         },
     ){
 
+        Box(modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopStart
+        ) {
 
             LazyColumn (
                 modifier =  Modifier.fillMaxSize() .padding(it),
@@ -237,7 +235,7 @@ fun ComposeDataGrid(
                 items(presentData.value.size){
 
                     Row(
-                        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.onPrimary)
+                        modifier = Modifier.fillMaxWidth()
                             .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -246,6 +244,21 @@ fun ComposeDataGrid(
                     }
                 }
             }
+
+        }
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+            , contentAlignment = Alignment.BottomCenter
+        ){
+            ComposeDataGridFooter(
+                modifier = Modifier.width(300.dp).padding(bottom = 20.dp),
+                lazyListState ,
+                presentData.value.size,
+                onRefresh
+            )
+        }
+
 
     }
 
@@ -291,7 +304,8 @@ fun ComposeDataGridHeader(
         modifier =  then(modifier).fillMaxWidth().height(60.dp)
             .padding(0.dp)
             .border(BorderStroke(width = 1.dp, color = Color.LightGray), RoundedCornerShape(6.dp))
-            .background( MaterialTheme.colorScheme.onPrimary),
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+        ,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ){
@@ -437,8 +451,8 @@ fun ComposeDataGridFooter(
     Row (
         modifier = then(modifier).fillMaxWidth()
             .padding(horizontal = 0.dp)
-            .background(MaterialTheme.colorScheme.onPrimary)
-            .border(BorderStroke(width = 1.dp, color = Color.LightGray), RoundedCornerShape(6.dp))
+            .border(BorderStroke(width = 1.dp, color = Color.LightGray))
+            .background(color = MaterialTheme.colorScheme.surfaceVariant)
         ,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
