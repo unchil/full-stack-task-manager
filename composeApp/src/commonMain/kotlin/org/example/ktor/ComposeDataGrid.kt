@@ -54,7 +54,8 @@ fun ComposeDataGrid(
 
     val presentData: MutableState<List<Any?>>  =  remember { mutableStateOf(data) }
 
-    val onSortOrder:(columnName:String, colInfo:ColumnInfo)->Unit = { columnName, colInfo ->
+
+    val onSortOrder:(colInfo:ColumnInfo)->Unit = { colInfo ->
 
         colInfo.sortOrder.value = when(colInfo.sortOrder.value){
             0 -> 1
@@ -68,12 +69,12 @@ fun ComposeDataGrid(
                 "Double" -> {
                     when(colInfo.sortOrder.value){
                         1 -> {
-                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString().toDouble()} +
-                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedBy { it[colInfo.columnIndex].toString().toDouble()} +
+                                    data.filter{ it[colInfo.columnIndex] == null }
                         }
                         -1 -> {
-                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedByDescending { it[columnNames.indexOf(columnName)].toString().toDouble()} +
-                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { it[colInfo.columnIndex].toString().toDouble()} +
+                                    data.filter{ it[colInfo.columnIndex] == null }
                         }
                         else -> presentData.value = data
                     }
@@ -82,12 +83,12 @@ fun ComposeDataGrid(
                 "Float" -> {
                     when(colInfo.sortOrder.value){
                         1 -> {
-                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString().toFloat()} +
-                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedBy { it[colInfo.columnIndex].toString().toFloat()} +
+                                    data.filter{ it[colInfo.columnIndex] == null }
                         }
                         -1 -> {
-                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedByDescending { it[columnNames.indexOf(columnName)].toString().toFloat()} +
-                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { it[colInfo.columnIndex].toString().toFloat()} +
+                                    data.filter{ it[colInfo.columnIndex] == null }
                         }
                         else -> presentData.value = data
                     }
@@ -96,12 +97,12 @@ fun ComposeDataGrid(
                 "Int" -> {
                     when(colInfo.sortOrder.value){
                         1 -> {
-                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString().toInt()} +
-                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedBy { it[colInfo.columnIndex].toString().toInt()} +
+                                    data.filter{ it[colInfo.columnIndex] == null }
                         }
                         -1 -> {
-                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedByDescending { it[columnNames.indexOf(columnName)].toString().toInt()} +
-                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { it[colInfo.columnIndex].toString().toInt()} +
+                                    data.filter{ it[colInfo.columnIndex] == null }
                         }
                         else -> presentData.value = data
                     }
@@ -110,12 +111,12 @@ fun ComposeDataGrid(
                 "Long" -> {
                     when(colInfo.sortOrder.value){
                         1 -> {
-                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString().toLong()} +
-                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedBy { it[colInfo.columnIndex].toString().toLong()} +
+                                    data.filter{ it[colInfo.columnIndex] == null }
                         }
                         -1 -> {
-                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedByDescending { it[columnNames.indexOf(columnName)].toString().toLong()} +
-                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { it[colInfo.columnIndex].toString().toLong()} +
+                                    data.filter{ it[colInfo.columnIndex] == null }
                         }
                         else -> presentData.value = data
                     }
@@ -126,12 +127,12 @@ fun ComposeDataGrid(
                 "String" -> {
                     when(colInfo.sortOrder.value){
                         1 -> {
-                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString()} +
-                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedBy { it[colInfo.columnIndex].toString()} +
+                                    data.filter{ it[colInfo.columnIndex] == null }
                         }
                         -1 -> {
-                            presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedByDescending { it[columnNames.indexOf(columnName)].toString()} +
-                                    data.filter{ it[columnNames.indexOf(columnName)] == null }
+                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { it[colInfo.columnIndex].toString()} +
+                                    data.filter{ it[colInfo.columnIndex] == null }
                         }
                         else -> presentData.value = data
                     }
@@ -145,38 +146,48 @@ fun ComposeDataGrid(
 
         }else{
             when(colInfo.columnType){
+
                 "String" -> {
+
+
                     when(colInfo.sortOrder.value){
-                        1 -> presentData.value = data.sortedBy { (it[columnNames.indexOf(columnName)] as String) }
-                        -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as String)   }
+
+                        1 -> {
+                            presentData.value = data.sortedBy { (it[colInfo.columnIndex] as String) }
+                        }
+                        -1 -> {
+                            presentData.value =  data.sortedByDescending { (it[colInfo.columnIndex] as String)   }
+                        }
                         else -> presentData.value = data
                     }
+
+
                 }
                 "Double" -> {
                     when(colInfo.sortOrder.value){
-                        1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Double) }
-                        -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Double) }
+                        1 -> presentData.value =  data.sortedBy { (it[colInfo.columnIndex] as Double) }
+                        -1 -> presentData.value =  data.sortedByDescending { (it[colInfo.columnIndex] as Double) }
                         else -> presentData.value =  data
                     }
                 }
                 "Float" -> {
                     when(colInfo.sortOrder.value){
-                        1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Float) }
-                        -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Float) }
+                        1 -> presentData.value =  data.sortedBy { (it[colInfo.columnIndex] as Float) }
+                        -1 -> presentData.value =  data.sortedByDescending { (it[colInfo.columnIndex] as Float) }
                         else -> presentData.value =  data
                     }
                 }
                 "Int" -> {
                     when(colInfo.sortOrder.value){
-                        1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Int) }
-                        -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Int) }
+                        1 -> presentData.value =  data.sortedBy { (it[colInfo.columnIndex] as Int) }
+                        -1 -> presentData.value =  data.sortedByDescending { (it[colInfo.columnIndex] as Int) }
                         else -> presentData.value =  data
                     }
                 }
                 "Long" -> {
                     when(colInfo.sortOrder.value){
-                        1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Long) }
-                        -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Long) }
+                        1 -> presentData.value =  data.sortedBy { (it[colInfo.columnIndex] as Long) }
+                        -1 -> presentData.value =  data.sortedByDescending { (it[colInfo.columnIndex] as Long) }
                         else -> presentData.value =  data
                     }
                 }
@@ -276,7 +287,7 @@ fun ComposeDataGrid(
 
 
 @Composable
-fun ComposeDataGridRow(  columnInfo:MutableState<Map<String, ColumnInfo>>, data:List<Any?>) {
+fun ComposeDataGridRow(  columnInfo:MutableState<List< ColumnInfo>>, data:List<Any?>) {
 
     val columnInfoList = columnInfo.value.toList()
 
@@ -286,7 +297,7 @@ fun ComposeDataGridRow(  columnInfo:MutableState<Map<String, ColumnInfo>>, data:
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
 
-        columnInfoList.forEachIndexed { index, (key, columnInfo) ->
+        columnInfoList.forEachIndexed { index, columnInfo ->
 
             Row(
                 modifier = Modifier.weight(columnInfo.widthWeigth.value),
@@ -307,8 +318,8 @@ fun ComposeDataGridRow(  columnInfo:MutableState<Map<String, ColumnInfo>>, data:
 @Composable
 fun ComposeDataGridHeader(
     modifier: Modifier = Modifier,
-    columnInfo: MutableState<Map<String, ColumnInfo>>,
-    onSortOrder:((String, ColumnInfo) -> Unit)? = null,
+    columnInfo: MutableState<List< ColumnInfo>>,
+    onSortOrder:((ColumnInfo) -> Unit)? = null,
     onFilter:((String, String) -> Unit)? = null,
 ) {
 
@@ -330,14 +341,13 @@ fun ComposeDataGridHeader(
 
 @Composable
 fun ComposeColumnRow(
-    columnInfo: MutableState<Map<String, ColumnInfo>>,
-    onSortOrder:((String, ColumnInfo) -> Unit)? = null,
+    columnInfoList: MutableState<List< ColumnInfo>>,
+    onSortOrder:(( ColumnInfo) -> Unit)? = null,
     onFilter:((String, String) -> Unit)? = null, ) {
 
-    require(columnInfo.value.size >= 2) { "column must be at least 2" }
+    require(columnInfoList.value.size >= 2) { "column must be at least 2" }
 
-    val columnCount = columnInfo.value.size
-    val columnInfoList = columnInfo.value.toList()
+    val columnCount = columnInfoList.value.size
 
     val dividerPositions = remember { MutableList(columnCount - 1) { 0.dp } }
     val density = LocalDensity.current.density
@@ -359,32 +369,32 @@ fun ComposeColumnRow(
             var oldSumBefore = 0f
 
             for (i in 0 until index + 1){
-                oldSumBefore += columnInfoList[i].second.widthWeigth.value
+                oldSumBefore += columnInfoList.value[i].widthWeigth.value
             }
             val oldSumAfter = 1f - oldSumBefore
 
             // Standard
-            columnInfoList[index].second.widthWeigth.value = (newWeightBefore / oldSumBefore) * columnInfoList[index].second.widthWeigth.value
+            columnInfoList.value[index].widthWeigth.value = (newWeightBefore / oldSumBefore) * columnInfoList.value[index].widthWeigth.value
 
             // After
             for (i in index + 1 until columnCount) {
-                columnInfoList[i].second.widthWeigth.value = (newWeightAfter / oldSumAfter) *columnInfoList[i].second.widthWeigth.value
+                columnInfoList.value[i].widthWeigth.value = (newWeightAfter / oldSumAfter) *columnInfoList.value[i].widthWeigth.value
             }
 
             // Ensure weights don't go below a minimum value (e.g., 0.1f)
             for (i in 0 until columnCount) {
-                columnInfoList[i].second.widthWeigth.value = max(columnInfoList[i].second.widthWeigth.value, 0.01f)
+                columnInfoList.value[i].widthWeigth.value = max(columnInfoList.value[i].widthWeigth.value, 0.01f)
             }
 
 
             var sum = 0f
-            columnInfoList.forEach {
-                sum += it.second.widthWeigth.value
+            columnInfoList.value.forEach {
+                sum += it.widthWeigth.value
             }
 
             // Normalize weights to ensure they sum to 1
-            columnInfoList.forEach {
-                it.second.widthWeigth.value /= sum
+            columnInfoList.value.forEach {
+                it.widthWeigth.value /= sum
             }
 
         }
@@ -412,7 +422,7 @@ fun ComposeColumnRow(
     ) {
 
 
-        columnInfoList.forEachIndexed { index, (key, columnInfo) ->
+        columnInfoList.value.forEachIndexed { index,  columnInfo ->
 
             val imageVector = when(columnInfo.sortOrder.value){
                 1 -> Icons.Default.KeyboardArrowUp
@@ -427,12 +437,12 @@ fun ComposeColumnRow(
             ) {
 
                 TextButton(
-                    onClick = { onSortOrder?.invoke(key, columnInfo) },
+                    onClick = { onSortOrder?.invoke( columnInfo) },
                     colors = ButtonDefaults.textButtonColors(contentColor = Color.Black),
-                ) { Text(key,) }
+                ) { Text(columnInfo.columnName,) }
 
                 Icon(imageVector, contentDescription = "Sorted Order", modifier = Modifier.width(16.dp),)
-                FilterMenu(key, onFilter)
+                FilterMenu(columnInfo.columnName, onFilter)
             }
 
             if ( index < columnCount - 1) {
@@ -571,9 +581,16 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
     }
 }
 
-data class ColumnInfo(val columnType: String, var sortOrder: MutableState<Int>, val widthWeigth: MutableState<Float>, val isContainNull:Boolean = false)
+data class ColumnInfo(
+    val columnName:String,
+    val columnIndex:Int,
+    val columnType: String,
+    var sortOrder: MutableState<Int>,
+    val widthWeigth: MutableState<Float>,
+    val isContainNull:Boolean = false
+)
 
-fun makeColInfo(columnNames: List<String>, data: List<List<Any?>>): Map<String, ColumnInfo> {
+fun makeColInfo(columnNames: List<String>, data: List<List<Any?>>): List< ColumnInfo> {
 
     val isContainNull = columnNames.map { false }.toMutableList()
     data.forEach{
@@ -584,16 +601,14 @@ fun makeColInfo(columnNames: List<String>, data: List<List<Any?>>): Map<String, 
         }
     }
 
-
-
-
-    val colInfo = mutableMapOf<String, ColumnInfo>()
+    val colInfo = mutableListOf< ColumnInfo>()
 
     columnNames.forEachIndexed{ index, columnName ->
 
-        colInfo.put(
-            columnName,
+        colInfo.add(
             ColumnInfo(
+                columnName,
+                index,
                 data.first { it[index] != null }[index]?.let {  it::class.simpleName.toString() }?: "NULL",
                 mutableStateOf(0),
                 mutableStateOf(1f / columnNames.size),
