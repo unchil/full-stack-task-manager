@@ -220,7 +220,7 @@ fun ComposeDataGrid(
             ComposeDataGridHeader(
                 modifier = Modifier.fillMaxWidth(),
                 columnInfo,
-                onMultiSortedOrder,
+                onSortOrder,
                 onFilter
             )
         },
