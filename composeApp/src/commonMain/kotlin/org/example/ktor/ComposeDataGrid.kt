@@ -58,28 +58,22 @@ fun ComposeDataGrid(
 
     val updateSortedIndexList:(colInfo:ColumnInfo)->Unit = {
 
-
-        if(!it.isContainNull){
-            if(sortedIndexList.isEmpty() ){
-                sortedIndexList.add(it.columnIndex)
-            } else {
-                if(it.sortOrder.value != 0){
-                    if(sortedIndexList.contains(it.columnIndex)) {
-                        sortedIndexList.remove(it.columnIndex)
-                        sortedIndexList.add(it.columnIndex)
-                    } else {
-                        sortedIndexList.add(it.columnIndex)
-                    }
-                }else{
-                    if(sortedIndexList.contains(it.columnIndex)) {
-                        sortedIndexList.remove(it.columnIndex)
-                    }
+        if(sortedIndexList.isEmpty() ){
+            sortedIndexList.add(it.columnIndex)
+        } else {
+            if(it.sortOrder.value != 0){
+                if(sortedIndexList.contains(it.columnIndex)) {
+                    sortedIndexList.remove(it.columnIndex)
+                    sortedIndexList.add(it.columnIndex)
+                } else {
+                    sortedIndexList.add(it.columnIndex)
+                }
+            }else{
+                if(sortedIndexList.contains(it.columnIndex)) {
+                    sortedIndexList.remove(it.columnIndex)
                 }
             }
-        } else{
-            it.sortOrder.value = 0
         }
-
 
     }
 
@@ -95,21 +89,21 @@ fun ComposeDataGrid(
             var comparator = when(firstSortOrder){
                 1 -> {
                     when(firstColumnType){
-                        "String" -> compareBy { it[sortedIndexList.first()] as String }
-                        "Double" -> compareBy { it[sortedIndexList.first()] as Double }
-                        "Float" -> compareBy { it[sortedIndexList.first()] as Float }
-                        "Int" -> compareBy { it[sortedIndexList.first()] as Int }
-                        "Long" -> compareBy { it[sortedIndexList.first()] as Long }
+                        "String" -> compareBy { it.getOrNull(sortedIndexList.first()) as? String ?: "" }
+                        "Double" -> compareBy { it.getOrNull(sortedIndexList.first()) as? Double ?: Double.MAX_VALUE }
+                        "Float" -> compareBy { it.getOrNull(sortedIndexList.first()) as? Float ?: Float.MAX_VALUE }
+                        "Int" -> compareBy { it.getOrNull(sortedIndexList.first()) as? Int ?: Int.MAX_VALUE }
+                        "Long" -> compareBy { it.getOrNull(sortedIndexList.first()) as? Long ?: Long.MAX_VALUE }
                         else ->   compareBy { it[sortedIndexList.first()] as String }
                     }
                 }
                 -1 -> {
                     when(firstColumnType){
-                        "String" -> compareByDescending { it[sortedIndexList.first()] as String }
-                        "Double" -> compareByDescending { it[sortedIndexList.first()] as Double }
-                        "Float" -> compareByDescending { it[sortedIndexList.first()] as Float }
-                        "Int" -> compareByDescending { it[sortedIndexList.first()] as Int }
-                        "Long" -> compareByDescending { it[sortedIndexList.first()] as Long }
+                        "String" -> compareByDescending { it.getOrNull(sortedIndexList.first()) as? String ?: "" }
+                        "Double" -> compareByDescending { it.getOrNull(sortedIndexList.first()) as? Double ?: Double.MIN_VALUE }
+                        "Float" -> compareByDescending { it.getOrNull(sortedIndexList.first()) as? Float ?: Float.MIN_VALUE }
+                        "Int" -> compareByDescending { it.getOrNull(sortedIndexList.first()) as? Int ?: Int.MIN_VALUE }
+                        "Long" -> compareByDescending { it.getOrNull(sortedIndexList.first()) as? Long ?: Long.MIN_VALUE }
                         else ->  compareByDescending { it[sortedIndexList.first()] as String }
                     }
                 }
@@ -124,21 +118,21 @@ fun ComposeDataGrid(
                 when(sortOrder){
                     1 -> {
                         when(columnType){
-                            "String" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as String }}
-                            "Double" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as Double }}
-                            "Float" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as Float }}
-                            "Int" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as Int }}
-                            "Long" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as Long }}
+                            "String" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? String ?: "" }}
+                            "Double" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? Double ?: Double.MAX_VALUE  }}
+                            "Float" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? Float ?: Float.MAX_VALUE }}
+                            "Int" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? Int ?: Int.MAX_VALUE }}
+                            "Long" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? Long ?: Long.MAX_VALUE}}
                         }
 
                     }
                     -1 -> {
                         when(columnType){
-                            "String" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as String }}
-                            "Double" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as Double }}
-                            "Float" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as Float }}
-                            "Int" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as Int }}
-                            "Long" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as Long }}
+                            "String" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? String ?: "" }}
+                            "Double" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? Double ?: Double.MIN_VALUE}}
+                            "Float" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? Float ?: Float.MIN_VALUE }}
+                            "Int" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? Int ?: Int.MIN_VALUE}}
+                            "Long" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? Long ?: Long.MIN_VALUE }}
                         }
                     }
                 }
@@ -166,59 +160,32 @@ fun ComposeDataGrid(
             }
         }
 
-        if(colInfo.isContainNull){
-
-            presentData.value = when(colInfo.sortOrder.value){
-                1 -> {
-                    when(colInfo.columnType){
-                        "String" ->  data.filter{ it[colInfo.columnIndex] != null }.sortedBy { (it[colInfo.columnIndex].toString()) } + data.filter{ it[colInfo.columnIndex] == null }
-                        "Double" -> data.filter{ it[colInfo.columnIndex] != null }.sortedBy { (it[colInfo.columnIndex].toString().toDouble()) } + data.filter{ it[colInfo.columnIndex] == null }
-                        "Float" -> data.filter{ it[colInfo.columnIndex] != null }.sortedBy { (it[colInfo.columnIndex].toString().toFloat()) } + data.filter{ it[colInfo.columnIndex] == null }
-                        "Int" -> data.filter{ it[colInfo.columnIndex] != null }.sortedBy { (it[colInfo.columnIndex].toString().toInt()) } + data.filter{ it[colInfo.columnIndex] == null }
-                        "Long" -> data.filter{ it[colInfo.columnIndex] != null }.sortedBy { (it[colInfo.columnIndex].toString().toLong()) } + data.filter{ it[colInfo.columnIndex] == null }
-                        else -> data
-                    }
+        presentData.value = when(colInfo.sortOrder.value){
+            1 -> {
+                when(colInfo.columnType){
+                    "String" ->  data.sortedBy { it.getOrNull(colInfo.columnIndex) as? String ?: "" }
+                    "Double" -> data.sortedBy { it.getOrNull(colInfo.columnIndex) as? Double ?: Double.MAX_VALUE }
+                    "Float" -> data.sortedBy { it.getOrNull(colInfo.columnIndex) as? Float ?: Float.MAX_VALUE }
+                    "Int" -> data.sortedBy { it.getOrNull(colInfo.columnIndex) as?  Int ?: Int.MAX_VALUE }
+                    "Long" -> data.sortedBy { it.getOrNull(colInfo.columnIndex) as?  Long ?: Long.MAX_VALUE }
+                    else -> data
                 }
-                -1 -> {
-                    when(colInfo.columnType){
-                        "String" ->  data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { (it[colInfo.columnIndex].toString()) } + data.filter{ it[colInfo.columnIndex] == null }
-                        "Double" -> data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { (it[colInfo.columnIndex].toString().toDouble()) } + data.filter{ it[colInfo.columnIndex] == null }
-                        "Float" -> data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { (it[colInfo.columnIndex].toString().toFloat()) } + data.filter{ it[colInfo.columnIndex] == null }
-                        "Int" -> data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { (it[colInfo.columnIndex].toString().toInt()) } + data.filter{ it[colInfo.columnIndex] == null }
-                        "Long" -> data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { (it[colInfo.columnIndex].toString().toLong()) } + data.filter{ it[colInfo.columnIndex] == null }
-                        else -> data
-                    }
-                }
-                else -> data
             }
-
-        }else{
-
-            presentData.value = when(colInfo.sortOrder.value){
-                1 -> {
-                    when(colInfo.columnType){
-                        "String" ->  data.sortedBy { (it[colInfo.columnIndex] as String) }
-                        "Double" -> data.sortedBy { (it[colInfo.columnIndex] as Double) }
-                        "Float" -> data.sortedBy { (it[colInfo.columnIndex] as Float) }
-                        "Int" -> data.sortedBy { (it[colInfo.columnIndex] as Int) }
-                        "Long" -> data.sortedBy { (it[colInfo.columnIndex] as Long) }
-                        else -> data
-                    }
+            -1 -> {
+                when(colInfo.columnType){
+                    "String" ->  data.sortedByDescending { it.getOrNull(colInfo.columnIndex) as? String ?: "" }
+                    "Double" -> data.sortedByDescending { it.getOrNull(colInfo.columnIndex) as? Double ?: Double.MIN_VALUE }
+                    "Float" -> data.sortedByDescending { it.getOrNull(colInfo.columnIndex) as? Float ?: Float.MIN_VALUE }
+                    "Int" -> data.sortedByDescending { it.getOrNull(colInfo.columnIndex) as?  Int ?: Int.MIN_VALUE }
+                    "Long" -> data.sortedByDescending { it.getOrNull(colInfo.columnIndex) as?  Long ?: Long.MIN_VALUE }
+                    else -> data
                 }
-                -1 -> {
-                    when(colInfo.columnType){
-                        "String" ->  data.sortedByDescending { (it[colInfo.columnIndex] as String) }
-                        "Double" -> data.sortedByDescending { (it[colInfo.columnIndex] as Double) }
-                        "Float" -> data.sortedByDescending { (it[colInfo.columnIndex] as Float) }
-                        "Int" -> data.sortedByDescending { (it[colInfo.columnIndex] as Int) }
-                        "Long" -> data.sortedByDescending { (it[colInfo.columnIndex] as Long) }
-                        else -> data
-                    }
-                }
-                else -> data
             }
-
+            else -> data
         }
+
+
+
     }
 
     val onFilter:(columnName:String, searchText:String) -> Unit = { columnName, searchText  ->
