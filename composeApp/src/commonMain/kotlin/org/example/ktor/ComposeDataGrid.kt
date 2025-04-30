@@ -138,129 +138,57 @@ fun ComposeDataGrid(
     val onSortOrder:(colInfo:ColumnInfo)->Unit = { colInfo ->
 
         if(colInfo.isContainNull){
-            when(colInfo.columnType){
-                "Double" -> {
-                    when(colInfo.sortOrder.value){
-                        1 -> {
-                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedBy { it[colInfo.columnIndex].toString().toDouble()} +
-                                    data.filter{ it[colInfo.columnIndex] == null }
-                        }
-                        -1 -> {
-                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { it[colInfo.columnIndex].toString().toDouble()} +
-                                    data.filter{ it[colInfo.columnIndex] == null }
-                        }
-                        else -> presentData.value = data
-                    }
 
-                }
-                "Float" -> {
-                    when(colInfo.sortOrder.value){
-                        1 -> {
-                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedBy { it[colInfo.columnIndex].toString().toFloat()} +
-                                    data.filter{ it[colInfo.columnIndex] == null }
-                        }
-                        -1 -> {
-                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { it[colInfo.columnIndex].toString().toFloat()} +
-                                    data.filter{ it[colInfo.columnIndex] == null }
-                        }
-                        else -> presentData.value = data
-                    }
-
-                }
-                "Int" -> {
-                    when(colInfo.sortOrder.value){
-                        1 -> {
-                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedBy { it[colInfo.columnIndex].toString().toInt()} +
-                                    data.filter{ it[colInfo.columnIndex] == null }
-                        }
-                        -1 -> {
-                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { it[colInfo.columnIndex].toString().toInt()} +
-                                    data.filter{ it[colInfo.columnIndex] == null }
-                        }
-                        else -> presentData.value = data
-                    }
-
-                }
-                "Long" -> {
-                    when(colInfo.sortOrder.value){
-                        1 -> {
-                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedBy { it[colInfo.columnIndex].toString().toLong()} +
-                                    data.filter{ it[colInfo.columnIndex] == null }
-                        }
-                        -1 -> {
-                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { it[colInfo.columnIndex].toString().toLong()} +
-                                    data.filter{ it[colInfo.columnIndex] == null }
-                        }
-                        else -> presentData.value = data
-                    }
-
-                }
-
-
-                "String" -> {
-                    when(colInfo.sortOrder.value){
-                        1 -> {
-                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedBy { it[colInfo.columnIndex].toString()} +
-                                    data.filter{ it[colInfo.columnIndex] == null }
-                        }
-                        -1 -> {
-                            presentData.value = data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { it[colInfo.columnIndex].toString()} +
-                                    data.filter{ it[colInfo.columnIndex] == null }
-                        }
-                        else -> presentData.value = data
+            presentData.value = when(colInfo.sortOrder.value){
+                1 -> {
+                    when(colInfo.columnType){
+                        "String" ->  data.filter{ it[colInfo.columnIndex] != null }.sortedBy { (it[colInfo.columnIndex].toString()) } + data.filter{ it[colInfo.columnIndex] == null }
+                        "Double" -> data.filter{ it[colInfo.columnIndex] != null }.sortedBy { (it[colInfo.columnIndex].toString().toDouble()) } + data.filter{ it[colInfo.columnIndex] == null }
+                        "Float" -> data.filter{ it[colInfo.columnIndex] != null }.sortedBy { (it[colInfo.columnIndex].toString().toFloat()) } + data.filter{ it[colInfo.columnIndex] == null }
+                        "Int" -> data.filter{ it[colInfo.columnIndex] != null }.sortedBy { (it[colInfo.columnIndex].toString().toInt()) } + data.filter{ it[colInfo.columnIndex] == null }
+                        "Long" -> data.filter{ it[colInfo.columnIndex] != null }.sortedBy { (it[colInfo.columnIndex].toString().toLong()) } + data.filter{ it[colInfo.columnIndex] == null }
+                        else -> data
                     }
                 }
-                else -> {
-                    presentData.value = data
+                -1 -> {
+                    when(colInfo.columnType){
+                        "String" ->  data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { (it[colInfo.columnIndex].toString()) } + data.filter{ it[colInfo.columnIndex] == null }
+                        "Double" -> data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { (it[colInfo.columnIndex].toString().toDouble()) } + data.filter{ it[colInfo.columnIndex] == null }
+                        "Float" -> data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { (it[colInfo.columnIndex].toString().toFloat()) } + data.filter{ it[colInfo.columnIndex] == null }
+                        "Int" -> data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { (it[colInfo.columnIndex].toString().toInt()) } + data.filter{ it[colInfo.columnIndex] == null }
+                        "Long" -> data.filter{ it[colInfo.columnIndex] != null }.sortedByDescending { (it[colInfo.columnIndex].toString().toLong()) } + data.filter{ it[colInfo.columnIndex] == null }
+                        else -> data
+                    }
                 }
+                else -> data
             }
 
         }else{
-            when(colInfo.columnType){
-                "String" -> {
-                    when(colInfo.sortOrder.value){
 
-                        1 -> {
-                            presentData.value = data.sortedBy { (it[colInfo.columnIndex] as String) }
-                        }
-                        -1 -> {
-                            presentData.value =  data.sortedByDescending { (it[colInfo.columnIndex] as String)   }
-                        }
-                        else -> presentData.value = data
+            presentData.value = when(colInfo.sortOrder.value){
+                1 -> {
+                    when(colInfo.columnType){
+                        "String" ->  data.sortedBy { (it[colInfo.columnIndex] as String) }
+                        "Double" -> data.sortedBy { (it[colInfo.columnIndex] as Double) }
+                        "Float" -> data.sortedBy { (it[colInfo.columnIndex] as Float) }
+                        "Int" -> data.sortedBy { (it[colInfo.columnIndex] as Int) }
+                        "Long" -> data.sortedBy { (it[colInfo.columnIndex] as Long) }
+                        else -> data
                     }
                 }
-                "Double" -> {
-                    when(colInfo.sortOrder.value){
-                        1 -> presentData.value =  data.sortedBy { (it[colInfo.columnIndex] as Double) }
-                        -1 -> presentData.value =  data.sortedByDescending { (it[colInfo.columnIndex] as Double) }
-                        else -> presentData.value =  data
+                -1 -> {
+                    when(colInfo.columnType){
+                        "String" ->  data.sortedByDescending { (it[colInfo.columnIndex] as String) }
+                        "Double" -> data.sortedByDescending { (it[colInfo.columnIndex] as Double) }
+                        "Float" -> data.sortedByDescending { (it[colInfo.columnIndex] as Float) }
+                        "Int" -> data.sortedByDescending { (it[colInfo.columnIndex] as Int) }
+                        "Long" -> data.sortedByDescending { (it[colInfo.columnIndex] as Long) }
+                        else -> data
                     }
                 }
-                "Float" -> {
-                    when(colInfo.sortOrder.value){
-                        1 -> presentData.value =  data.sortedBy { (it[colInfo.columnIndex] as Float) }
-                        -1 -> presentData.value =  data.sortedByDescending { (it[colInfo.columnIndex] as Float) }
-                        else -> presentData.value =  data
-                    }
-                }
-                "Int" -> {
-                    when(colInfo.sortOrder.value){
-                        1 -> presentData.value =  data.sortedBy { (it[colInfo.columnIndex] as Int) }
-                        -1 -> presentData.value =  data.sortedByDescending { (it[colInfo.columnIndex] as Int) }
-                        else -> presentData.value =  data
-                    }
-                }
-                "Long" -> {
-                    when(colInfo.sortOrder.value){
-                        1 -> presentData.value =  data.sortedBy { (it[colInfo.columnIndex] as Long) }
-                        -1 -> presentData.value =  data.sortedByDescending { (it[colInfo.columnIndex] as Long) }
-                        else -> presentData.value =  data
-                    }
-                }
-                else -> {
-                    presentData.value = data
-                }
+                else -> data
             }
+
         }
     }
 
