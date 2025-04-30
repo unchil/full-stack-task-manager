@@ -58,22 +58,29 @@ fun ComposeDataGrid(
 
     val updateSortedIndexList:(colInfo:ColumnInfo)->Unit = {
 
-        if(sortedIndexList.isEmpty() ){
-            sortedIndexList.add(it.columnIndex)
-        } else {
-            if(it.sortOrder.value != 0){
-                if(sortedIndexList.contains(it.columnIndex)) {
-                    sortedIndexList.remove(it.columnIndex)
-                    sortedIndexList.add(it.columnIndex)
-                } else {
-                    sortedIndexList.add(it.columnIndex)
-                }
-            }else{
-                if(sortedIndexList.contains(it.columnIndex)) {
-                    sortedIndexList.remove(it.columnIndex)
+
+        if(!it.isContainNull){
+            if(sortedIndexList.isEmpty() ){
+                sortedIndexList.add(it.columnIndex)
+            } else {
+                if(it.sortOrder.value != 0){
+                    if(sortedIndexList.contains(it.columnIndex)) {
+                        sortedIndexList.remove(it.columnIndex)
+                        sortedIndexList.add(it.columnIndex)
+                    } else {
+                        sortedIndexList.add(it.columnIndex)
+                    }
+                }else{
+                    if(sortedIndexList.contains(it.columnIndex)) {
+                        sortedIndexList.remove(it.columnIndex)
+                    }
                 }
             }
+        } else{
+            it.sortOrder.value = 0
         }
+
+
     }
 
     val onMultiSortedOrder:(colInfo:ColumnInfo)->Unit = { colInfo ->
@@ -240,7 +247,7 @@ fun ComposeDataGrid(
             ComposeDataGridHeader(
                 modifier = Modifier.fillMaxWidth(),
                 columnInfo,
-                onSortOrder,
+                onMultiSortedOrder,
                 onFilter
             )
         },
