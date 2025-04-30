@@ -57,78 +57,92 @@ fun ComposeDataGrid(
     val sortedIndexList = remember { mutableListOf<Int>() }
 
     val updateSortedIndexList:(colInfo:ColumnInfo)->Unit = {
-        if(sortedIndexList.isEmpty()){
+
+        if(sortedIndexList.isEmpty() ){
             sortedIndexList.add(it.columnIndex)
         } else {
-            sortedIndexList.contains(it.columnIndex).let { isContain ->
-                if(isContain) {
+            if(it.sortOrder.value != 0){
+                if(sortedIndexList.contains(it.columnIndex)) {
                     sortedIndexList.remove(it.columnIndex)
                     sortedIndexList.add(it.columnIndex)
                 } else {
                     sortedIndexList.add(it.columnIndex)
+                }
+            }else{
+                if(sortedIndexList.contains(it.columnIndex)) {
+                    sortedIndexList.remove(it.columnIndex)
                 }
             }
         }
     }
 
     val onMultiSortedOrder:(colInfo:ColumnInfo)->Unit = { colInfo ->
+
         updateSortedIndexList(colInfo)
-        val firstSortOrder = columnInfo.value[sortedIndexList.first()].sortOrder.value
-        val firstColumnType =  columnInfo.value[sortedIndexList.first()].columnType
 
-        var comparator = when(firstSortOrder){
-            1 -> {
-                when(firstColumnType){
-                    "String" -> compareBy { it[sortedIndexList.first()] as String }
-                    "Double" -> compareBy { it[sortedIndexList.first()] as Double }
-                    "Float" -> compareBy { it[sortedIndexList.first()] as Float }
-                    "Int" -> compareBy { it[sortedIndexList.first()] as Int }
-                    "Long" -> compareBy { it[sortedIndexList.first()] as Long }
-                    else ->   compareBy { it[sortedIndexList.first()] as String }
-                }
-            }
-            -1 -> {
-                when(firstColumnType){
-                    "String" -> compareByDescending { it[sortedIndexList.first()] as String }
-                    "Double" -> compareByDescending { it[sortedIndexList.first()] as Double }
-                    "Float" -> compareByDescending { it[sortedIndexList.first()] as Float }
-                    "Int" -> compareByDescending { it[sortedIndexList.first()] as Int }
-                    "Long" -> compareByDescending { it[sortedIndexList.first()] as Long }
-                    else ->  compareByDescending { it[sortedIndexList.first()] as String }
-                }
-            }
-            else ->  compareBy<List<Any?>> { it[sortedIndexList.first()] as String }
-        }
+        if(sortedIndexList.isNotEmpty() ){
 
-        for (i in 1 until sortedIndexList.size){
+            val firstSortOrder = columnInfo.value[sortedIndexList.first()].sortOrder.value
+            val firstColumnType =  columnInfo.value[sortedIndexList.first()].columnType
 
-            val sortOrder = columnInfo.value[sortedIndexList[i]].sortOrder.value
-            val columnType =  columnInfo.value[sortedIndexList[i]].columnType
-
-            when(sortOrder){
+            var comparator = when(firstSortOrder){
                 1 -> {
-                    when(columnType){
-                        "String" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as String }}
-                        "Double" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as Double }}
-                        "Float" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as Float }}
-                        "Int" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as Int }}
-                        "Long" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as Long }}
+                    when(firstColumnType){
+                        "String" -> compareBy { it[sortedIndexList.first()] as String }
+                        "Double" -> compareBy { it[sortedIndexList.first()] as Double }
+                        "Float" -> compareBy { it[sortedIndexList.first()] as Float }
+                        "Int" -> compareBy { it[sortedIndexList.first()] as Int }
+                        "Long" -> compareBy { it[sortedIndexList.first()] as Long }
+                        else ->   compareBy { it[sortedIndexList.first()] as String }
                     }
-
                 }
                 -1 -> {
-                    when(columnType){
-                        "String" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as String }}
-                        "Double" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as Double }}
-                        "Float" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as Float }}
-                        "Int" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as Int }}
-                        "Long" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as Long }}
+                    when(firstColumnType){
+                        "String" -> compareByDescending { it[sortedIndexList.first()] as String }
+                        "Double" -> compareByDescending { it[sortedIndexList.first()] as Double }
+                        "Float" -> compareByDescending { it[sortedIndexList.first()] as Float }
+                        "Int" -> compareByDescending { it[sortedIndexList.first()] as Int }
+                        "Long" -> compareByDescending { it[sortedIndexList.first()] as Long }
+                        else ->  compareByDescending { it[sortedIndexList.first()] as String }
+                    }
+                }
+                else ->  compareBy<List<Any?>> { it[sortedIndexList.first()] as String }
+            }
+
+            for (i in 1 until sortedIndexList.size){
+
+                val sortOrder = columnInfo.value[sortedIndexList[i]].sortOrder.value
+                val columnType =  columnInfo.value[sortedIndexList[i]].columnType
+
+                when(sortOrder){
+                    1 -> {
+                        when(columnType){
+                            "String" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as String }}
+                            "Double" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as Double }}
+                            "Float" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as Float }}
+                            "Int" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as Int }}
+                            "Long" -> {comparator = comparator.thenBy { it[sortedIndexList[i]] as Long }}
+                        }
+
+                    }
+                    -1 -> {
+                        when(columnType){
+                            "String" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as String }}
+                            "Double" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as Double }}
+                            "Float" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as Float }}
+                            "Int" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as Int }}
+                            "Long" -> {comparator = comparator.thenByDescending { it[sortedIndexList[i]] as Long }}
+                        }
                     }
                 }
             }
+
+            presentData.value = data.sortedWith(comparator)
+
+        } else{
+            presentData.value = data
         }
 
-        presentData.value = data.sortedWith(comparator)
 
     }
 
@@ -220,7 +234,7 @@ fun ComposeDataGrid(
             ComposeDataGridHeader(
                 modifier = Modifier.fillMaxWidth(),
                 columnInfo,
-                onSortOrder,
+                onMultiSortedOrder,
                 onFilter
             )
         },
