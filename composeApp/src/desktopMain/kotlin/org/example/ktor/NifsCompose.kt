@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,18 +21,19 @@ fun NifsCompose(){
             .background(Color.White)
             .padding(20.dp)
             .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ){
 
         Text("Nifs Sea Water Temperature Infomation",
-            modifier=Modifier.fillMaxWidth().align(Alignment.CenterHorizontally).padding(vertical = 20.dp),
+            modifier=Modifier.padding(vertical = 20.dp),
             fontSize=20.sp ,
             fontWeight= FontWeight.Bold
         )
 
-        NifsSeaWaterInfoDataGrid(modifier = Modifier.fillMaxWidth().height(600.dp ))
-        NifsObservationBoxPlot(modifier = Modifier.fillMaxWidth())
-        NifsObservationLayerBars(modifier = Modifier.fillMaxWidth() )
-        NifsObservationLine(modifier = Modifier.fillMaxWidth() )
-        NifsObservationRibbon(modifier = Modifier.fillMaxWidth() )
+        NifsSeaWaterInfoDataGrid(modifier = Modifier.fillMaxWidth(0.9f).height(560.dp ).padding(vertical = 20.dp))
+        NifsObservationBoxPlot(modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 20.dp))
+        NifsObservationLayerBars(modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 20.dp) )
+        NifsObservationLine(modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 20.dp) )
+        NifsObservationRibbon(modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 20.dp) )
     }
 }

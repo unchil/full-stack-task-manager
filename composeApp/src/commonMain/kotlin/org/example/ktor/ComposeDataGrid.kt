@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.Modifier.Companion.then
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -55,7 +56,7 @@ fun ComposeDataGrid(
 
     val onSortOrder:(columnName:String, colInfo:ColumnInfo)->Unit = { columnName, colInfo ->
 
-        colInfo.sortOrder = when(colInfo.sortOrder){
+        colInfo.sortOrder.value = when(colInfo.sortOrder.value){
             0 -> 1
             1 -> -1
             else -> 0
@@ -65,7 +66,7 @@ fun ComposeDataGrid(
 
             when(colInfo.columnType){
                 "Double" -> {
-                    when(colInfo.sortOrder){
+                    when(colInfo.sortOrder.value){
                         1 -> {
                             presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString().toDouble()} +
                                     data.filter{ it[columnNames.indexOf(columnName)] == null }
@@ -79,7 +80,7 @@ fun ComposeDataGrid(
 
                 }
                 "Float" -> {
-                    when(colInfo.sortOrder){
+                    when(colInfo.sortOrder.value){
                         1 -> {
                             presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString().toFloat()} +
                                     data.filter{ it[columnNames.indexOf(columnName)] == null }
@@ -93,7 +94,7 @@ fun ComposeDataGrid(
 
                 }
                 "Int" -> {
-                    when(colInfo.sortOrder){
+                    when(colInfo.sortOrder.value){
                         1 -> {
                             presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString().toInt()} +
                                     data.filter{ it[columnNames.indexOf(columnName)] == null }
@@ -107,7 +108,7 @@ fun ComposeDataGrid(
 
                 }
                 "Long" -> {
-                    when(colInfo.sortOrder){
+                    when(colInfo.sortOrder.value){
                         1 -> {
                             presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString().toLong()} +
                                     data.filter{ it[columnNames.indexOf(columnName)] == null }
@@ -123,7 +124,7 @@ fun ComposeDataGrid(
 
 
                 "String" -> {
-                    when(colInfo.sortOrder){
+                    when(colInfo.sortOrder.value){
                         1 -> {
                             presentData.value = data.filter{ it[columnNames.indexOf(columnName)] != null }.sortedBy { it[columnNames.indexOf(columnName)].toString()} +
                                     data.filter{ it[columnNames.indexOf(columnName)] == null }
@@ -145,35 +146,35 @@ fun ComposeDataGrid(
         }else{
             when(colInfo.columnType){
                 "String" -> {
-                    when(colInfo.sortOrder){
+                    when(colInfo.sortOrder.value){
                         1 -> presentData.value = data.sortedBy { (it[columnNames.indexOf(columnName)] as String) }
-                        -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as String) }
+                        -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as String)   }
                         else -> presentData.value = data
                     }
                 }
                 "Double" -> {
-                    when(colInfo.sortOrder){
+                    when(colInfo.sortOrder.value){
                         1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Double) }
                         -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Double) }
                         else -> presentData.value =  data
                     }
                 }
                 "Float" -> {
-                    when(colInfo.sortOrder){
+                    when(colInfo.sortOrder.value){
                         1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Float) }
                         -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Float) }
                         else -> presentData.value =  data
                     }
                 }
                 "Int" -> {
-                    when(colInfo.sortOrder){
+                    when(colInfo.sortOrder.value){
                         1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Int) }
                         -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Int) }
                         else -> presentData.value =  data
                     }
                 }
                 "Long" -> {
-                    when(colInfo.sortOrder){
+                    when(colInfo.sortOrder.value){
                         1 -> presentData.value =  data.sortedBy { (it[columnNames.indexOf(columnName)] as Long) }
                         -1 -> presentData.value =  data.sortedByDescending { (it[columnNames.indexOf(columnName)] as Long) }
                         else -> presentData.value =  data
@@ -189,7 +190,8 @@ fun ComposeDataGrid(
     }
 
     val onFilter:(columnName:String, searchText:String) -> Unit = { columnName, searchText  ->
-        presentData.value =  data.filter {
+
+        presentData.value =  presentData.value.filter {it as List<*>
             it[columnNames.indexOf(columnName)].toString().contains(searchText)
         }
     }
@@ -232,17 +234,25 @@ fun ComposeDataGrid(
 
                 ){
 
+
                 items(presentData.value.size){
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth()
-                            .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text((it+1).toString(),Modifier.width( 40.dp), textAlign= TextAlign.Center)
-                        ComposeDataGridRow( columnInfo, presentData.value[it] as List<Any?>)
-                    }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                                .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text((it + 1).toString(), Modifier.width(40.dp), textAlign = TextAlign.Center)
+                            ComposeDataGridRow(columnInfo, presentData.value[it] as List<Any?>)
+                        }
+
+
+
+
                 }
+
+
             }
 
         }
@@ -277,12 +287,14 @@ fun ComposeDataGridRow(  columnInfo:MutableState<Map<String, ColumnInfo>>, data:
     ) {
 
         columnInfoList.forEachIndexed { index, (key, columnInfo) ->
+
             Row(
                 modifier = Modifier.weight(columnInfo.widthWeigth.value),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text( data[index].toString())
+                Text( data[index].toString() )
             }
+
 
         }
 
@@ -402,6 +414,12 @@ fun ComposeColumnRow(
 
         columnInfoList.forEachIndexed { index, (key, columnInfo) ->
 
+            val imageVector = when(columnInfo.sortOrder.value){
+                1 -> Icons.Default.KeyboardArrowUp
+                -1 -> Icons.Default.KeyboardArrowDown
+                else -> EmptyImageVector
+            }
+
             Row(
                 modifier = Modifier.weight(columnInfo.widthWeigth.value),
                 verticalAlignment = Alignment.CenterVertically,
@@ -413,7 +431,7 @@ fun ComposeColumnRow(
                     colors = ButtonDefaults.textButtonColors(contentColor = Color.Black),
                 ) { Text(key,) }
 
-
+                Icon(imageVector, contentDescription = "Sorted Order", modifier = Modifier.width(16.dp),)
                 FilterMenu(key, onFilter)
             }
 
@@ -553,7 +571,7 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
     }
 }
 
-data class ColumnInfo(val columnType: String, var sortOrder: Int, val widthWeigth: MutableState<Float>, val isContainNull:Boolean = false)
+data class ColumnInfo(val columnType: String, var sortOrder: MutableState<Int>, val widthWeigth: MutableState<Float>, val isContainNull:Boolean = false)
 
 fun makeColInfo(columnNames: List<String>, data: List<List<Any?>>): Map<String, ColumnInfo> {
 
@@ -577,7 +595,7 @@ fun makeColInfo(columnNames: List<String>, data: List<List<Any?>>): Map<String, 
             columnName,
             ColumnInfo(
                 data.first { it[index] != null }[index]?.let {  it::class.simpleName.toString() }?: "NULL",
-                0,
+                mutableStateOf(0),
                 mutableStateOf(1f / columnNames.size),
                 isContainNull[index]
             )
@@ -587,3 +605,10 @@ fun makeColInfo(columnNames: List<String>, data: List<List<Any?>>): Map<String, 
 }
 
 
+val EmptyImageVector: ImageVector = ImageVector.Builder(
+    name = "Empty",
+    defaultWidth = 0.dp,
+    defaultHeight = 0.dp,
+    viewportWidth = 0f,
+    viewportHeight = 0f
+).build()

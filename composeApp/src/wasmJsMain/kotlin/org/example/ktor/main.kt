@@ -32,15 +32,16 @@ fun main() {
                     .background(Color.White)
                     .padding(20.dp)
                     .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
             ){
 
                 Text("Nifs Sea Water Temperature Infomation",
-                    modifier=Modifier.fillMaxWidth().align(Alignment.CenterHorizontally).padding(vertical = 20.dp),
+                    modifier=Modifier.padding(vertical = 20.dp),
                     fontSize=20.sp ,
                     fontWeight= FontWeight.Bold
                 )
 
-                NifsSeaWaterInfoDataGrid(modifier = Modifier.fillMaxWidth().height(600.dp ))
+                NifsSeaWaterInfoDataGrid(modifier = Modifier.fillMaxWidth(0.9f).height(560.dp ).padding(vertical = 20.dp))
             }
 
         }
