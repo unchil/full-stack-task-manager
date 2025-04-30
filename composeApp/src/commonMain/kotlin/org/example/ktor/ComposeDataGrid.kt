@@ -206,8 +206,6 @@ fun ComposeDataGrid(
         }
     }
 
-
-
     val onFilter:(columnName:String, searchText:String) -> Unit = { columnName, searchText  ->
 
         presentData.value =  presentData.value.filter {it as List<*>
@@ -234,7 +232,7 @@ fun ComposeDataGrid(
             ComposeDataGridHeader(
                 modifier = Modifier.fillMaxWidth(),
                 columnInfo,
-                onMultiSortedOrder,
+                onSortOrder,
                 onFilter
             )
         },
