@@ -151,6 +151,14 @@ fun ComposeDataGrid(
 
     val onSortOrder:(colInfo:ColumnInfo)->Unit = { colInfo ->
 
+        columnInfo.value.forEachIndexed {
+            index, columnInfo ->
+
+            if(index != colInfo.columnIndex){
+                columnInfo.sortOrder.value = 0
+            }
+        }
+
         if(colInfo.isContainNull){
 
             presentData.value = when(colInfo.sortOrder.value){
@@ -446,6 +454,9 @@ fun ComposeColumnRow(
 
                 TextButton(
                     onClick = {
+
+
+
                         columnInfo.sortOrder.value = when(columnInfo.sortOrder.value){
                             0 -> 1
                             1 -> -1
