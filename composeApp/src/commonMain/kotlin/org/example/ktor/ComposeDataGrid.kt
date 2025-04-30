@@ -56,25 +56,26 @@ fun ComposeDataGrid(
 
     val sortedIndexList = remember { mutableListOf<Int>() }
 
-    val updateSortedIndexList:(colInfo:ColumnInfo)->Unit = {
+    val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
 
+    val updateSortedIndexList:(colInfo:ColumnInfo)->Unit = {
         if(sortedIndexList.isEmpty() ){
             sortedIndexList.add(it.columnIndex)
         } else {
-            if(it.sortOrder.value != 0){
+
+            if (it.sortOrder.value.equals(0) ){
+                if( sortedIndexList.contains(it.columnIndex)) {
+                    sortedIndexList.remove(it.columnIndex)
+                }
+            } else {
                 if(sortedIndexList.contains(it.columnIndex)) {
                     sortedIndexList.remove(it.columnIndex)
                     sortedIndexList.add(it.columnIndex)
                 } else {
                     sortedIndexList.add(it.columnIndex)
                 }
-            }else{
-                if(sortedIndexList.contains(it.columnIndex)) {
-                    sortedIndexList.remove(it.columnIndex)
-                }
             }
         }
-
     }
 
     val onMultiSortedOrder:(colInfo:ColumnInfo)->Unit = { colInfo ->
@@ -110,29 +111,29 @@ fun ComposeDataGrid(
                 else ->  compareBy<List<Any?>> { it[sortedIndexList.first()] as String }
             }
 
-            for (i in 1 until sortedIndexList.size){
+            if(sortedIndexList.size > 1){
+                for (i in 1 until sortedIndexList.size){
+                    val sortOrder = columnInfo.value[sortedIndexList[i]].sortOrder.value
+                    val columnType =  columnInfo.value[sortedIndexList[i]].columnType
 
-                val sortOrder = columnInfo.value[sortedIndexList[i]].sortOrder.value
-                val columnType =  columnInfo.value[sortedIndexList[i]].columnType
-
-                when(sortOrder){
-                    1 -> {
-                        when(columnType){
-                            "String" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? String ?: "" }}
-                            "Double" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? Double ?: Double.MAX_VALUE  }}
-                            "Float" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? Float ?: Float.MAX_VALUE }}
-                            "Int" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? Int ?: Int.MAX_VALUE }}
-                            "Long" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? Long ?: Long.MAX_VALUE}}
+                    when(sortOrder){
+                        1 -> {
+                            when(columnType){
+                                "String" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? String ?: "" }}
+                                "Double" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? Double ?: Double.MAX_VALUE  }}
+                                "Float" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? Float ?: Float.MAX_VALUE }}
+                                "Int" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? Int ?: Int.MAX_VALUE }}
+                                "Long" -> {comparator = comparator.thenBy { it.getOrNull(sortedIndexList[i]) as? Long ?: Long.MAX_VALUE}}
+                            }
                         }
-
-                    }
-                    -1 -> {
-                        when(columnType){
-                            "String" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? String ?: "" }}
-                            "Double" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? Double ?: Double.MIN_VALUE}}
-                            "Float" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? Float ?: Float.MIN_VALUE }}
-                            "Int" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? Int ?: Int.MIN_VALUE}}
-                            "Long" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? Long ?: Long.MIN_VALUE }}
+                        -1 -> {
+                            when(columnType){
+                                "String" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? String ?: "" }}
+                                "Double" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? Double ?: Double.MIN_VALUE}}
+                                "Float" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? Float ?: Float.MIN_VALUE }}
+                                "Int" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? Int ?: Int.MIN_VALUE}}
+                                "Long" -> {comparator = comparator.thenByDescending { it.getOrNull(sortedIndexList[i]) as? Long ?: Long.MIN_VALUE }}
+                            }
                         }
                     }
                 }
@@ -144,14 +145,9 @@ fun ComposeDataGrid(
             presentData.value = data
         }
 
-
     }
 
-
-
-
     val onSortOrder:(colInfo:ColumnInfo)->Unit = { colInfo ->
-
         columnInfo.value.forEachIndexed {
             index, columnInfo ->
 
@@ -183,26 +179,25 @@ fun ComposeDataGrid(
             }
             else -> data
         }
-
-
-
     }
 
     val onFilter:(columnName:String, searchText:String) -> Unit = { columnName, searchText  ->
-
         presentData.value =  presentData.value.filter {it as List<*>
             it[columnNames.indexOf(columnName)].toString().contains(searchText)
         }
     }
 
-    val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
+    val initSortOrder:()->Unit = {
+        sortedIndexList.clear()
+        columnInfo.value.forEach { it.sortOrder.value = 0 }
+    }
+
 
     val onRefresh:()-> Unit = {
         coroutineScope.launch {
             presentData.value = data
             lazyListState.animateScrollToItem(0)
-            sortedIndexList.clear()
-            columnInfo.value.forEach { it.sortOrder.value = 0 }
+            initSortOrder()
         }
     }
 
@@ -235,27 +230,19 @@ fun ComposeDataGrid(
 
                 ){
 
-
                 items(presentData.value.size){
 
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth()
-                                .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text((it + 1).toString(), Modifier.width(40.dp), textAlign = TextAlign.Center)
-                            ComposeDataGridRow(columnInfo, presentData.value[it] as List<Any?>)
-                        }
-
-
-
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                            .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text((it + 1).toString(), Modifier.width(40.dp), textAlign = TextAlign.Center)
+                        ComposeDataGridRow(columnInfo, presentData.value[it] as List<Any?>)
+                    }
 
                 }
-
-
             }
-
         }
 
         Box(
@@ -400,8 +387,6 @@ fun ComposeColumnRow(
         }
     }
 
-
-
     Row(
         Modifier
             .fillMaxSize()
@@ -410,7 +395,6 @@ fun ComposeColumnRow(
             },
         verticalAlignment = Alignment.CenterVertically,
     ) {
-
 
         columnInfoList.value.forEachIndexed { index,  columnInfo ->
 
@@ -428,9 +412,6 @@ fun ComposeColumnRow(
 
                 TextButton(
                     onClick = {
-
-
-
                         columnInfo.sortOrder.value = when(columnInfo.sortOrder.value){
                             0 -> 1
                             1 -> -1
