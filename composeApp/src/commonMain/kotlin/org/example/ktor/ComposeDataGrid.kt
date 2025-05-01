@@ -1,6 +1,7 @@
 package org.example.ktor
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
@@ -17,6 +18,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +42,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlin.math.max
+
+object OperatorMenu {
+    enum class Operator {
+        Contains{ override fun toString() = "Contains"},
+        DoseNotContains{ override fun toString() = "Dose Not Contains"},
+        Equals{ override fun toString() = "Equals"},
+        DoseNotEquals{ override fun toString() = "Dose Not Equals"},
+        BeginsWith{ override fun toString() = "Begins With"},
+        EndsWith{ override fun toString() = "Ends With"},
+        Blank{ override fun toString() = "Blank"},
+        NotBlank{ override fun toString() = "Not Blank"}
+    }
+
+    val Operators = listOf(
+        Operator.Contains, Operator.DoseNotContains, Operator.Equals, Operator.DoseNotEquals,
+        Operator.BeginsWith, Operator.EndsWith, Operator.Blank, Operator.NotBlank
+    )
+}
 
 
 @Composable
@@ -182,10 +203,54 @@ fun ComposeDataGrid(
         }
     }
 
-    val onFilter:(columnName:String, searchText:String) -> Unit = { columnName, searchText  ->
-        presentData.value =  presentData.value.filter {it as List<*>
-            it[columnNames.indexOf(columnName)].toString().contains(searchText)
-        }
+    val onFilter:(columnName:String, searchText:String, operator:String) -> Unit = { columnName, searchText, operator  ->
+
+        presentData.value = when(operator){
+                OperatorMenu.Operator.Contains.toString() ->
+                    presentData.value.filter {
+                        it as List<*>
+                        it[columnNames.indexOf(columnName)].toString().contains(searchText)
+                    }
+                OperatorMenu.Operator.DoseNotContains.toString() ->
+                    presentData.value.filter {
+                        it as List<*>
+                        it[columnNames.indexOf(columnName)].toString().contains(searchText).not()
+                    }
+                OperatorMenu.Operator.Equals.toString() ->
+                    presentData.value.filter {
+                        it as List<*>
+                        it[columnNames.indexOf(columnName)].toString().equals(searchText)
+                    }
+                OperatorMenu.Operator.DoseNotEquals.toString() ->
+                    presentData.value.filter {
+                        it as List<*>
+                        it[columnNames.indexOf(columnName)].toString().equals(searchText).not()
+                    }
+                OperatorMenu.Operator.BeginsWith.toString() ->
+                    presentData.value.filter {
+                        it as List<*>
+                        it[columnNames.indexOf(columnName)].toString().startsWith(searchText)
+                    }
+                OperatorMenu.Operator.EndsWith.toString() ->
+                    presentData.value.filter {
+                        it as List<*>
+                        it[columnNames.indexOf(columnName)].toString().endsWith(searchText)
+                    }
+                OperatorMenu.Operator.Blank.toString() ->
+                    presentData.value.filter {
+                        it as List<*>
+                        it[columnNames.indexOf(columnName)].toString().isBlank()
+                    }
+                OperatorMenu.Operator.NotBlank.toString() ->
+                    presentData.value.filter {
+                        it as List<*>
+                        it[columnNames.indexOf(columnName)].toString().isNotBlank()
+                    }
+                else -> {
+                    presentData.value
+                }
+            }
+
     }
 
     val initSortOrder:()->Unit = {
@@ -298,7 +363,7 @@ fun ComposeDataGridHeader(
     modifier: Modifier = Modifier,
     columnInfo: MutableState<List< ColumnInfo>>,
     onSortOrder:((ColumnInfo) -> Unit)? = null,
-    onFilter:((String, String) -> Unit)? = null,
+    onFilter:((String, String, String) -> Unit)? = null,
 ) {
 
     Row (
@@ -321,7 +386,7 @@ fun ComposeDataGridHeader(
 fun ComposeColumnRow(
     columnInfoList: MutableState<List< ColumnInfo>>,
     onSortOrder:(( ColumnInfo) -> Unit)? = null,
-    onFilter:((String, String) -> Unit)? = null, ) {
+    onFilter:((String, String, String) -> Unit)? = null, ) {
 
     require(columnInfoList.value.size >= 2) { "column must be at least 2" }
 
@@ -423,7 +488,7 @@ fun ComposeColumnRow(
                 ) { Text(columnInfo.columnName,) }
 
                 Icon(imageVector, contentDescription = "Sorted Order", modifier = Modifier.width(16.dp),)
-                FilterMenu(columnInfo.columnName, onFilter)
+                SearchMenu(columnInfo.columnName, onFilter)
             }
 
             if ( index < columnCount - 1) {
@@ -491,19 +556,25 @@ fun ComposeDataGridFooter(
 
 
 
+
 @Composable
-fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) {
+fun SearchMenu(columnName:String, onFilter: ((String, String, String)-> Unit)? = null) {
+
     var expanded by remember { mutableStateOf(false) }
     val filterText = remember { mutableStateOf("") }
+    val operatorText = remember { mutableStateOf(OperatorMenu.Operators.first().toString()) }
     var isFocused by remember { mutableStateOf(false) }
 
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
+    val scrollState = remember { ScrollState(0) }
+
     val onSearch: () -> Unit = {
-        onFilter?.invoke(columnName, filterText.value)
+        onFilter?.invoke(columnName, filterText.value, operatorText.value)
         expanded = false
         filterText.value = ""
+        operatorText.value = OperatorMenu.Operators.first().toString()
     }
 
     LaunchedEffect(isPressed){
@@ -511,6 +582,8 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
             onSearch()
         }
     }
+
+    var expandedOperator by remember { mutableStateOf(false) }
 
 
     Box(  contentAlignment = Alignment.Center, ){
@@ -523,43 +596,105 @@ fun FilterMenu(columnName:String, onFilter: ((String, String)-> Unit)? = null ) 
             onDismissRequest = {
                 expanded = false
                 filterText.value = ""
-            }
+            },
+            modifier = Modifier.width(200.dp),
         ) {
-            OutlinedTextField(
-                modifier = Modifier.padding(horizontal = 8.dp).onKeyEvent { event ->
-                    if (event.key.equals(Key.Enter) && event.type.equals(KeyEventType.KeyUp) ) {
-                        onSearch()
-                        true
-                    }else{
-                        false
-                    }
-                }.onFocusChanged { focusState ->
-                    isFocused = focusState.isFocused
-                },
-                value = filterText.value,
-                onValueChange = {
-                    filterText.value = it
-                },
-                label = { Text("Filter...")  },
-                trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            onSearch()
+
+            Column {
+
+                Box( contentAlignment = Alignment.Center,){
+
+                    OutlinedTextField(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        value = operatorText.value,
+                        readOnly = true,
+                        onValueChange = {
+                            operatorText.value = it
                         },
-                        interactionSource = interactionSource,
-                        enabled = isFocused,
+                        label = { Text("Operator...")  },
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    expandedOperator = !expandedOperator
+                                },
+                            ) {
+                                Icon(Icons.Default.ArrowDropDown,
+                                    contentDescription = "Operator",
+                                )
+                            }
+                        },
+                        singleLine = true,
+                    )
+
+
+
+                    DropdownMenu(
+                        expanded = expandedOperator,
+                        onDismissRequest = {
+                            expandedOperator = false
+                        },
+                        scrollState = scrollState,
+                        modifier = Modifier.width(200.dp).height(160.dp).padding(horizontal = 8.dp),
                     ) {
-                        Icon(Icons.Default.Search,
-                            contentDescription = "Search",
-                            tint = if (isFocused) { Color(128,65,217)} else Color.LightGray
-                        )
+
+                        OperatorMenu.Operators.forEach { operator ->
+
+                            HorizontalDivider()
+
+                            DropdownMenuItem(
+                                text = { Text(operator.toString()) },
+                                onClick = {
+                                    operatorText.value = operator.toString()
+                                    expandedOperator = false
+                                }
+                            )
+                        }
+
                     }
-                },
-                singleLine = true,
-            )
+
+                }
+
+                OutlinedTextField(
+                    modifier = Modifier.padding(horizontal = 8.dp).onKeyEvent { event ->
+                        if (event.key.equals(Key.Enter) && event.type.equals(KeyEventType.KeyUp) ) {
+                            onSearch()
+                            true
+                        }else{
+                            false
+                        }
+                    }.onFocusChanged { focusState ->
+                        isFocused = focusState.isFocused
+                    },
+                    value = filterText.value,
+                    onValueChange = {
+                        filterText.value = it
+                    },
+                    label = { Text("Search...")  },
+                    trailingIcon = {
+                        IconButton(
+                            onClick = {
+                                onSearch()
+                            },
+                            interactionSource = interactionSource,
+                            enabled = isFocused,
+                        ) {
+                            Icon(Icons.Default.Search,
+                                contentDescription = "Search",
+                                tint = if (isFocused) { Color(128,65,217)} else Color.LightGray
+                            )
+                        }
+                    },
+                    singleLine = true,
+                )
+            }
+
         }
+
+
+
     }
 }
+
 
 data class ColumnInfo(
     val columnName:String,
