@@ -87,6 +87,7 @@ fun ComposeDataGrid(
             val firstSortOrder = columnInfo.value[sortedIndexList.first()].sortOrder.value
             val firstColumnType =  columnInfo.value[sortedIndexList.first()].columnType
 
+            // String    "\u0000":NullAtBeginning (ASCII 코드 0),   "":NullAtEnd
             var comparator = when(firstSortOrder){
                 1 -> {
                     when(firstColumnType){
@@ -115,7 +116,7 @@ fun ComposeDataGrid(
                 for (i in 1 until sortedIndexList.size){
                     val sortOrder = columnInfo.value[sortedIndexList[i]].sortOrder.value
                     val columnType =  columnInfo.value[sortedIndexList[i]].columnType
-
+                    // String    "\u0000":NullAtBeginning (ASCII 코드 0),   "":NullAtEnd
                     when(sortOrder){
                         1 -> {
                             when(columnType){
@@ -155,7 +156,7 @@ fun ComposeDataGrid(
                 columnInfo.sortOrder.value = 0
             }
         }
-
+        // String    "\u0000":NullAtBeginning (ASCII 코드 0),   "":NullAtEnd
         presentData.value = when(colInfo.sortOrder.value){
             1 -> {
                 when(colInfo.columnType){
@@ -330,7 +331,6 @@ fun ComposeColumnRow(
     val density = LocalDensity.current.density
     var rowWidthInDp by remember { mutableStateOf(0.dp) }
     val dividerThickness = 2.dp
-    val interactionSources = remember { List(columnCount - 1) { MutableInteractionSource() } }
     val totalWidth = rowWidthInDp - (dividerThickness * (columnCount - 1))
     val draggableStates = (0 until columnCount - 1).map { index ->
 
@@ -433,7 +433,6 @@ fun ComposeColumnRow(
                         .draggable(
                             orientation = Orientation.Horizontal,
                             state = draggableStates[index],
-                            interactionSource = interactionSources[index]
                         ),
                     color = Color.LightGray,
                     thickness = dividerThickness
