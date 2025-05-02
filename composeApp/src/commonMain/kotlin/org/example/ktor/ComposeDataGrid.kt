@@ -43,26 +43,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
-object OperatorMenu {
-    enum class Operator {
-        Contains{ override fun toString() = "Contains"},
-        DoseNotContains{ override fun toString() = "Dose Not Contains"},
-        Equals{ override fun toString() = "Equals"},
-        DoseNotEquals{ override fun toString() = "Dose Not Equals"},
-        BeginsWith{ override fun toString() = "Begins With"},
-        EndsWith{ override fun toString() = "Ends With"},
-        Blank{ override fun toString() = "Blank"},
-        NotBlank{ override fun toString() = "Not Blank"},
-        Null{override fun toString() = "Null"},
-        NotNull{override fun toString() = "Not Null"}
-    }
-
-    val Operators = listOf(
-        Operator.Contains, Operator.DoseNotContains, Operator.Equals, Operator.DoseNotEquals,
-        Operator.BeginsWith, Operator.EndsWith, Operator.Blank, Operator.NotBlank, Operator.Null, Operator.NotNull
-    )
-}
-
 
 @Composable
 fun ComposeDataGrid(
@@ -71,21 +51,40 @@ fun ComposeDataGrid(
     data:List<List<Any?>>,
 ){
 
+    val makeColInfo: (columnNames: List<String>, data: List<List<Any?>>) -> List<ColumnInfo>  = { columnNames, data ->
+        val isContainNull = columnNames.map { false }.toMutableList()
+        data.forEach{
+            it.forEachIndexed {  index, any ->
+                if(!isContainNull[index].equals(null)){
+                    isContainNull[index] = (any == null)
+                }
+            }
+        }
+        val colInfo = mutableListOf< ColumnInfo>()
+        columnNames.forEachIndexed{ index, columnName ->
+            colInfo.add(
+                ColumnInfo(
+                    columnName,
+                    index,
+                    data.first { it[index] != null }[index]?.let {  it::class.simpleName.toString() }?: "NULL",
+                    mutableStateOf(0),
+                    mutableStateOf(1f / columnNames.size),
+                    isContainNull[index]
+                )
+            )
+        }
+        colInfo
+    }
     val coroutineScope = rememberCoroutineScope()
-
-    val columnInfo = remember { mutableStateOf(makeColInfo(columnNames, data) ) }
-
-    val presentData: MutableState<List<Any?>>  =  remember { mutableStateOf(data) }
-
-    val sortedIndexList = remember { mutableListOf<Int>() }
-
     val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
+    val columnInfo = remember { mutableStateOf(makeColInfo(columnNames, data) ) }
+    val presentData: MutableState<List<Any?>>  =  remember { mutableStateOf(data) }
+    val sortedIndexList = remember { mutableListOf<Int>() }
 
     val updateSortedIndexList:(colInfo:ColumnInfo)->Unit = {
         if(sortedIndexList.isEmpty() ){
             sortedIndexList.add(it.columnIndex)
         } else {
-
             if (it.sortOrder.value.equals(0) ){
                 if( sortedIndexList.contains(it.columnIndex)) {
                     sortedIndexList.remove(it.columnIndex)
@@ -106,10 +105,8 @@ fun ComposeDataGrid(
         updateSortedIndexList(colInfo)
 
         if(sortedIndexList.isNotEmpty() ){
-
             val firstSortOrder = columnInfo.value[sortedIndexList.first()].sortOrder.value
             val firstColumnType =  columnInfo.value[sortedIndexList.first()].columnType
-
             // String    "\u0000":NullAtBeginning (ASCII 코드 0),   "":NullAtEnd
             var comparator = when(firstSortOrder){
                 1 -> {
@@ -134,7 +131,6 @@ fun ComposeDataGrid(
                 }
                 else ->  compareBy<List<Any?>> { it[sortedIndexList.first()] as String }
             }
-
             if(sortedIndexList.size > 1){
                 for (i in 1 until sortedIndexList.size){
                     val sortOrder = columnInfo.value[sortedIndexList[i]].sortOrder.value
@@ -162,51 +158,14 @@ fun ComposeDataGrid(
                     }
                 }
             }
-
             presentData.value = data.sortedWith(comparator)
-
         } else{
             presentData.value = data
         }
 
     }
 
-    val onSortOrder:(colInfo:ColumnInfo)->Unit = { colInfo ->
-        columnInfo.value.forEachIndexed {
-            index, columnInfo ->
-
-            if(index != colInfo.columnIndex){
-                columnInfo.sortOrder.value = 0
-            }
-        }
-        // String    "\u0000":NullAtBeginning (ASCII 코드 0),   "":NullAtEnd
-        presentData.value = when(colInfo.sortOrder.value){
-            1 -> {
-                when(colInfo.columnType){
-                    "String" ->  data.sortedBy { it.getOrNull(colInfo.columnIndex) as? String ?: "" }
-                    "Double" -> data.sortedBy { it.getOrNull(colInfo.columnIndex) as? Double ?: Double.MAX_VALUE }
-                    "Float" -> data.sortedBy { it.getOrNull(colInfo.columnIndex) as? Float ?: Float.MAX_VALUE }
-                    "Int" -> data.sortedBy { it.getOrNull(colInfo.columnIndex) as?  Int ?: Int.MAX_VALUE }
-                    "Long" -> data.sortedBy { it.getOrNull(colInfo.columnIndex) as?  Long ?: Long.MAX_VALUE }
-                    else -> data
-                }
-            }
-            -1 -> {
-                when(colInfo.columnType){
-                    "String" ->  data.sortedByDescending { it.getOrNull(colInfo.columnIndex) as? String ?: "" }
-                    "Double" -> data.sortedByDescending { it.getOrNull(colInfo.columnIndex) as? Double ?: Double.MIN_VALUE }
-                    "Float" -> data.sortedByDescending { it.getOrNull(colInfo.columnIndex) as? Float ?: Float.MIN_VALUE }
-                    "Int" -> data.sortedByDescending { it.getOrNull(colInfo.columnIndex) as?  Int ?: Int.MIN_VALUE }
-                    "Long" -> data.sortedByDescending { it.getOrNull(colInfo.columnIndex) as?  Long ?: Long.MIN_VALUE }
-                    else -> data
-                }
-            }
-            else -> data
-        }
-    }
-
     val onFilter:(columnName:String, searchText:String, operator:String) -> Unit = { columnName, searchText, operator  ->
-
         presentData.value = when(operator){
                 OperatorMenu.Operator.Contains.toString() ->
                     presentData.value.filter {
@@ -262,14 +221,12 @@ fun ComposeDataGrid(
                     presentData.value
                 }
             }
-
     }
 
     val initSortOrder:()->Unit = {
         sortedIndexList.clear()
         columnInfo.value.forEach { it.sortOrder.value = 0 }
     }
-
 
     val onRefresh:()-> Unit = {
         coroutineScope.launch {
@@ -281,14 +238,17 @@ fun ComposeDataGrid(
 
     Scaffold(
         modifier = then(modifier).fillMaxSize()
-            .padding(0.dp).border(BorderStroke(width = 1.dp, color = Color.LightGray), RoundedCornerShape(6.dp))
-                ,
+            .padding(0.dp)
+            .border(
+                BorderStroke(width = 1.dp, color = Color.LightGray),
+                RoundedCornerShape(6.dp)
+            ),
         topBar = {
             ComposeDataGridHeader(
                 modifier = Modifier.fillMaxWidth(),
-                columnInfo,
-                onMultiSortedOrder,
-                onFilter
+                columnInfo = columnInfo,
+                onSortOrder = onMultiSortedOrder,
+                onFilter = onFilter
             )
         },
         bottomBar = {
@@ -296,46 +256,52 @@ fun ComposeDataGrid(
         },
     ){
 
-        Box(modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopStart
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
         ) {
 
             LazyColumn (
-                modifier =  Modifier.fillMaxSize() .padding(it),
+                modifier = Modifier.fillMaxSize()
+                    .padding(it),
                 state = lazyListState,
                 contentPadding = PaddingValues(1.dp),
                 userScrollEnabled = true,
-
-                ){
+            ){
 
                 items(presentData.value.size){
-
                     Row(
                         modifier = Modifier.fillMaxWidth()
                             .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text((it + 1).toString(), Modifier.width(40.dp), textAlign = TextAlign.Center)
+
+                        // row number
+                        Text(
+                            text = (it + 1).toString(),
+                            modifier = Modifier.width(40.dp),
+                            textAlign = TextAlign.Center
+                        )
+
                         ComposeDataGridRow(columnInfo, presentData.value[it] as List<Any?>)
                     }
-
                 }
+
             }
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter
+            ){
+                ComposeDataGridFooter(
+                    modifier = Modifier.width(280.dp).padding(bottom = 20.dp),
+                    lazyListState = lazyListState ,
+                    dataCnt = presentData.value.size,
+                    onRefresh = onRefresh
+                )
+            }
+
         }
-
-        Box(
-            modifier = Modifier.fillMaxSize()
-            , contentAlignment = Alignment.BottomCenter
-        ){
-            ComposeDataGridFooter(
-                modifier = Modifier.width(300.dp).padding(bottom = 20.dp),
-                lazyListState ,
-                presentData.value.size,
-                onRefresh
-            )
-        }
-
-
     }
 
 }
@@ -343,29 +309,20 @@ fun ComposeDataGrid(
 
 @Composable
 fun ComposeDataGridRow(  columnInfo:MutableState<List< ColumnInfo>>, data:List<Any?>) {
-
-    val columnInfoList = columnInfo.value.toList()
-
     Row (
-        modifier = Modifier.fillMaxWidth().height(50.dp),
+        modifier = Modifier.fillMaxWidth().height(40.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
-
-        columnInfoList.forEachIndexed { index, columnInfo ->
-
+        columnInfo.value.toList().forEachIndexed { index, columnInfo ->
             Row(
                 modifier = Modifier.weight(columnInfo.widthWeigth.value),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text( data[index].toString() )
             }
-
-
         }
-
     }
-
 }
 
 
@@ -379,14 +336,15 @@ fun ComposeDataGridHeader(
 ) {
 
     Row (
-        modifier =  then(modifier).fillMaxWidth().height(60.dp)
-            .padding(0.dp)
+        modifier =  then(modifier).fillMaxWidth()
+            .height(50.dp)
             .border(BorderStroke(width = 1.dp, color = Color.LightGray), RoundedCornerShape(6.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-        ,
+            .background(MaterialTheme.colorScheme.surfaceVariant),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ){
+
+        // row number space
         Text("", Modifier.width( 40.dp))
 
         ComposeColumnRow( columnInfo, onSortOrder, onFilter)
@@ -403,56 +361,41 @@ fun ComposeColumnRow(
     require(columnInfoList.value.size >= 2) { "column must be at least 2" }
 
     val columnCount = columnInfoList.value.size
-
     val dividerPositions = remember { MutableList(columnCount - 1) { 0.dp } }
     val density = LocalDensity.current.density
     var rowWidthInDp by remember { mutableStateOf(0.dp) }
     val dividerThickness = 2.dp
     val totalWidth = rowWidthInDp - (dividerThickness * (columnCount - 1))
     val draggableStates = (0 until columnCount - 1).map { index ->
-
         rememberDraggableState { delta ->
-
             val newPositionDp = ( dividerPositions[index] + (delta/density).dp  ).coerceIn(0.dp, totalWidth)
-
             dividerPositions[index] = newPositionDp
-
             val newWeightBefore = (newPositionDp / totalWidth)
             val newWeightAfter = 1f - newWeightBefore
-
             var oldSumBefore = 0f
-
             for (i in 0 until index + 1){
                 oldSumBefore += columnInfoList.value[i].widthWeigth.value
             }
             val oldSumAfter = 1f - oldSumBefore
-
             // Standard
             columnInfoList.value[index].widthWeigth.value = (newWeightBefore / oldSumBefore) * columnInfoList.value[index].widthWeigth.value
-
             // After
             for (i in index + 1 until columnCount) {
                 columnInfoList.value[i].widthWeigth.value = (newWeightAfter / oldSumAfter) *columnInfoList.value[i].widthWeigth.value
             }
-
             // Ensure weights don't go below a minimum value (e.g., 0.1f)
             for (i in 0 until columnCount) {
                 columnInfoList.value[i].widthWeigth.value = max(columnInfoList.value[i].widthWeigth.value, 0.01f)
             }
-
-
             var sum = 0f
             columnInfoList.value.forEach {
                 sum += it.widthWeigth.value
             }
-
             // Normalize weights to ensure they sum to 1
             columnInfoList.value.forEach {
                 it.widthWeigth.value /= sum
             }
-
         }
-
     }
 
     LaunchedEffect(rowWidthInDp) {
@@ -474,7 +417,6 @@ fun ComposeColumnRow(
     ) {
 
         columnInfoList.value.forEachIndexed { index,  columnInfo ->
-
             val imageVector = when(columnInfo.sortOrder.value){
                 1 -> Icons.Default.KeyboardArrowUp
                 -1 -> Icons.Default.KeyboardArrowDown
@@ -490,10 +432,10 @@ fun ComposeColumnRow(
                 TextButton(
                     onClick = {
                         columnInfo.sortOrder.value = when(columnInfo.sortOrder.value){
-                            0 -> 1
-                            1 -> -1
-                            else -> 0
-                        }
+                                                        0 -> 1
+                                                        1 -> -1
+                                                        else -> 0
+                                                    }
                         onSortOrder?.invoke( columnInfo)
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = Color.Black),
@@ -505,12 +447,11 @@ fun ComposeColumnRow(
 
             if ( index < columnCount - 1) {
                 VerticalDivider(
-                    Modifier
-                        .height(40.dp)
-                        .draggable(
-                            orientation = Orientation.Horizontal,
-                            state = draggableStates[index],
-                        ),
+                    modifier = Modifier.height(40.dp)
+                                .draggable(
+                                    orientation = Orientation.Horizontal,
+                                    state = draggableStates[index],
+                                ),
                     color = Color.LightGray,
                     thickness = dividerThickness
                 )
@@ -520,8 +461,6 @@ fun ComposeColumnRow(
 
     }
 }
-
-
 
 
 @Composable
@@ -535,13 +474,10 @@ fun ComposeDataGridFooter(
 
     Row (
         modifier = then(modifier).fillMaxWidth()
-            .padding(horizontal = 0.dp)
             .border(BorderStroke(width = 1.dp, color = Color.LightGray))
-            .background(color = MaterialTheme.colorScheme.surfaceVariant)
-        ,
+            .background(color = MaterialTheme.colorScheme.surfaceVariant),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-
+        horizontalArrangement = Arrangement.SpaceEvenly
     ){
 
         IconButton(
@@ -563,7 +499,6 @@ fun ComposeDataGridFooter(
         ) {  Icon(Icons.Default.Refresh, contentDescription = "Refresh")  }
 
     }
-
 }
 
 
@@ -576,11 +511,10 @@ fun SearchMenu(columnName:String, onFilter: ((String, String, String)-> Unit)? =
     val filterText = remember { mutableStateOf("") }
     val operatorText = remember { mutableStateOf(OperatorMenu.Operators.first().toString()) }
     var isFocused by remember { mutableStateOf(false) }
-
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-
     val scrollState = remember { ScrollState(0) }
+    var expandedOperator by remember { mutableStateOf(false) }
 
     val onSearch: () -> Unit = {
         onFilter?.invoke(columnName, filterText.value, operatorText.value)
@@ -594,9 +528,6 @@ fun SearchMenu(columnName:String, onFilter: ((String, String, String)-> Unit)? =
             onSearch()
         }
     }
-
-    var expandedOperator by remember { mutableStateOf(false) }
-
 
     Box(  contentAlignment = Alignment.Center, ){
 
@@ -620,39 +551,23 @@ fun SearchMenu(columnName:String, onFilter: ((String, String, String)-> Unit)? =
                         modifier = Modifier.padding(horizontal = 8.dp),
                         value = operatorText.value,
                         readOnly = true,
-                        onValueChange = {
-                            operatorText.value = it
-                        },
+                        onValueChange = { operatorText.value = it },
                         label = { Text("Operator...")  },
                         trailingIcon = {
-                            IconButton(
-                                onClick = {
-                                    expandedOperator = !expandedOperator
-                                },
-                            ) {
-                                Icon(Icons.Default.ArrowDropDown,
-                                    contentDescription = "Operator",
-                                )
-                            }
+                            IconButton( onClick = { expandedOperator = !expandedOperator}, )
+                            { Icon(Icons.Default.ArrowDropDown, contentDescription = "Operator",) }
                         },
                         singleLine = true,
                     )
 
-
-
                     DropdownMenu(
                         expanded = expandedOperator,
-                        onDismissRequest = {
-                            expandedOperator = false
-                        },
+                        onDismissRequest = { expandedOperator = false },
                         scrollState = scrollState,
                         modifier = Modifier.width(200.dp).height(160.dp).padding(horizontal = 8.dp),
                     ) {
-
                         OperatorMenu.Operators.forEach { operator ->
-
                             HorizontalDivider()
-
                             DropdownMenuItem(
                                 text = { Text(operator.toString()) },
                                 onClick = {
@@ -661,9 +576,7 @@ fun SearchMenu(columnName:String, onFilter: ((String, String, String)-> Unit)? =
                                 }
                             )
                         }
-
                     }
-
                 }
 
                 OutlinedTextField(
@@ -674,19 +587,13 @@ fun SearchMenu(columnName:String, onFilter: ((String, String, String)-> Unit)? =
                         }else{
                             false
                         }
-                    }.onFocusChanged { focusState ->
-                        isFocused = focusState.isFocused
-                    },
+                    }.onFocusChanged { focusState ->  isFocused = focusState.isFocused  },
                     value = filterText.value,
-                    onValueChange = {
-                        filterText.value = it
-                    },
+                    onValueChange = { filterText.value = it  },
                     label = { Text("Search...")  },
                     trailingIcon = {
                         IconButton(
-                            onClick = {
-                                onSearch()
-                            },
+                            onClick = { onSearch()  },
                             interactionSource = interactionSource,
                             enabled = isFocused,
                         ) {
@@ -701,10 +608,26 @@ fun SearchMenu(columnName:String, onFilter: ((String, String, String)-> Unit)? =
             }
 
         }
-
-
-
     }
+}
+
+object OperatorMenu {
+    enum class Operator {
+        Contains{ override fun toString() = "Contains"},
+        DoseNotContains{ override fun toString() = "Dose Not Contains"},
+        Equals{ override fun toString() = "Equals"},
+        DoseNotEquals{ override fun toString() = "Dose Not Equals"},
+        BeginsWith{ override fun toString() = "Begins With"},
+        EndsWith{ override fun toString() = "Ends With"},
+        Blank{ override fun toString() = "Blank"},
+        NotBlank{ override fun toString() = "Not Blank"},
+        Null{override fun toString() = "Null"},
+        NotNull{override fun toString() = "Not Null"}
+    }
+    val Operators = listOf(
+        Operator.Contains, Operator.DoseNotContains, Operator.Equals, Operator.DoseNotEquals,
+        Operator.BeginsWith, Operator.EndsWith, Operator.Blank, Operator.NotBlank, Operator.Null, Operator.NotNull
+    )
 }
 
 
@@ -716,35 +639,6 @@ data class ColumnInfo(
     val widthWeigth: MutableState<Float>,
     val isContainNull:Boolean = false
 )
-
-fun makeColInfo(columnNames: List<String>, data: List<List<Any?>>): List< ColumnInfo> {
-
-    val isContainNull = columnNames.map { false }.toMutableList()
-    data.forEach{
-        it.forEachIndexed {  index, any ->
-            if(!isContainNull[index].equals(null)){
-                isContainNull[index] = (any == null)
-            }
-        }
-    }
-
-    val colInfo = mutableListOf< ColumnInfo>()
-
-    columnNames.forEachIndexed{ index, columnName ->
-
-        colInfo.add(
-            ColumnInfo(
-                columnName,
-                index,
-                data.first { it[index] != null }[index]?.let {  it::class.simpleName.toString() }?: "NULL",
-                mutableStateOf(0),
-                mutableStateOf(1f / columnNames.size),
-                isContainNull[index]
-            )
-        )
-    }
-    return colInfo
-}
 
 
 val EmptyImageVector: ImageVector = ImageVector.Builder(
