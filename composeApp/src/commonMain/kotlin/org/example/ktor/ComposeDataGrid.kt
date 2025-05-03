@@ -81,14 +81,20 @@ fun ComposeDataGrid(
     val presentData: MutableState<List<Any?>>  =  remember { mutableStateOf(data) }
     val sortedIndexList = remember { mutableListOf<Int>() }
 
+    val initSortOrder:()->Unit = {
+        sortedIndexList.clear()
+        columnInfo.value.forEach { it.sortOrder.value = 0 }
+    }
+
+
     val updateSortedIndexList:(colInfo:ColumnInfo)->Unit = {
         if(sortedIndexList.isEmpty() ){
             sortedIndexList.add(it.columnIndex)
         } else {
-            if (it.sortOrder.value.equals(0) ){
-                if( sortedIndexList.contains(it.columnIndex)) {
-                    sortedIndexList.remove(it.columnIndex)
-                }
+            if (it.sortOrder.value == 0){
+                initSortOrder()
+                presentData.value = data
+
             } else {
                 if(sortedIndexList.contains(it.columnIndex)) {
                     sortedIndexList.remove(it.columnIndex)
@@ -158,6 +164,8 @@ fun ComposeDataGrid(
                     }
                 }
             }
+
+           val data:List<List<Any?>> = presentData.value.filterIsInstance<List<Any?>>()
             presentData.value = data.sortedWith(comparator)
         } else{
             presentData.value = data
@@ -223,10 +231,6 @@ fun ComposeDataGrid(
             }
     }
 
-    val initSortOrder:()->Unit = {
-        sortedIndexList.clear()
-        columnInfo.value.forEach { it.sortOrder.value = 0 }
-    }
 
     val onRefresh:()-> Unit = {
         coroutineScope.launch {
