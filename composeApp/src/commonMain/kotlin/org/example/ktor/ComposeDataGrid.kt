@@ -104,6 +104,10 @@ fun ComposeDataGrid(
         }
         pagingData.value = currentPageData
 
+        coroutineScope.launch {
+            lazyListState.animateScrollToItem(0)
+        }
+
     }
 
     val updateSortedIndexList:(colInfo:ColumnInfo)->Unit = {
