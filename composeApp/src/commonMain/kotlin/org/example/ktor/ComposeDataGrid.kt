@@ -546,15 +546,17 @@ fun ComposeDataGridFooter(
     onPageChange:((Int, Int)->Unit)?=null
 ) {
 
+    val lastPage =  remember {  mutableStateOf(  if( dataCount <= pageSize.value ) 1 else { if( dataCount % pageSize.value == 0 ){ dataCount/pageSize.value } else { (dataCount/pageSize.value) + 1 } } )}
 
-    val lastPage = remember {  mutableStateOf(if(dataCount%pageSize.value == 0){dataCount/pageSize.value} else {dataCount/pageSize.value+1} )}
     val startRowIndex = remember { mutableStateOf( (currentPage.value-1)*pageSize.value) }
-    val endRowIndex = remember { mutableStateOf(  if(currentPage.value == lastPage.value){dataCount } else{(pageSize.value * currentPage.value) } )}
+
+    val endRowIndex = remember { mutableStateOf(  if( currentPage.value == lastPage.value){ dataCount } else{ (pageSize.value * currentPage.value) } )}
 
     LaunchedEffect(key1 = currentPage.value, key2 = pageSize.value, key3 = dataCount){
+
+        lastPage.value = if( dataCount <= pageSize.value ) 1 else { if( dataCount % pageSize.value == 0 ){ dataCount/pageSize.value } else { (dataCount/pageSize.value) + 1 } }
         startRowIndex.value = (currentPage.value-1)*pageSize.value
-        endRowIndex.value =  if(currentPage.value == lastPage.value){dataCount } else{(pageSize.value * currentPage.value) }
-        lastPage.value = if(dataCount%pageSize.value == 0){dataCount/pageSize.value} else {dataCount/pageSize.value+1}
+        endRowIndex.value =  if(currentPage.value == lastPage.value){ dataCount } else{ (pageSize.value * currentPage.value)  }
 
         onPageChange?.let {
             it(startRowIndex.value, endRowIndex.value)
@@ -635,7 +637,7 @@ fun ComposeDataGridFooter(
 
             }
 
-            Text( "${( startRowIndex.value + 1 )}  to  ${ endRowIndex.value }  of  ${dataCount}" , modifier = Modifier.padding(horizontal = 20.dp))
+            Text( "${ if(dataCount == 0){0} else{  ( startRowIndex.value + 1 ) } }  to  ${ endRowIndex.value }  of  ${dataCount}" , modifier = Modifier.padding(horizontal = 20.dp))
 
             IconButton(
                 enabled = currentPage.value > 1,
