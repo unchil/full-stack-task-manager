@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -27,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -78,6 +80,9 @@ fun ComposeDataGrid(
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
     val columnInfo = remember { mutableStateOf(makeColInfo(columnNames, data) ) }
+
+    val enablePagingGrid = remember { mutableStateOf(false) }
+
     val presentData: MutableState<List<Any?>>  =  remember { mutableStateOf(data) }
     val pagingData: MutableState<List<Any?>>  =  remember { mutableStateOf(data) }
     val sortedIndexList = remember { mutableListOf<Int>() }
@@ -193,8 +198,9 @@ fun ComposeDataGrid(
         } else{
             presentData.value = data
         }
-
-        initPageData()
+        if(enablePagingGrid.value) {
+            initPageData()
+        }
 
     }
 
@@ -255,15 +261,17 @@ fun ComposeDataGrid(
                 }
             }
 
-        initPageData()
+        if(enablePagingGrid.value) {
+            initPageData()
+        }
     }
 
     val onRefresh:()-> Unit = {
+        presentData.value = data
+        currentPage.value = 1
+        initSortOrder()
         coroutineScope.launch {
-            presentData.value = data
             lazyListState.animateScrollToItem(0)
-            initSortOrder()
-            currentPage.value = 1
         }
     }
 
@@ -297,7 +305,9 @@ fun ComposeDataGrid(
             )
         },
         bottomBar = {
-            ComposeDataGridFooter(currentPage, pageSize, presentData.value.size, onPageChange, )
+            if(enablePagingGrid.value) {
+                ComposeDataGridFooter(currentPage, pageSize, presentData.value.size, onPageChange,)
+            }
         },
     ){
 
@@ -313,8 +323,7 @@ fun ComposeDataGrid(
                 contentPadding = PaddingValues(1.dp),
                 userScrollEnabled = true,
             ){
-                items(pagingData.value.size){
-           //     items(presentData.value.size){
+                items( if(enablePagingGrid.value) {pagingData.value.size} else {presentData.value.size}){
                     Row(
                         modifier = Modifier.fillMaxWidth()
                             .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
@@ -323,13 +332,12 @@ fun ComposeDataGrid(
 
                         // row number
                         Text(
-                            text = (startRowNum.value + it +  1).toString(),
+                            text =  if(enablePagingGrid.value) {  (startRowNum.value + it +  1).toString() } else { (it + 1).toString() },
                             modifier = Modifier.width(40.dp),
                             textAlign = TextAlign.Center
                         )
 
-                    //    ComposeDataGridRow(columnInfo, presentData.value[it] as List<Any?>)
-                        ComposeDataGridRow(columnInfo, pagingData.value[it] as List<Any?>)
+                        ComposeDataGridRow(columnInfo, if(enablePagingGrid.value) {pagingData.value[it] as List<Any?>} else {presentData.value[it] as List<Any?>})
                     }
                 }
 
@@ -340,9 +348,10 @@ fun ComposeDataGrid(
                 contentAlignment = Alignment.BottomCenter
             ){
                 ComposeDataGridFooter(
-                    modifier = Modifier.width(280.dp).padding(bottom = 70.dp),
+                    modifier = Modifier.width(360.dp).padding(bottom = if(enablePagingGrid.value) { 70.dp} else { 10.dp}),
                     lazyListState = lazyListState ,
-                    dataCnt = pagingData.value.size,
+                    dataCnt = if(enablePagingGrid.value) {pagingData.value.size} else {presentData.value.size},
+                    enablePagingGrid = enablePagingGrid,
                     onRefresh = onRefresh
                 )
             }
@@ -410,6 +419,8 @@ fun ComposeColumnRow(
     val dividerPositions = remember { MutableList(columnCount - 1) { 0.dp } }
     val density = LocalDensity.current.density
     var rowWidthInDp by remember { mutableStateOf(0.dp) }
+
+
     val dividerThickness = 2.dp
     val totalWidth = rowWidthInDp - (dividerThickness * (columnCount - 1))
     val draggableStates = (0 until columnCount - 1).map { index ->
@@ -514,6 +525,7 @@ fun ComposeDataGridFooter(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState,
     dataCnt: Int,
+    enablePagingGrid:MutableState<Boolean>,
     onRefresh:(()->Unit)? = null,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -543,6 +555,16 @@ fun ComposeDataGridFooter(
         IconButton(
             onClick = { coroutineScope.launch { onRefresh?.invoke() } }
         ) {  Icon(Icons.Default.Refresh, contentDescription = "Refresh")  }
+
+
+
+        Text(
+            "PagingGrid:",
+        )
+        Checkbox(
+            checked = enablePagingGrid.value,
+            onCheckedChange = { enablePagingGrid.value = it }
+        )
 
     }
 }
@@ -641,6 +663,10 @@ fun ComposeDataGridFooter(
                             onChangePageSize(selectedOptionText.toInt())
                         }
                     )
+
+
+
+
 
                 }
 
