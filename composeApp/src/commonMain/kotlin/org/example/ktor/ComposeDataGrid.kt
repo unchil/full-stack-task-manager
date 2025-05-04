@@ -115,6 +115,18 @@ fun ComposeDataGrid(
 
     }
 
+    LaunchedEffect(enablePagingGrid.value) {
+
+        if(enablePagingGrid.value){
+            currentPage.value = 1
+            pageSize.value = 20
+        }
+        coroutineScope.launch {
+            lazyListState.animateScrollToItem(0)
+        }
+
+    }
+
     val updateSortedIndexList:(colInfo:ColumnInfo)->Unit = {
         if(sortedIndexList.isEmpty() ){
             sortedIndexList.add(it.columnIndex)
