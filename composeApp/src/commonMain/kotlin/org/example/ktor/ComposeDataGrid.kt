@@ -359,7 +359,7 @@ fun ComposeDataGrid(
                 contentAlignment = Alignment.BottomCenter
             ){
                 ComposeDataGridFooter(
-                    modifier = Modifier.width(360.dp).padding(bottom = if(enablePagingGrid.value) { 70.dp} else { 10.dp}),
+                    modifier = Modifier.width(340.dp).padding(bottom = if(enablePagingGrid.value) { 70.dp} else { 10.dp}),
                     lazyListState = lazyListState ,
                     dataCnt = if(enablePagingGrid.value) {pagingData.value.size} else {presentData.value.size},
                     enablePagingGrid = enablePagingGrid,
@@ -570,8 +570,9 @@ fun ComposeDataGridFooter(
 
 
         Text(
-            "PagingGrid:",
+            "Pagination:",
         )
+
         Checkbox(
             checked = enablePagingGrid.value,
             onCheckedChange = { enablePagingGrid.value = it }
