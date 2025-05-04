@@ -92,13 +92,18 @@ fun ComposeDataGrid(
     val pageSize = remember {  mutableStateOf(20)}
 
     val initPageData:()->Unit = {
-        val endIndex = if(presentData.value.size % pageSize.value == 0){presentData.value.size/pageSize.value} else {presentData.value.size % pageSize.value}
+
+        currentPage.value = 1
+        val lastPage = if( presentData.value.size <= pageSize.value ) 1 else { if( presentData.value.size % pageSize.value == 0 ){ presentData.value.size/pageSize.value } else { (presentData.value.size/pageSize.value) + 1 } }
+        val endIndex =  if( currentPage.value == lastPage){ presentData.value.size } else{ (pageSize.value * currentPage.value) }
+
+
         val currentPageData = mutableListOf<List<Any?>>()
         for ( i in 0  until endIndex){
             currentPageData.add( presentData.value[i] as List<Any?>)
         }
         pagingData.value = currentPageData
-        currentPage.value = 1
+
     }
 
     val updateSortedIndexList:(colInfo:ColumnInfo)->Unit = {
