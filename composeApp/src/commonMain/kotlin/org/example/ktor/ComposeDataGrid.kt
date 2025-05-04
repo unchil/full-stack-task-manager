@@ -79,6 +79,7 @@ fun ComposeDataGrid(
     val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
     val columnInfo = remember { mutableStateOf(makeColInfo(columnNames, data) ) }
     val presentData: MutableState<List<Any?>>  =  remember { mutableStateOf(data) }
+    val pagingData: MutableState<List<Any?>>  =  remember { mutableStateOf(data) }
     val sortedIndexList = remember { mutableListOf<Int>() }
 
     val initSortOrder:()->Unit = {
@@ -86,6 +87,19 @@ fun ComposeDataGrid(
         columnInfo.value.forEach { it.sortOrder.value = 0 }
     }
 
+    val startRowNum = remember {  mutableStateOf(0)}
+    val currentPage = remember {  mutableStateOf(1)}
+    val pageSize = remember {  mutableStateOf(20)}
+
+    val initPageData:()->Unit = {
+        val endIndex = if(presentData.value.size % pageSize.value == 0){presentData.value.size/pageSize.value} else {presentData.value.size % pageSize.value}
+        val currentPageData = mutableListOf<List<Any?>>()
+        for ( i in 0  until endIndex){
+            currentPageData.add( presentData.value[i] as List<Any?>)
+        }
+        pagingData.value = currentPageData
+        currentPage.value = 1
+    }
 
     val updateSortedIndexList:(colInfo:ColumnInfo)->Unit = {
         if(sortedIndexList.isEmpty() ){
@@ -171,6 +185,8 @@ fun ComposeDataGrid(
             presentData.value = data
         }
 
+        initPageData()
+
     }
 
     val onFilter:(columnName:String, searchText:String, operator:String) -> Unit = { columnName, searchText, operator  ->
@@ -229,16 +245,32 @@ fun ComposeDataGrid(
                     presentData.value
                 }
             }
-    }
 
+        initPageData()
+    }
 
     val onRefresh:()-> Unit = {
         coroutineScope.launch {
             presentData.value = data
             lazyListState.animateScrollToItem(0)
             initSortOrder()
+            currentPage.value = 1
         }
     }
+
+    val onPageChange:(Int, Int)->Unit = { startIndex, endIndex->
+        startRowNum.value = startIndex
+        val currentPageData = mutableListOf<List<Any?>>()
+        for ( i in startIndex  until endIndex){
+            currentPageData.add( presentData.value[i] as List<Any?>)
+        }
+        pagingData.value = currentPageData
+        coroutineScope.launch {
+            lazyListState.animateScrollToItem(0)
+        }
+
+  }
+
 
     Scaffold(
         modifier = then(modifier).fillMaxSize()
@@ -256,7 +288,7 @@ fun ComposeDataGrid(
             )
         },
         bottomBar = {
-
+            ComposeDataGridFooter(currentPage, pageSize, presentData.value.size, onPageChange, )
         },
     ){
 
@@ -272,8 +304,8 @@ fun ComposeDataGrid(
                 contentPadding = PaddingValues(1.dp),
                 userScrollEnabled = true,
             ){
-
-                items(presentData.value.size){
+                items(pagingData.value.size){
+           //     items(presentData.value.size){
                     Row(
                         modifier = Modifier.fillMaxWidth()
                             .border(BorderStroke(width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f))),
@@ -282,12 +314,13 @@ fun ComposeDataGrid(
 
                         // row number
                         Text(
-                            text = (it + 1).toString(),
+                            text = (startRowNum.value + it +  1).toString(),
                             modifier = Modifier.width(40.dp),
                             textAlign = TextAlign.Center
                         )
 
-                        ComposeDataGridRow(columnInfo, presentData.value[it] as List<Any?>)
+                    //    ComposeDataGridRow(columnInfo, presentData.value[it] as List<Any?>)
+                        ComposeDataGridRow(columnInfo, pagingData.value[it] as List<Any?>)
                     }
                 }
 
@@ -298,9 +331,9 @@ fun ComposeDataGrid(
                 contentAlignment = Alignment.BottomCenter
             ){
                 ComposeDataGridFooter(
-                    modifier = Modifier.width(280.dp).padding(bottom = 20.dp),
+                    modifier = Modifier.width(280.dp).padding(bottom = 70.dp),
                     lazyListState = lazyListState ,
-                    dataCnt = presentData.value.size,
+                    dataCnt = pagingData.value.size,
                     onRefresh = onRefresh
                 )
             }
@@ -490,7 +523,7 @@ fun ComposeDataGridFooter(
             onClick = { coroutineScope.launch { lazyListState.animateScrollToItem(0)  }  }
         ) {  Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Goto First Page") }
 
-        Text ( "Total Count : $dataCnt" )
+        Text ( "Count : $dataCnt" )
 
         IconButton(
             modifier = Modifier,
@@ -504,6 +537,127 @@ fun ComposeDataGridFooter(
 
     }
 }
+
+@Composable
+fun ComposeDataGridFooter(
+    currentPage: MutableState<Int> = mutableStateOf(1) ,
+    pageSize: MutableState<Int>,
+    dataCount:Int,
+    onPageChange:((Int, Int)->Unit)?=null
+) {
+
+
+    val lastPage = remember {  mutableStateOf(if(dataCount%pageSize.value == 0){dataCount/pageSize.value} else {dataCount/pageSize.value+1} )}
+    val startRowIndex = remember { mutableStateOf( (currentPage.value-1)*pageSize.value) }
+    val endRowIndex = remember { mutableStateOf(  if(currentPage.value == lastPage.value){dataCount } else{(pageSize.value * currentPage.value) } )}
+
+    LaunchedEffect(key1 = currentPage.value, key2 = pageSize.value, key3 = dataCount){
+        startRowIndex.value = (currentPage.value-1)*pageSize.value
+        endRowIndex.value =  if(currentPage.value == lastPage.value){dataCount } else{(pageSize.value * currentPage.value) }
+        lastPage.value = if(dataCount%pageSize.value == 0){dataCount/pageSize.value} else {dataCount/pageSize.value+1}
+
+        onPageChange?.let {
+            it(startRowIndex.value, endRowIndex.value)
+        }
+
+    }
+
+    var expanded by remember { mutableStateOf(false) }
+
+    val onChangePageSize:(Int)->Unit = {
+        pageSize.value = it
+        currentPage.value = 1
+        expanded = false
+    }
+
+    Box(
+        modifier = Modifier.fillMaxWidth().height(60.dp).border(
+            BorderStroke(width = 1.dp, color = Color.LightGray),
+            RoundedCornerShape(6.dp)
+        ),
+        contentAlignment = Alignment.Center
+    ){
+
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(end = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+
+            Text( "Page Size:", modifier = Modifier.padding(horizontal = 20.dp) )
+
+            Box( modifier = Modifier.height(50.dp).width(110.dp), contentAlignment = Alignment.Center, ){
+
+                var selectedOptionText by remember { mutableStateOf("20") }
+
+                OutlinedTextField(
+                    modifier = Modifier.padding(horizontal = 0.dp),
+                    value = selectedOptionText,
+                    readOnly = true,
+                    onValueChange = { selectedOptionText = it },
+                    trailingIcon = {
+                        IconButton( onClick = { expanded = !expanded}, )
+                        { Icon(Icons.Default.ArrowDropDown, contentDescription = "Page Size",) }
+                    },
+                    singleLine = true,
+                )
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.width(100.dp),
+                ) {
+
+                    DropdownMenuItem(
+                        text = { Text("20") },
+                        onClick = {
+                            selectedOptionText = "20"
+                            onChangePageSize(selectedOptionText.toInt())
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text("100") },
+                        onClick = {
+                            selectedOptionText = "100"
+                            onChangePageSize(selectedOptionText.toInt())
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("1000") },
+                        onClick = {
+                            selectedOptionText = "1000"
+                            onChangePageSize(selectedOptionText.toInt())
+                        }
+                    )
+
+                }
+
+            }
+
+            Text( "${( startRowIndex.value + 1 )}  to  ${ endRowIndex.value }  of  ${dataCount}" , modifier = Modifier.padding(horizontal = 20.dp))
+
+            IconButton(
+                enabled = currentPage.value > 1,
+                onClick = { currentPage.value = currentPage.value - 1}
+            ) {
+                Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Prev Page")
+            }
+
+            Text( "Page ${currentPage.value} of ${ lastPage.value }" , modifier = Modifier.padding(horizontal = 0.dp))
+
+            IconButton(
+                enabled = currentPage.value < lastPage.value  ,
+                onClick = { currentPage.value = currentPage.value + 1  }
+            ) {
+                Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Next Page")
+            }
+
+        }
+    }
+}
+
+
 
 
 
