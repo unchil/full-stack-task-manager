@@ -1,10 +1,12 @@
 package org.example.ktor
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -30,19 +32,28 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Modifier.Companion.then
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kotlin.collections.forEach
+import kotlin.collections.forEachIndexed
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 
 @Composable
@@ -61,11 +72,13 @@ fun ComposeDataGrid(
                 }
             }
         }
+
         val colInfo = mutableListOf< ColumnInfo>()
         columnNames.forEachIndexed{ index, columnName ->
             colInfo.add(
                 ColumnInfo(
                     columnName,
+                    index,
                     index,
                     data.first { it[index] != null }[index]?.let {  it::class.simpleName.toString() }?: "NULL",
                     mutableStateOf(0),
@@ -76,6 +89,8 @@ fun ComposeDataGrid(
         }
         colInfo
     }
+
+
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
     val columnInfo = remember { mutableStateOf(makeColInfo(columnNames, data) ) }
@@ -125,6 +140,30 @@ fun ComposeDataGrid(
         }
 
     }
+
+    val updateOrginalColumnIndex: (MutableState<List<ColumnInfo>>) -> Unit = { newColumnInfoList ->
+        newColumnInfoList.value.forEach {
+            it.originalColumnIndex = it.columnIndex
+        }
+    }
+
+    // ColumnInfo의 순서가 변경될 때, data의 순서도 함께 변경하는 로직
+    val updateDataColumnOrder: (MutableState<List<ColumnInfo>>) -> Unit = { newColumnInfoList ->
+
+        val newData = presentData.value.map { row ->
+            val oldRow = row as List<Any?>
+            val newRow = mutableListOf<Any?>().apply { repeat(oldRow.size) { add(null) } }
+
+            newColumnInfoList.value.forEach { colInfo ->
+                newRow[colInfo.columnIndex] = oldRow[colInfo.originalColumnIndex]
+            }
+            newRow
+        }
+
+        presentData.value = newData
+        updateOrginalColumnIndex(newColumnInfoList)
+    }
+
 
     val updateSortedIndexList:(colInfo:ColumnInfo)->Unit = {
         if(sortedIndexList.isEmpty() ){
@@ -312,7 +351,8 @@ fun ComposeDataGrid(
                 modifier = Modifier.fillMaxWidth(),
                 columnInfo = columnInfo,
                 onSortOrder = onMultiSortedOrder,
-                onFilter = onFilter
+                onFilter = onFilter,
+                updateDataColumnOrder = updateDataColumnOrder // ComposableDataGridHeader에 추가
             )
         },
         bottomBar = {
@@ -359,7 +399,7 @@ fun ComposeDataGrid(
                 contentAlignment = Alignment.BottomCenter
             ){
                 ComposeDataGridFooter(
-                    modifier = Modifier.width(340.dp).padding(bottom = if(enablePagingGrid.value) { 70.dp} else { 10.dp}),
+                    modifier = Modifier.width(380.dp).padding(bottom = if(enablePagingGrid.value) { 70.dp} else { 10.dp}),
                     lazyListState = lazyListState ,
                     dataCnt = if(enablePagingGrid.value) {pagingData.value.size} else {presentData.value.size},
                     enablePagingGrid = enablePagingGrid,
@@ -399,6 +439,7 @@ fun ComposeDataGridHeader(
     columnInfo: MutableState<List< ColumnInfo>>,
     onSortOrder:((ColumnInfo) -> Unit)? = null,
     onFilter:((String, String, String) -> Unit)? = null,
+    updateDataColumnOrder: (MutableState<List<ColumnInfo>>) -> Unit  // 추가
 ) {
 
     Row (
@@ -413,7 +454,7 @@ fun ComposeDataGridHeader(
         // row number space
         Text("", Modifier.width( 40.dp))
 
-        ComposeColumnRow( columnInfo, onSortOrder, onFilter)
+        ComposeColumnRow( columnInfo, updateDataColumnOrder, onSortOrder, onFilter, )
     }
 
 }
@@ -421,16 +462,20 @@ fun ComposeDataGridHeader(
 @Composable
 fun ComposeColumnRow(
     columnInfoList: MutableState<List< ColumnInfo>>,
+    updateColumnInfo: ((MutableState<List<ColumnInfo>>) -> Unit)? = null,
     onSortOrder:(( ColumnInfo) -> Unit)? = null,
-    onFilter:((String, String, String) -> Unit)? = null, ) {
+    onFilter:((String, String, String) -> Unit)? = null,
+    ) {
 
     require(columnInfoList.value.size >= 2) { "column must be at least 2" }
 
     val columnCount = columnInfoList.value.size
-    val dividerPositions = remember { MutableList(columnCount - 1) { 0.dp } }
+    val dividerPositions = remember { MutableList(columnCount) { 0.dp } }
     val density = LocalDensity.current.density
     var rowWidthInDp by remember { mutableStateOf(0.dp) }
 
+    val offsetList = remember {  MutableList(columnCount ) { mutableStateOf(IntOffset.Zero) } }
+    val boxSizePx = remember {  MutableList(columnCount ){ mutableStateOf(IntSize.Zero) } }
 
     val dividerThickness = 2.dp
     val totalWidth = rowWidthInDp - (dividerThickness * (columnCount - 1))
@@ -469,11 +514,44 @@ fun ComposeColumnRow(
     LaunchedEffect(rowWidthInDp) {
         if (rowWidthInDp > 0.dp) {
             val initialPosition = (rowWidthInDp / columnCount)
-            for (i in 0 until columnCount - 1) {
+            for (i in 0 until columnCount ) {
                 dividerPositions[i] = initialPosition * (i + 1) - (dividerThickness * (i + 1) / 2)
             }
         }
     }
+
+    fun  MutableList<Dp>.findRangeIndex( index: Int,  density: Float): Int {
+        var appendBoxSize = 0
+        for ( i in 0 until index ) {
+            appendBoxSize += boxSizePx[i].value.width
+        }
+        val currentDp:Dp = (( offsetList[index].value.x + boxSizePx[index].value.width / 2 + appendBoxSize ) / density).dp
+        val oldDp = dividerPositions[index]
+
+        if (currentDp <= this[0]) {
+            return 0
+        }else if (currentDp >= this.last()) {
+            return this.size - 1
+        }else if( currentDp > oldDp) {
+            for ( i in index + 1 until this.size ) {
+                if ( currentDp <= this[i]) {
+                    return i
+                }
+            }
+        }else if (currentDp < oldDp){
+            for ( i in (0 until index ).reversed() ) {
+                if ( currentDp >= this[i]) {
+                    return i + 1
+                }
+            }
+        } else {
+            return index
+        }
+        return index
+    }
+
+
+
 
     Row(
         Modifier
@@ -485,14 +563,61 @@ fun ComposeColumnRow(
     ) {
 
         columnInfoList.value.forEachIndexed { index,  columnInfo ->
+
             val imageVector = when(columnInfo.sortOrder.value){
                 1 -> Icons.Default.KeyboardArrowUp
                 -1 -> Icons.Default.KeyboardArrowDown
                 else -> EmptyImageVector
             }
 
+            // 드래그 중인 box 의 alpha 값 state
+            val draggedItemAlpha = remember { mutableStateOf(1f) }
+            // alpha 값을 animation state로 만듦
+            val animatedAlpha by animateFloatAsState(
+                targetValue = if (offsetList[index].value == IntOffset.Zero) 1f else  draggedItemAlpha.value,
+                label = "alphaAnimation"
+            )
             Row(
-                modifier = Modifier.weight(columnInfo.widthWeigth.value),
+                modifier = Modifier.weight(columnInfo.widthWeigth.value)
+                    // onGloballyPositioned를 사용하여 Box의 크기를 가져옴
+                    .onGloballyPositioned { layoutCoordinates ->
+                        boxSizePx[index].value = layoutCoordinates.size
+                    }
+                    .pointerInput(Unit) {
+                        detectDragGestures (
+                            onDragStart = { offset ->
+                                draggedItemAlpha.value = 0.5f
+                            },
+                            onDragEnd = {
+                                val targetColumnIndex = dividerPositions.findRangeIndex( index, density )
+                                val currentList = columnInfoList.value.toMutableList()
+                                val draggedColumn = currentList.removeAt(index)
+                                currentList.add(targetColumnIndex, draggedColumn)
+                                currentList.forEachIndexed{ newIndex, columnInfo ->
+                                    columnInfo.columnIndex = newIndex
+                                }
+                                columnInfoList.value = currentList.toList()
+
+                                updateColumnInfo?.let{
+                                    it(columnInfoList)
+                                }
+
+                                offsetList[index].value = IntOffset.Zero
+                                draggedItemAlpha.value = 1f
+                            }  ,
+                            onDragCancel = {
+                                offsetList[index].value = IntOffset.Zero
+                                draggedItemAlpha.value = 1f
+                            },
+                        ){ pointerInputChange, offset ->
+                            pointerInputChange.consume()
+                            val offsetChange = IntOffset(offset.x.roundToInt(), offset.y.roundToInt())
+                            offsetList[index].value = offsetList[index].value.plus(offsetChange)
+                        }
+                    }
+                    .offset { offsetList[index].value }
+                    .alpha(animatedAlpha)
+                ,
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -500,10 +625,10 @@ fun ComposeColumnRow(
                 TextButton(
                     onClick = {
                         columnInfo.sortOrder.value = when(columnInfo.sortOrder.value){
-                                                        0 -> 1
-                                                        1 -> -1
-                                                        else -> 0
-                                                    }
+                            0 -> 1
+                            1 -> -1
+                            else -> 0
+                        }
                         onSortOrder?.invoke( columnInfo)
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = Color.Black),
@@ -512,6 +637,8 @@ fun ComposeColumnRow(
                 Icon(imageVector, contentDescription = "Sorted Order", modifier = Modifier.width(16.dp),)
                 SearchMenu(columnInfo.columnName, onFilter)
             }
+
+
 
             if ( index < columnCount - 1) {
                 VerticalDivider(
@@ -543,7 +670,7 @@ fun ComposeDataGridFooter(
 
     Row (
         modifier = then(modifier).fillMaxWidth()
-            .border(BorderStroke(width = 1.dp, color = Color.LightGray))
+            .border( BorderStroke(width = 0.dp, color = Color.LightGray), shape = RoundedCornerShape(6.dp))
             .background(color = MaterialTheme.colorScheme.surfaceVariant),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
@@ -631,7 +758,7 @@ fun ComposeDataGridFooter(
 
             Text( "Page Size:", modifier = Modifier.padding(horizontal = 20.dp) )
 
-            Box( modifier = Modifier.height(50.dp).width(110.dp), contentAlignment = Alignment.Center, ){
+            Box( modifier = Modifier.height(48.dp).width(110.dp), contentAlignment = Alignment.Center, ){
 
                 var selectedOptionText by remember { mutableStateOf("20") }
 
@@ -650,9 +777,8 @@ fun ComposeDataGridFooter(
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
-                    modifier = Modifier.width(100.dp),
+                    modifier = Modifier.width(110.dp),
                 ) {
-
                     DropdownMenuItem(
                         text = { Text("20") },
                         onClick = {
@@ -660,7 +786,6 @@ fun ComposeDataGridFooter(
                             onChangePageSize(selectedOptionText.toInt())
                         }
                     )
-
                     DropdownMenuItem(
                         text = { Text("100") },
                         onClick = {
@@ -675,11 +800,6 @@ fun ComposeDataGridFooter(
                             onChangePageSize(selectedOptionText.toInt())
                         }
                     )
-
-
-
-
-
                 }
 
             }
@@ -818,6 +938,12 @@ fun SearchMenu(columnName:String, onFilter: ((String, String, String)-> Unit)? =
     }
 }
 
+
+
+
+
+
+
 object OperatorMenu {
     enum class Operator {
         Contains{ override fun toString() = "Contains"},
@@ -840,7 +966,8 @@ object OperatorMenu {
 
 data class ColumnInfo(
     val columnName:String,
-    val columnIndex:Int,
+    var columnIndex:Int,          // 현재 컬럼의 index
+    var originalColumnIndex: Int, // 초기 컬럼 index를 저장하기 위한 값
     val columnType: String,
     var sortOrder: MutableState<Int>,
     val widthWeigth: MutableState<Float>,
