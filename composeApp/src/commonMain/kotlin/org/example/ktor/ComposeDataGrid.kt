@@ -87,7 +87,7 @@ fun ComposeDataGrid(
 
     val presentData: MutableState<List<Any?>>  =  remember { mutableStateOf(data) }
     val pagingData: MutableState<List<Any?>>  =  remember { mutableStateOf(data) }
-    val sortedIndexList = remember { mutableListOf<Int>() }
+    var sortedIndexList = remember { mutableListOf<Int>() }
 
     val initSortOrder:()->Unit = {
         sortedIndexList.clear()
@@ -130,12 +130,14 @@ fun ComposeDataGrid(
     }
 
     val updateOrginalColumnIndex: (MutableState<List<ColumnInfo>>) -> Unit = { newColumnInfoList ->
-
+        val tempSortedIndexList =  mutableListOf<Int>()
         newColumnInfoList.value.forEach {
-
-
+            if(sortedIndexList.contains(it.originalColumnIndex)){
+                tempSortedIndexList.add(it.columnIndex)
+            }
             it.originalColumnIndex = it.columnIndex
         }
+        sortedIndexList = tempSortedIndexList
     }
 
     // ColumnInfo의 순서가 변경될 때, data의 순서도 함께 변경하는 로직
@@ -626,19 +628,15 @@ fun ComposeColumnRow(
                                 val currentList = columnInfoList.value.toMutableList()
                                 val draggedColumn = currentList.removeAt(index)
                                 currentList.add(targetColumnIndex, draggedColumn)
-                                currentList.forEachIndexed{ newIndex, columnInfo ->
-                                    columnInfo.columnIndex = newIndex
+
+                                currentList.forEachIndexed{ newIndex, colInfo ->
+                                    colInfo.columnIndex = newIndex
                                 }
+
                                 columnInfoList.value = currentList.toList()
 
                                 updateColumnInfo?.let{
                                     it(columnInfoList)
-                                }
-
-
-                                if(sortedIndexList.contains(index)) {
-                                    sortedIndexList.remove(index)
-                                    sortedIndexList.add(targetColumnIndex)
                                 }
 
                                 offsetList[index].value = IntOffset.Zero
