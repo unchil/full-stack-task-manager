@@ -496,6 +496,11 @@ fun ComposeColumnRow(
                     is HoverInteraction.Enter -> {
                         currentHoverEnterInteraction[index].value = interaction
                     }
+                    is HoverInteraction.Exit -> {
+                        currentHoverEnterInteraction[index].value = null
+                    }
+                    else -> {}
+
                 }
             }
         }
@@ -595,9 +600,7 @@ fun ComposeColumnRow(
                 else -> EmptyImageVector
             }
 
-            // 드래그 중인 box 의 alpha 값 state
             val draggedItemAlpha = remember { mutableStateOf(1f) }
-            // alpha 값을 animation state로 만듦
             val animatedAlpha by animateFloatAsState(
                 targetValue = if (offsetList[index].value == IntOffset.Zero) 1f else  draggedItemAlpha.value,
                 label = "alphaAnimation"
@@ -617,6 +620,12 @@ fun ComposeColumnRow(
 
                             },
                             onDragEnd = {
+                                currentHoverEnterInteraction[index].value?.let {
+                                    coroutineScope.launch {
+                                        interactionSourceList[index].emit(HoverInteraction.Exit(it))
+                                    }
+                                }
+
                                 val targetColumnIndex = findIndexFromDividerPositions(dividerPositions, index, density)
                                 val currentList = columnInfoList.value.toMutableList()
                                 val draggedColumn = currentList.removeAt(index)
@@ -633,12 +642,6 @@ fun ComposeColumnRow(
                                 offsetList[index].value = IntOffset.Zero
                                 draggedItemAlpha.value = 1f
 
-                                currentHoverEnterInteraction[index].value?.let {
-                                    coroutineScope.launch {
-                                        interactionSourceList[index].emit(HoverInteraction.Exit(it))
-                                        currentHoverEnterInteraction[index].value = null
-                                    }
-                                }
 
                             }  ,
                             onDragCancel = {
