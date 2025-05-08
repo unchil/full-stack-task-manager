@@ -13,6 +13,7 @@ import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -38,6 +39,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kotlin.collections.mutableListOf
+import kotlin.collections.remove
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -127,7 +130,10 @@ fun ComposeDataGrid(
     }
 
     val updateOrginalColumnIndex: (MutableState<List<ColumnInfo>>) -> Unit = { newColumnInfoList ->
+
         newColumnInfoList.value.forEach {
+
+
             it.originalColumnIndex = it.columnIndex
         }
     }
@@ -144,13 +150,14 @@ fun ComposeDataGrid(
             }
             newRow
         }
-
         presentData.value = newData
+
+        updateOrginalColumnIndex(newColumnInfoList)
 
         if(enablePagingGrid.value) {
             initPageData()
         }
-        updateOrginalColumnIndex(newColumnInfoList)
+
     }
 
 
@@ -345,7 +352,8 @@ fun ComposeDataGrid(
                 columnInfo = columnInfo,
                 onSortOrder = onMultiSortedOrder,
                 onFilter = onFilter,
-                updateDataColumnOrder = updateDataColumnOrder // ComposableDataGridHeader에 추가
+                updateDataColumnOrder = updateDataColumnOrder ,// ComposableDataGridHeader에 추가
+                sortedIndexList = sortedIndexList
             )
         },
         bottomBar = {
@@ -432,7 +440,8 @@ fun ComposeDataGridHeader(
     columnInfo: MutableState<List< ColumnInfo>>,
     onSortOrder:((ColumnInfo) -> Unit)? = null,
     onFilter:((String, String, String) -> Unit)? = null,
-    updateDataColumnOrder: (MutableState<List<ColumnInfo>>) -> Unit  // 추가
+    updateDataColumnOrder: (MutableState<List<ColumnInfo>>) -> Unit , // 추가
+    sortedIndexList: MutableList<Int>
 ) {
 
     Row (
@@ -447,7 +456,7 @@ fun ComposeDataGridHeader(
         // row number space
         Text("", Modifier.width( 40.dp))
 
-        ComposeColumnRow( columnInfo, updateDataColumnOrder, onSortOrder, onFilter, )
+        ComposeColumnRow( columnInfo, updateDataColumnOrder, onSortOrder, onFilter,sortedIndexList )
     }
 
 }
@@ -458,6 +467,7 @@ fun ComposeColumnRow(
     updateColumnInfo: ((MutableState<List<ColumnInfo>>) -> Unit)? = null,
     onSortOrder:(( ColumnInfo) -> Unit)? = null,
     onFilter:((String, String, String) -> Unit)? = null,
+    sortedIndexList: MutableList<Int>
 ) {
 
     require(columnInfoList.value.size >= 2) { "column must be at least 2" }
@@ -623,6 +633,12 @@ fun ComposeColumnRow(
 
                                 updateColumnInfo?.let{
                                     it(columnInfoList)
+                                }
+
+
+                                if(sortedIndexList.contains(index)) {
+                                    sortedIndexList.remove(index)
+                                    sortedIndexList.add(targetColumnIndex)
                                 }
 
                                 offsetList[index].value = IntOffset.Zero
