@@ -5,11 +5,15 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.hoverable
+
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -55,6 +59,9 @@ import kotlin.collections.forEachIndexed
 import kotlin.math.max
 import kotlin.math.roundToInt
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.HoverInteraction
+import androidx.compose.foundation.interaction.Interaction
 
 @Composable
 fun ComposeDataGrid(
@@ -465,9 +472,11 @@ fun ComposeColumnRow(
     updateColumnInfo: ((MutableState<List<ColumnInfo>>) -> Unit)? = null,
     onSortOrder:(( ColumnInfo) -> Unit)? = null,
     onFilter:((String, String, String) -> Unit)? = null,
-    ) {
+) {
 
     require(columnInfoList.value.size >= 2) { "column must be at least 2" }
+
+    val coroutineScope = rememberCoroutineScope()
 
     val columnCount = columnInfoList.value.size
     val dividerPositions = remember { MutableList(columnCount) { 0.dp } }
@@ -476,6 +485,22 @@ fun ComposeColumnRow(
 
     val offsetList = remember {  MutableList(columnCount ) { mutableStateOf(IntOffset.Zero) } }
     val boxSizePx = remember {  MutableList(columnCount ){ mutableStateOf(IntSize.Zero) } }
+
+    val interactionSourceList = remember { MutableList(columnCount ){ MutableInteractionSource() } }
+    val currentHoverEnterInteraction = remember  { MutableList(columnCount ){ mutableStateOf<HoverInteraction.Enter?>(null) } }
+
+    interactionSourceList.forEachIndexed { index, interactionSource ->
+        LaunchedEffect(interactionSource){
+            interactionSource.interactions.collect { interaction ->
+                when (interaction) {
+                    is HoverInteraction.Enter -> {
+                        currentHoverEnterInteraction[index].value = interaction
+                    }
+                }
+            }
+        }
+    }
+
 
     val dividerThickness = 2.dp
     val totalWidth = rowWidthInDp - (dividerThickness * (columnCount - 1))
@@ -520,7 +545,9 @@ fun ComposeColumnRow(
         }
     }
 
-    fun  MutableList<Dp>.findRangeIndex( index: Int,  density: Float): Int {
+
+    fun findIndexFromDividerPositions  ( dividerPositions: MutableList<Dp>, index: Int,  density: Float) :Int  {
+
         var appendBoxSize = 0
         for ( i in 0 until index ) {
             appendBoxSize += boxSizePx[i].value.width
@@ -528,19 +555,19 @@ fun ComposeColumnRow(
         val currentDp:Dp = (( offsetList[index].value.x + boxSizePx[index].value.width / 2 + appendBoxSize ) / density).dp
         val oldDp = dividerPositions[index]
 
-        if (currentDp <= this[0]) {
+        if (currentDp <= dividerPositions[0]) {
             return 0
-        }else if (currentDp >= this.last()) {
-            return this.size - 1
+        } else if (currentDp >= dividerPositions.last()) {
+             return dividerPositions.size - 1
         }else if( currentDp > oldDp) {
-            for ( i in index + 1 until this.size ) {
-                if ( currentDp <= this[i]) {
+            for ( i in index + 1 until dividerPositions.size ) {
+                if ( currentDp <= dividerPositions[i]) {
                     return i
                 }
             }
         }else if (currentDp < oldDp){
             for ( i in (0 until index ).reversed() ) {
-                if ( currentDp >= this[i]) {
+                if ( currentDp >= dividerPositions[i]) {
                     return i + 1
                 }
             }
@@ -549,8 +576,6 @@ fun ComposeColumnRow(
         }
         return index
     }
-
-
 
 
     Row(
@@ -577,6 +602,8 @@ fun ComposeColumnRow(
                 targetValue = if (offsetList[index].value == IntOffset.Zero) 1f else  draggedItemAlpha.value,
                 label = "alphaAnimation"
             )
+
+
             Row(
                 modifier = Modifier.weight(columnInfo.widthWeigth.value)
                     // onGloballyPositioned를 사용하여 Box의 크기를 가져옴
@@ -587,9 +614,10 @@ fun ComposeColumnRow(
                         detectDragGestures (
                             onDragStart = { offset ->
                                 draggedItemAlpha.value = 0.5f
+
                             },
                             onDragEnd = {
-                                val targetColumnIndex = dividerPositions.findRangeIndex( index, density )
+                                val targetColumnIndex = findIndexFromDividerPositions(dividerPositions, index, density)
                                 val currentList = columnInfoList.value.toMutableList()
                                 val draggedColumn = currentList.removeAt(index)
                                 currentList.add(targetColumnIndex, draggedColumn)
@@ -604,6 +632,14 @@ fun ComposeColumnRow(
 
                                 offsetList[index].value = IntOffset.Zero
                                 draggedItemAlpha.value = 1f
+
+                                currentHoverEnterInteraction[index].value?.let {
+                                    coroutineScope.launch {
+                                        interactionSourceList[index].emit(HoverInteraction.Exit(it))
+                                        currentHoverEnterInteraction[index].value = null
+                                    }
+                                }
+
                             }  ,
                             onDragCancel = {
                                 offsetList[index].value = IntOffset.Zero
@@ -622,17 +658,23 @@ fun ComposeColumnRow(
                 horizontalArrangement = Arrangement.Center
             ) {
 
+
                 TextButton(
                     onClick = {
-                        columnInfo.sortOrder.value = when(columnInfo.sortOrder.value){
-                            0 -> 1
-                            1 -> -1
-                            else -> 0
-                        }
-                        onSortOrder?.invoke( columnInfo)
+                            columnInfo.sortOrder.value = when(columnInfo.sortOrder.value){
+                                0 -> 1
+                                1 -> -1
+                                else -> 0
+                            }
+                            onSortOrder?.invoke( columnInfo)
+
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Black),
+                    interactionSource = interactionSourceList[index],
+                    colors = ButtonDefaults.buttonColors( contentColor = Color.Black, containerColor = Color.Transparent),
                 ) { Text(columnInfo.columnName,) }
+
+
+
 
                 Icon(imageVector, contentDescription = "Sorted Order", modifier = Modifier.width(16.dp),)
                 SearchMenu(columnInfo.columnName, onFilter)
