@@ -4,6 +4,7 @@ Includes dataGrid that can be used in Kotlin Compose MultiPlatform : [composeApp
 * Column Data Filtering
   - Contains, Equals, Begins With, Ends With, Blank, Null
 * Column Divider draggable
+* Change the order of columns
 * Request parameters
    - columnNames:List<String>
    - data:List<List<Any?>>
