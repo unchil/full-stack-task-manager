@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -317,7 +319,7 @@ fun ComposeDataGrid(
         modifier = then(modifier)
             .fillMaxSize()
             .border(
-                BorderStroke(width = 1.dp, color = Color.LightGray),
+                BorderStroke(width = 1.dp, color = Color.Black),
                 RoundedCornerShape(6.dp)
             ),
         topBar = {
@@ -337,7 +339,7 @@ fun ComposeDataGrid(
     ){
 
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().background(Color.White),
             contentAlignment = Alignment.TopCenter
         ) {
 
@@ -442,9 +444,9 @@ fun ComposeDataGridHeader(
             .fillMaxWidth()
             .height(50.dp)
             .border(
-                border = BorderStroke(width = 1.dp, color = Color.LightGray),
+                border = BorderStroke(width = 1.dp, color = Color.Black),
                 shape = RoundedCornerShape(6.dp) )
-            .background(MaterialTheme.colorScheme.surfaceVariant),
+            .background(Color.White),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ){
@@ -689,8 +691,8 @@ fun ComposeDataGridFooter(
     Row (
         modifier = then(modifier)
             .fillMaxWidth()
-            .border( BorderStroke(width = 0.dp, color = Color.LightGray), shape = RoundedCornerShape(6.dp))
-            .background(color = MaterialTheme.colorScheme.surfaceVariant),
+            .border( BorderStroke(width = 1.dp, color = Color.Black), shape = RoundedCornerShape(6.dp))
+            .background(color = Color.White),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ){
@@ -787,7 +789,7 @@ fun ComposeDataGridFooter(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .border( BorderStroke(width = 1.dp, color = Color.LightGray),
+            .border( BorderStroke(width = 1.dp, color = Color.Black),
             RoundedCornerShape(6.dp) ),
         contentAlignment = Alignment.Center
     ){
@@ -858,7 +860,7 @@ fun ComposeDataGridFooter(
                 enabled = currentPage.value > 1,
                 onClick = { currentPage.value = currentPage.value - 1}
             ) {
-                Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Prev Page")
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Prev Page")
             }
 
             Text(
@@ -870,7 +872,7 @@ fun ComposeDataGridFooter(
                 enabled = currentPage.value < lastPage.value  ,
                 onClick = { currentPage.value = currentPage.value + 1  }
             ) {
-                Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Next Page")
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next Page")
             }
 
         }
