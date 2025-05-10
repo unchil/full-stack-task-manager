@@ -208,9 +208,8 @@ fun ComposeDataGrid(
 
            val data:List<List<Any?>> = presentData.filterIsInstance<List<Any?>>()
             presentData = data.sortedWith(comparator)
-        } else{
-           // presentData = data
         }
+
         if(enablePagingGrid.value) {
             initPageData()
         }
