@@ -134,8 +134,6 @@ fun ComposeDataGrid(
         } else {
             if (it.sortOrder.value == 0){
                 initSortOrder()
-                presentData = data
-
             } else {
                 if(sortedIndexList.contains(it.columnIndex)) {
                     sortedIndexList.remove(it.columnIndex)
@@ -210,7 +208,8 @@ fun ComposeDataGrid(
            val data:List<List<Any?>> = presentData.filterIsInstance<List<Any?>>()
             presentData = data.sortedWith(comparator)
         } else{
-            presentData = data
+           // presentData = data
+
         }
         if(enablePagingGrid.value) {
             initPageData()
@@ -1030,8 +1029,11 @@ val makeColInfo: (columnNames: List<String>, data: List<List<Any?>>) -> List<Col
     columnInfo
 }
 
-val  findIndexFromDividerPositions: ( currentDp:Dp, dividerPositions: MutableList<Dp>, index: Int, density: Float) -> Int = {
-        currentDp, dividerPositions, index, density ->
+val  findIndexFromDividerPositions: (
+    currentDp:Dp,
+    dividerPositions: MutableList<Dp>,
+    index: Int,
+    density: Float ) -> Int = { currentDp, dividerPositions, index, density ->
 
     val oldDp = dividerPositions[index]
 
