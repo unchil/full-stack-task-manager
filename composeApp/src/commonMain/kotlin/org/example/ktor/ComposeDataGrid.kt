@@ -133,7 +133,8 @@ fun ComposeDataGrid(
             sortedIndexList.add(it.columnIndex)
         } else {
             if (it.sortOrder.value == 0){
-                initSortOrder()
+                sortedIndexList.remove(it.columnIndex)
+
             } else {
                 if(sortedIndexList.contains(it.columnIndex)) {
                     sortedIndexList.remove(it.columnIndex)
@@ -209,7 +210,6 @@ fun ComposeDataGrid(
             presentData = data.sortedWith(comparator)
         } else{
            // presentData = data
-
         }
         if(enablePagingGrid.value) {
             initPageData()
