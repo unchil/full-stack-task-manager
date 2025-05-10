@@ -832,7 +832,7 @@ fun ComposeDataGridFooter(
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
-                    modifier = Modifier.width(110.dp),
+                    modifier = Modifier.width(110.dp).background(color = Color.White),
                 ) {
                     pageSizes.forEach { option ->
                         DropdownMenuItem(
@@ -919,10 +919,10 @@ fun SearchMenu(
                 expanded = false
                 filterText.value = ""
             },
-            modifier = Modifier.width(200.dp),
+            modifier = Modifier.width(200.dp).background(color = Color.White),
         ) {
 
-            Column {
+            Column() {
 
                 Box( contentAlignment = Alignment.Center,){
 
@@ -943,12 +943,13 @@ fun SearchMenu(
                         expanded = expandedOperator,
                         onDismissRequest = { expandedOperator = false },
                         scrollState = scrollState,
-                        modifier = Modifier.width(200.dp).height(160.dp).padding(horizontal = 8.dp),
+                        modifier = Modifier.width(200.dp).height(160.dp).background(color = Color.White),
                     ) {
                         OperatorMenu.Operators.forEach { operator ->
                             HorizontalDivider()
                             DropdownMenuItem(
                                 text = { Text(operator.toString()) },
+
                                 onClick = {
                                     operatorText.value = operator.toString()
                                     expandedOperator = false
