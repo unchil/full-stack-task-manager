@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Modifier.Companion.then
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -442,7 +443,7 @@ fun ComposeDataGridHeader(
     Row (
         modifier =  then(modifier)
             .fillMaxWidth()
-            .height(50.dp)
+            .height(46.dp)
             .border(
                 border = BorderStroke(width = 1.dp, color = Color.Black),
                 shape = RoundedCornerShape(6.dp) )
@@ -690,7 +691,7 @@ fun ComposeDataGridFooter(
 
     Row (
         modifier = then(modifier)
-            .fillMaxWidth()
+            .fillMaxWidth().height(46.dp)
             .border( BorderStroke(width = 1.dp, color = Color.Black), shape = RoundedCornerShape(6.dp))
             .background(color = Color.White),
         verticalAlignment = Alignment.CenterVertically,
@@ -718,6 +719,7 @@ fun ComposeDataGridFooter(
         Text( "Pagination:",  )
 
         Checkbox(
+            modifier = Modifier.scale(0.8f),
             checked = enablePagingGrid.value,
             onCheckedChange = { enablePagingGrid.value = it }
         )
@@ -788,7 +790,7 @@ fun ComposeDataGridFooter(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
+            .height(46.dp)
             .border( BorderStroke(width = 1.dp, color = Color.Black),
             RoundedCornerShape(6.dp) ),
         contentAlignment = Alignment.Center
@@ -802,13 +804,12 @@ fun ComposeDataGridFooter(
 
             Text(
                 "Page Size:",
-                modifier = Modifier.padding(horizontal = 20.dp)
+                modifier = Modifier.padding(horizontal = 10.dp)
             )
 
             Box(
                 modifier = Modifier
-                    .height(48.dp)
-                    .width(110.dp),
+                    .width(110.dp).scale(0.8f),
                 contentAlignment = Alignment.Center,
             ){
 
@@ -832,7 +833,7 @@ fun ComposeDataGridFooter(
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
-                    modifier = Modifier.width(110.dp).background(color = Color.White),
+                    modifier = Modifier.width(100.dp).background(color = Color.White),
                 ) {
                     pageSizes.forEach { option ->
                         DropdownMenuItem(
@@ -853,7 +854,7 @@ fun ComposeDataGridFooter(
                 } else{  
                     ( startRowIndex.value + 1 ) 
                 }}  to  ${ endRowIndex.value } of  ${dataCount}" ,
-                modifier = Modifier.padding(horizontal = 20.dp)
+                modifier = Modifier.padding(horizontal = 10.dp)
             )
 
             IconButton(
@@ -919,7 +920,7 @@ fun SearchMenu(
                 expanded = false
                 filterText.value = ""
             },
-            modifier = Modifier.width(200.dp).background(color = Color.White),
+            modifier = Modifier.width(180.dp).background(color = Color.White),
         ) {
 
             Column() {
