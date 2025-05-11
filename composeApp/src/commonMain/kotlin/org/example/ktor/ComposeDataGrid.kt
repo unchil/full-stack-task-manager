@@ -321,7 +321,7 @@ fun ComposeDataGrid(
             .fillMaxSize()
             .border(
                 BorderStroke(width = 1.dp, color = Color.Black),
-                RoundedCornerShape(6.dp)
+                RoundedCornerShape(2.dp)
             ),
         topBar = {
             ComposeDataGridHeader(
@@ -446,7 +446,7 @@ fun ComposeDataGridHeader(
             .height(46.dp)
             .border(
                 border = BorderStroke(width = 1.dp, color = Color.Black),
-                shape = RoundedCornerShape(6.dp) )
+                shape = RoundedCornerShape(2.dp) )
             .background(Color.White),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
@@ -692,7 +692,7 @@ fun ComposeDataGridFooter(
     Row (
         modifier = then(modifier)
             .fillMaxWidth().height(46.dp)
-            .border( BorderStroke(width = 1.dp, color = Color.Black), shape = RoundedCornerShape(6.dp))
+            .border( BorderStroke(width = 1.dp, color = Color.Black), shape = RoundedCornerShape(2.dp))
             .background(color = Color.White),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
@@ -792,7 +792,7 @@ fun ComposeDataGridFooter(
             .fillMaxWidth()
             .height(46.dp)
             .border( BorderStroke(width = 1.dp, color = Color.Black),
-            RoundedCornerShape(6.dp) ),
+            RoundedCornerShape(2.dp) ),
         contentAlignment = Alignment.Center
     ){
 
