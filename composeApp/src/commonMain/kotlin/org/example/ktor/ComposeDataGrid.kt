@@ -218,62 +218,71 @@ fun ComposeDataGrid(
         }
     }
 
+
+    //columnInfo
     val onFilter:(columnName:String, searchText:String, operator:String) -> Unit = { columnName, searchText, operator  ->
-        presentData = when(operator){
+
+        columnInfo.value.find { it.columnName == columnName }?.let {columInfo ->
+            presentData = when(operator){
                 OperatorMenu.Operator.Contains.toString() ->
                     presentData.filter {
                         it as List<*>
-                        it[columnNames.indexOf(columnName)].toString().contains(searchText)
+                        it[columInfo.columnIndex].toString().contains(searchText)
                     }
                 OperatorMenu.Operator.DoseNotContains.toString() ->
                     presentData.filter {
                         it as List<*>
-                        it[columnNames.indexOf(columnName)].toString().contains(searchText).not()
+                        it[columInfo.columnIndex].toString().contains(searchText).not()
                     }
                 OperatorMenu.Operator.Equals.toString() ->
                     presentData.filter {
                         it as List<*>
-                        it[columnNames.indexOf(columnName)].toString().equals(searchText)
+                        it[columInfo.columnIndex].toString().equals(searchText)
                     }
                 OperatorMenu.Operator.DoseNotEquals.toString() ->
                     presentData.filter {
                         it as List<*>
-                        it[columnNames.indexOf(columnName)].toString().equals(searchText).not()
+                        it[columInfo.columnIndex].toString().equals(searchText).not()
                     }
                 OperatorMenu.Operator.BeginsWith.toString() ->
                     presentData.filter {
                         it as List<*>
-                        it[columnNames.indexOf(columnName)].toString().startsWith(searchText)
+                        it[columInfo.columnIndex].toString().startsWith(searchText)
                     }
                 OperatorMenu.Operator.EndsWith.toString() ->
                     presentData.filter {
                         it as List<*>
-                        it[columnNames.indexOf(columnName)].toString().endsWith(searchText)
+                        it[columInfo.columnIndex].toString().endsWith(searchText)
                     }
                 OperatorMenu.Operator.Blank.toString() ->
                     presentData.filter {
                         it as List<*>
-                        it[columnNames.indexOf(columnName)].toString().isBlank()
+                        it[columInfo.columnIndex].toString().isBlank()
                     }
                 OperatorMenu.Operator.NotBlank.toString() ->
                     presentData.filter {
                         it as List<*>
-                        it[columnNames.indexOf(columnName)].toString().isNotBlank()
+                        it[columInfo.columnIndex].toString().isNotBlank()
                     }
                 OperatorMenu.Operator.Null.toString() ->
                     presentData.filter {
                         it as List<*>
-                        it[columnNames.indexOf(columnName)] == null
+                        it[columInfo.columnIndex] == null
                     }
                 OperatorMenu.Operator.NotNull.toString() ->
                     presentData.filter {
                         it as List<*>
-                        it[columnNames.indexOf(columnName)] != null
+                        it[columInfo.columnIndex] != null
                     }
                 else -> {
                     presentData
                 }
             }
+
+
+        }
+
+
 
         if(enablePagingGrid.value) {
             initPageData()
@@ -790,7 +799,7 @@ fun ComposeDataGridFooter(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(46.dp)
+            .height(48.dp)
             .border( BorderStroke(width = 1.dp, color = Color.Black),
             RoundedCornerShape(2.dp) ),
         contentAlignment = Alignment.Center
