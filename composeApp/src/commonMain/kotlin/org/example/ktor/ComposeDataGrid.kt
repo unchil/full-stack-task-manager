@@ -217,9 +217,7 @@ fun ComposeDataGrid(
             initPageData()
         }
     }
-
-
-    //columnInfo
+    
     val onFilter:(columnName:String, searchText:String, operator:String) -> Unit = { columnName, searchText, operator  ->
 
         columnInfo.value.find { it.columnName == columnName }?.let {columInfo ->
