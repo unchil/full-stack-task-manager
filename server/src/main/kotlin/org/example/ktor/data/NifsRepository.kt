@@ -39,7 +39,7 @@ class NifsRepository:NifsRepositoryInterface {
 
                 ObservationTable.join(
                     ObservatoryTable,
-                    JoinType.LEFT,
+                    JoinType.INNER,
                     onColumn = ObservationTable.sta_cde,
                     otherColumn = ObservatoryTable.sta_cde
                 ).select( ObservationTable.sta_cde,
@@ -69,7 +69,7 @@ class NifsRepository:NifsRepositoryInterface {
 
                 ObservationTable.join(
                     ObservatoryTable,
-                    JoinType.LEFT,
+                    JoinType.INNER,
                     onColumn = ObservationTable.sta_cde,
                     otherColumn = ObservatoryTable.sta_cde
                 ).select( ObservationTable.sta_cde,
@@ -113,7 +113,7 @@ class NifsRepository:NifsRepositoryInterface {
             ObservationTable
                 .join(
                     ObservatoryTable,
-                    JoinType.LEFT,
+                    JoinType.INNER,
                     onColumn = ObservationTable.sta_cde,
                     otherColumn = ObservatoryTable.sta_cde
                 )

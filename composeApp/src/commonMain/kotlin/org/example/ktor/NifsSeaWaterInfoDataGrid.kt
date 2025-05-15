@@ -15,18 +15,18 @@ import org.example.ktor.data.DATA_DIVISION
 @Composable
 fun NifsSeaWaterInfoDataGrid(modifier: Modifier = Modifier) {
 
-    val viewModel = remember { NifsSeaWaterInfoCurrentViewModel() }
+    val viewModel = remember { NifsSeaWaterInfoOneDayViewModel() }
 
     LaunchedEffect(key1 = viewModel){
-        viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh(DATA_DIVISION.current))
+        viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.oneday))
         while(true){
             delay(1800 * 1000).let {
-                viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh(DATA_DIVISION.current))
+                viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.oneday))
             }
         }
     }
 
-    val seaWaterInfoCurrent = viewModel._seaWaterInfoCurrentStateFlow.collectAsState()
+    val seaWaterInfoCurrent = viewModel._seaWaterInfoOneDayStateFlow.collectAsState()
 
     if(seaWaterInfoCurrent.value.isNotEmpty()){
 
