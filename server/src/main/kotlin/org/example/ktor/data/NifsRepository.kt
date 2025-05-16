@@ -4,21 +4,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.*
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
-import org.example.ktor.db.entity.ObservationTable
-import org.example.ktor.db.entity.ObservatoryTable
-import org.example.ktor.db.entity.toObservation
-import org.example.ktor.db.entity.toObservatory
-import org.example.ktor.db.entity.toSeawaterInformationByObservationPoint
+import org.example.ktor.db.entity.*
 import org.example.ktor.model.Observation
 import org.example.ktor.model.Observatory
 import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
-import org.jetbrains.exposed.sql.statements.DeleteStatement.Companion.where
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import java.sql.Types.FLOAT
 
 class NifsRepository:NifsRepositoryInterface {
 
