@@ -6,7 +6,6 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import full_stack_task_manager.composeapp.generated.resources.AppleGothic
@@ -15,7 +14,7 @@ import org.jetbrains.compose.resources.Font
 import full_stack_task_manager.composeapp.generated.resources.AppleSDGothicNeo
 
 @Composable
-fun AppTheme(content: @Composable () -> Unit) {
+fun AppTheme(enableDarkMode: Boolean = false, content: @Composable () -> Unit) {
 
     val AppleGothic = FontFamily(
         Font(Res.font.AppleGothic, FontWeight.Bold),
@@ -129,10 +128,10 @@ fun AppTheme(content: @Composable () -> Unit) {
     )
 
 
-
+    val colorScheme = if(enableDarkMode) DarkColors else LightColors
 
     MaterialTheme(
-        colorScheme = LightColors,
+        colorScheme = colorScheme,
         typography = typography
     ) {
         content()

@@ -64,6 +64,8 @@ fun ComposeDataGrid(
     val currentPage = remember {  mutableStateOf(1)}
     val pageSize = remember {  mutableStateOf(20)}
 
+    val enableDarkMode = remember { mutableStateOf(false) }
+
     val initSortOrder:()->Unit = {
         sortedIndexList.clear()
         columnInfo.value.forEach { it.sortOrder.value = 0 }
@@ -324,7 +326,7 @@ fun ComposeDataGrid(
         }
     }
 
-    AppTheme{
+    AppTheme(enableDarkMode = enableDarkMode.value) {
 
 
         Scaffold(
@@ -411,11 +413,12 @@ fun ComposeDataGrid(
                 ){
                     ComposeDataGridFooter(
                         modifier = Modifier
-                            .width(380.dp)
+                            .width(500.dp)
                             .padding( bottom = if(enablePagingGrid.value) { 70.dp} else { 10.dp} ),
                         lazyListState = lazyListState ,
                         dataCnt = if(enablePagingGrid.value) {pagingData.size} else {presentData.size},
                         enablePagingGrid = enablePagingGrid,
+                        enableDarkMode = enableDarkMode,
                         onRefresh = onRefresh
                     )
                 }
@@ -700,6 +703,7 @@ fun ComposeDataGridFooter(
     lazyListState: LazyListState,
     dataCnt: Int,
     enablePagingGrid:MutableState<Boolean>,
+    enableDarkMode:MutableState<Boolean>,
     onRefresh:(()->Unit)? = null, ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -710,7 +714,7 @@ fun ComposeDataGridFooter(
             .border( BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline), shape = RoundedCornerShape(2.dp))
             .background(color  =MaterialTheme.colorScheme.surface),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.Center
     ){
 
         IconButton(
@@ -731,13 +735,22 @@ fun ComposeDataGridFooter(
             onClick = { coroutineScope.launch { onRefresh?.invoke() } }
         ) {  Icon(Icons.Default.Refresh, contentDescription = "Refresh")  }
 
-        Text( "Pagination:",  )
+
 
         Checkbox(
             modifier = Modifier.scale(0.8f),
             checked = enablePagingGrid.value,
             onCheckedChange = { enablePagingGrid.value = it }
         )
+
+        Text( "Pagination")
+
+        Checkbox(
+            modifier = Modifier.scale(0.8f),
+            checked = enableDarkMode.value,
+            onCheckedChange = { enableDarkMode.value = it }
+        )
+        Text( "DarkMode")
 
     }
 }
