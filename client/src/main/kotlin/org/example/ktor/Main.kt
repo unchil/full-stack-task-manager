@@ -6,52 +6,47 @@ import org.jetbrains.kotlinx.dataframe.api.*
 import kotlinx.datetime.*
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
-import kotlinx.serialization.json.Json
-import org.example.ktor.OWQInformationTable.ph
-import org.example.ktor.OWQInformationTable.rtmWqBgalgsQy
-import org.example.ktor.OWQInformationTable.rtmWqChpla
-import org.example.ktor.OWQInformationTable.rtmWqCndctv
-import org.example.ktor.OWQInformationTable.rtmWqDoxn
-import org.example.ktor.OWQInformationTable.rtmWqSlnty
-import org.example.ktor.OWQInformationTable.rtmWqTu
-import org.example.ktor.OWQInformationTable.rtmWqWtchDtlDt
-import org.example.ktor.OWQInformationTable.rtmWqWtchStaCd
-import org.example.ktor.OWQInformationTable.rtmWtchWtem
-import org.example.ktor.Repository.Companion.conn
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 import io.ktor.util.logging.*
 import org.jetbrains.kotlinx.dataframe.DataRow
-
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import org.json.XML
 import java.sql.Connection
 import java.sql.DriverManager
-import org.jetbrains.kotlinx.dataframe.io.DbConnectionConfig
+import kotlin.collections.forEach
+import kotlin.text.get
 
 
 @Suppress("DefaultLocale")
 @OptIn(FormatStringsInDatetimeFormats::class)
 fun main() {
-    val LOGGER = KtorSimpleLogger( ::main.name)
     /*
     val repository = Repository()
     repository.getRealTimeObservation()
     repository.getRealTimeObservatory()
     repository.getRealTimeOceanWaterQuailty()
     NifsApi.client.close()
-
  */
 
-    val url = makeUrl()
+    val LOGGER = KtorSimpleLogger( ::main.name)
+    val jdbcUrl = "jdbc:sqlite:/Users/unchil/full-stack-task-manager/full-stack-task-manager.sqlite"
+
+    try {
+        getRealTimeOceanWaterQuailty(jdbcUrl)
+    } catch (e:Exception) {
+        LOGGER.error(e.stackTrace.toString())
+    }
+
+}
+
+fun getRealTimeOceanWaterQuailty(jdbcUrl:String){
+
+    val LOGGER = KtorSimpleLogger( ::getRealTimeOceanWaterQuailty.name)
+    val url = makeUrl_RealTimeOceanWaterQuality()
     val pagePath = "$url&pageNo=1"
     val jsonData = XML.toJSONObject(DataFrame.read(pagePath).toCsvStr())
-
     var df = DataFrame.readJsonStr(jsonData.toString().trimIndent())
     LOGGER.info("\n"+ df.schema().toString())
-
     df = df.get("response").get("body").get("items").get("item")[0] as DataFrame<*>
 
     df = df
@@ -63,16 +58,52 @@ fun main() {
     LOGGER.info("\n"+ df.describe().toString())
     LOGGER.info("\n"+ df.head(5).toString())
 
-    val codeFile = "/Volumes/WorkSpace/Notebook/data/실시간 해양수질자동측정망 정점정보.csv"
-    LOGGER.info("\n"+ codeFile)
-
-    val jdbcUrl = "jdbc:sqlite:/Users/unchil/full-stack-task-manager/full-stack-task-manager.sqlite"
     val tableName = "OWQInformation"
 
-    fun createAndPopulateTable(con: Connection) {
-        val stmt = con.createStatement()
-        stmt.executeUpdate(
-            """CREATE TABLE IF NOT EXISTS ${tableName} (
+    try {
+        DriverManager.getConnection(jdbcUrl).use {conn ->
+
+            createAndPopulateTable(conn, tableName)
+
+            val sql = """INSERT INTO ${tableName} ( 
+                    rtmWqWtchDtlDt, rtmWqWtchStaCd, rtmWtchWtem, rtmWqCndctv,
+                    ph, rtmWqDoxn, rtmWqTu, rtmWqBgalgsQy, rtmWqChpla, rtmWqSlnty 
+                ) VALUES (?,?,?,?,?,?,?,?,?,? )""".trimIndent()
+
+            LOGGER.info("\n"+ sql)
+
+            df.forEach { it ->
+                try {
+                    conn.prepareStatement(sql)?.use { preparedStatement ->
+                        preparedStatement.setString(1, it["rtmWqWtchDtlDt"].toString())
+                        preparedStatement.setString(2, it["rtmWqWtchStaCd"].toString())
+                        preparedStatement.setString(3, it["rtmWtchWtem"].toString())
+                        preparedStatement.setString(4, it["rtmWqCndctv"].toString())
+                        preparedStatement.setString(5, it["ph"].toString())
+                        preparedStatement.setString(6, it["rtmWqDoxn"].toString())
+                        preparedStatement.setString(7, it["rtmWqTu"].toString())
+                        preparedStatement.setString(8, it["rtmWqBgalgsQy"].toString())
+                        preparedStatement.setString(9, it["rtmWqChpla"].toString())
+                        preparedStatement.setString(10, it["rtmWqSlnty"].toString())
+
+                        preparedStatement.executeUpdate()
+                    }
+                } catch (e: Exception){
+                    LOGGER.warn(e.localizedMessage)
+                }
+            }
+
+        }
+
+    } catch (e: Exception){
+        LOGGER.error(e.localizedMessage)
+    }
+
+}
+
+fun createAndPopulateTable(con: Connection, tableName: String) {
+    val stmt = con.createStatement()
+    val sql = """CREATE TABLE IF NOT EXISTS ${tableName} (
                     rtmWqWtchDtlDt TEXT,
                     rtmWqWtchStaCd TEXT,
                     rtmWtchWtem    TEXT,
@@ -86,50 +117,13 @@ fun main() {
                     constraint primaryKey
                         primary key (rtmWqWtchDtlDt, rtmWqWtchStaCd)
                 );""".trimIndent()
-        )
 
-    }
-
-    val sqlStmt = "INSERT INTO $tableName" +
-            " ( rtmWqWtchDtlDt, rtmWqWtchStaCd, rtmWtchWtem, rtmWqCndctv," +
-            " ph, rtmWqDoxn, rtmWqTu, rtmWqBgalgsQy, rtmWqChpla, rtmWqSlnty )" +
-            " VALUES( ?,?,?,?,?,?,?,?,?,? )"
-
-    LOGGER.info("\n"+ sqlStmt)
-
-    DriverManager.getConnection(jdbcUrl ).use {conn ->
-
-        createAndPopulateTable(conn)
-
-        df.forEach { it ->
-            try {
-                conn.prepareStatement(sqlStmt)?.use { preparedStatement ->
-                    preparedStatement.setString(1, it["rtmWqWtchDtlDt"].toString())
-                    preparedStatement.setString(2, it["rtmWqWtchStaCd"].toString())
-                    preparedStatement.setString(3, it["rtmWtchWtem"].toString())
-                    preparedStatement.setString(4, it["rtmWqCndctv"].toString())
-                    preparedStatement.setString(5, it["ph"].toString())
-                    preparedStatement.setString(6, it["rtmWqDoxn"].toString())
-                    preparedStatement.setString(7, it["rtmWqTu"].toString())
-                    preparedStatement.setString(8, it["rtmWqBgalgsQy"].toString())
-                    preparedStatement.setString(9, it["rtmWqChpla"].toString())
-                    preparedStatement.setString(10, it["rtmWqSlnty"].toString())
-
-                    preparedStatement.executeUpdate()
-                }
-            } catch (e: Exception){
-                LOGGER.warn(e.localizedMessage)
-            }
-        }
-
-    }
-
+    stmt.executeUpdate(sql)
 
 }
 
-
-fun makeUrl():String {
-    val LOGGER = KtorSimpleLogger( ::makeUrl.name )
+fun makeUrl_RealTimeOceanWaterQuality():String {
+    val LOGGER = KtorSimpleLogger( ::makeUrl_RealTimeOceanWaterQuality.name )
 
     val now = Clock.System.now()
 
