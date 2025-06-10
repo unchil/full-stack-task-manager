@@ -41,3 +41,18 @@ object ObservatoryTable: Table("Observatory"){
     override val primaryKey = PrimaryKey(sta_cde, name = "primaryKey")
 }
 
+object OWQInformationTable: Table("OWQInformation"){
+    val rtmWqWtchDtlDt = varchar("rtmWqWtchDtlDt", 20)
+    val rtmWqWtchStaCd = varchar("rtmWqWtchStaCd", 7)
+    val rtmWtchWtem = varchar("rtmWtchWtem", 6)
+    val rtmWqCndctv = varchar("rtmWqCndctv", 6)
+    val ph = varchar("ph", 5)
+    val rtmWqDoxn = varchar("rtmWqDoxn", 5)
+    val rtmWqTu = varchar("rtmWqTu", 5)
+    val rtmWqBgalgsQy = varchar("rtmWqBgalgsQy", 10).nullable()
+    val rtmWqChpla = varchar("rtmWqChpla", 7)
+    val rtmWqSlnty = varchar("rtmWqSlnty", 6)
+
+
+    override val primaryKey = PrimaryKey(rtmWqWtchDtlDt, rtmWqWtchStaCd, name = "primaryKey")
+}

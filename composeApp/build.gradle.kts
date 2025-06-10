@@ -12,7 +12,6 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.secretsGradle)
-    alias(libs.plugins.dataframe)
 }
 
 
@@ -103,7 +102,6 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.kotlinx.datetime)
 
         }
 
@@ -118,7 +116,6 @@ kotlin {
 
             implementation(libs.let.plot.platf.awt)
             implementation(libs.let.plot.compose)
-            implementation(libs.kotlinx.dataframe)
         }
 
 

@@ -2,7 +2,6 @@ package org.example.ktor
 
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class Observation(
     val sta_cde: String,
@@ -40,6 +39,34 @@ data class Header(
     val resultMsg: String
 )
 
+
+@Serializable
+data class OceanWaterQuality (
+    val num: String, // 순번
+    val rtmWqWtchStaCd: String, // 실시간수질관측정점코드
+    val rtmWqWtchDtlDt: String, // 실시간수질관측상세일시
+    val rtmWtchWtem: String, // 실시간관측수온
+    val rtmWqCndctv: String, // 실시간수질전기전도도
+    val ph: String, // 수소이온농도
+    val rtmWqDoxn: String, // 실시간수질용존산소량
+    val rtmWqTu: String, // 실시간수질탁도
+    val rtmWqBgalgsQy: String?, // 실시간수질남조류량
+    val rtmWqChpla: String, // 실시간수질클로로필
+    val rtmWqSlnty: String // 실시간수질염분
+)
+
+
+
+@Serializable
+data class OceanWaterQualityBody(
+    val items: List<OceanWaterQuality>,
+    val numOfRows: String,
+    val pageNo: String,
+    val totalCount: String
+)
+
+
+
 @Serializable
 data class ObservationBody(
     val item: List<Observation>,
@@ -60,4 +87,10 @@ data class ObservationResponse(
 data class ObservatoryResponse(
     val header: Header,
     val body: ObservatoryBody
+)
+
+@Serializable
+data class OceanWaterResponse(
+    val header: Header,
+    val body: OceanWaterQualityBody
 )

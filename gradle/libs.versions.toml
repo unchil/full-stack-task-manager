@@ -22,6 +22,8 @@ kotlinxHtmlJs = "0.10.0"
 ktor = "3.0.3"
 logback = "1.5.16"
 
+jackson-dataformat = "2.19.0"
+
 serialization = "1.7.3"
 uiDesktop = "1.7.0"
 
@@ -31,7 +33,7 @@ secrets-gradle-plugin = "2.0.1"
 sqlite-version = "3.47.1.0"
 h2-version = "2.3.232"
 exposed-version = "0.57.0"
-dataframe = "0.15.0"
+
 playServicesMaps = "19.1.0"
 googlemaps = "6.5.2"
 uiAndroid = "1.7.8"
@@ -44,6 +46,8 @@ uiUtilAndroid = "1.7.8"
 runtimeAndroid = "1.8.0"
 foundationAndroid = "1.8.0"
 
+
+dataframe = "1.0.0-Beta2"
 
 [libraries]
 
@@ -66,7 +70,9 @@ logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization = {group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization"}
 kotlinx-dataframe = {group = "org.jetbrains.kotlinx", name = "dataframe", version.ref = "dataframe"}
-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.6.2" }
+kotlinx-dataframe-jdbc = {group = "org.jetbrains.kotlinx", name = "dataframe-jdbc", version.ref = "dataframe"}
+
+
 
 ktor-server-core = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty-jvm", version.ref = "ktor" }
@@ -86,6 +92,7 @@ ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version
 ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktor-client-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-logging = { group = "io.ktor", name ="ktor-client-logging", version.ref = "ktor" }
+ktor-serialization-xml = {group = "io.ktor", name ="ktor-serialization-kotlinx-xml", version.ref = "ktor" }
 
 sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-version" }
 h2 = { module = "com.h2database:h2", version.ref = "h2-version" }
@@ -144,5 +151,3 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
 secretsGradle = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets-gradle-plugin" }
-
-dataframe = { id="org.jetbrains.kotlinx.dataframe", version.ref= "dataframe"}
