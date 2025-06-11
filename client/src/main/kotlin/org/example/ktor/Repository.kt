@@ -4,6 +4,8 @@ import io.ktor.util.logging.*
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.kotlinx.dataframe.DataRow
+import org.jetbrains.kotlinx.dataframe.io.readJson
 
 class Repository {
 
@@ -118,9 +120,14 @@ class Repository {
     }
 
     companion object {
+
+        val config_df = DataRow.readJson(path= this::class.java.classLoader?.getResource("application.json")!!.path)
+        val url = (config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
+        val driver = (config_df["SQLITE_DB"] as DataRow<*>)["driverClassName"].toString()
+
         val conn = Database.connect(
-            url = Config.Item[Config.jdbcURL],
-            driver =  Config.Item[Config.driverClassName]
+            url = url,
+            driver = driver,
         )
 
     }

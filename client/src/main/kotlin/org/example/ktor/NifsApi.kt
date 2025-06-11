@@ -10,21 +10,38 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import org.jetbrains.kotlinx.dataframe.DataColumn
+import org.jetbrains.kotlinx.dataframe.DataRow
+import org.jetbrains.kotlinx.dataframe.io.readJson
 
 class NifsApi {
 
-    companion object {
+       companion object {
 
-        suspend fun callOpenAPI_json(id:String):String{
-            client.get(urlString = Config.Item[Config.endPoint] ){
-                url{
-                    appendPathSegments( Config.Item[Config.subPath])
-                    parameters.append("id", Config.Item[ if (id.equals("list")) Config.list else Config.code ] )
-                    parameters.append("key", Config.Item[Config.apikey] )
+           val config_df = DataRow.readJson(path= this::class.java.classLoader?.getResource("application.json")!!.path)
+
+           suspend fun callOpenAPI_json(id:String):String{
+
+                val confData = this.config_df["NIFS_API"] as DataRow<*>
+
+                val url = confData["endPoint"].toString()
+                val serviceID =  if (id.equals("list")) {
+                    (confData["id"] as DataRow<*>)["list"].toString()
+                } else{
+                    (confData["id"] as DataRow<*>)["code"].toString()
                 }
-            }.let {
-                return it.bodyAsText(java.nio.charset.Charset.forName("EUC-KR"))
-            }
+                val key = confData["apikey"].toString()
+                val subPath = confData["subPath"].toString()
+
+                client.get(urlString =  url) {
+                    url{
+                        appendPathSegments( subPath)
+                        parameters.append("id", serviceID )
+                        parameters.append("key", key )
+                    }
+                }.let {
+                    return it.bodyAsText(java.nio.charset.Charset.forName("EUC-KR"))
+                }
         }
 
         val client = HttpClient(CIO) {
