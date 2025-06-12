@@ -18,5 +18,6 @@ captures
 **/xcshareddata/WorkspaceSettings.xcsettings
 /client/src/main/resources/application.json
 /notebook/kotlinNotebook.ipynb
+/notebook/OceanWaterQuality.ipynb
 /full-stack-task-manager.sqlite
 /kotlin-js-store/yarn.lock
