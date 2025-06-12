@@ -25,7 +25,7 @@ import kotlin.use
 
 fun getRealTimeObservation( ){
 
-    val jdbcUrl = (Repository.Companion.config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
+    val jdbcUrl = (Config.config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
     val urlString = makeUrl(::getRealTimeObservation.name)
     val response = java.net.URI(urlString).toURL().openStream().use { inputStream ->
         InputStreamReader(inputStream, Charset.forName("EUC-KR")).readText()
@@ -83,7 +83,7 @@ fun getRealTimeObservation( ){
 }
 
 fun getRealTimeObservatory(){
-    val jdbcUrl = (Repository.Companion.config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
+    val jdbcUrl = (Config.config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
     val urlString = makeUrl(::getRealTimeObservatory.name)
     val response = java.net.URI(urlString).toURL().openStream().use { inputStream ->
         InputStreamReader(inputStream, Charset.forName("EUC-KR")).readText()
@@ -149,7 +149,7 @@ fun getRealTimeObservatory(){
 
 fun getRealTimeOceanWaterQuailty(){
 
-    val jdbcUrl = (Repository.Companion.config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
+    val jdbcUrl = (Config.config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
 
     val url = makeUrl(::getRealTimeOceanWaterQuailty.name)
     val pagePath = "$url&pageNo=1"
@@ -238,12 +238,12 @@ fun makeUrl(funcName:String):String {
 
     val urlString = when (funcName) {
         ::getRealTimeObservation.name -> {
-            val confData = Repository.Companion.config_df["NIFS_API"] as DataRow<*>
+            val confData = Config.config_df["NIFS_API"] as DataRow<*>
             "${confData["endPoint"].toString()}/${confData["subPath"].toString()}" +
                     "?id=${ (confData["id"] as DataRow<*>)["list"].toString()}&key=${ confData["apikey"].toString()}"
         }
         ::getRealTimeObservatory.name -> {
-            val confData = Repository.Companion.config_df["NIFS_API"] as DataRow<*>
+            val confData = Config.config_df["NIFS_API"] as DataRow<*>
             "${confData["endPoint"].toString()}/${confData["subPath"].toString()}" +
                     "?id=${ (confData["id"] as DataRow<*>)["code"].toString()}&key=${ confData["apikey"].toString()}"
         }
@@ -264,7 +264,7 @@ fun makeUrl(funcName:String):String {
 
             val numOfRows = 100
 
-            val confData = Repository.Companion.config_df["MOF_API"] as DataRow<*>
+            val confData = Config.config_df["MOF_API"] as DataRow<*>
 
             val endPoint = confData["mof_endPoint"]
             val subPath = confData["mof_subPath"]

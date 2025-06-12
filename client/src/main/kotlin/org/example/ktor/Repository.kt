@@ -13,7 +13,7 @@ class Repository {
     internal val LOGGER = KtorSimpleLogger( Repository::class.java.name )
 
     init {
-        transaction(conn) {
+        transaction(Config.conn) {
             addLogger(StdOutSqlLogger)
         }
     }
@@ -25,7 +25,7 @@ class Repository {
                 val recvData = Json.decodeFromString<ObservationResponse>(it)
                 if(recvData.header.resultCode.equals("00")){
                     LOGGER.info( "${::getRealTimeObservation.name} [receive count[${recvData.body.item.size}]]")
-                    transaction (conn){
+                    transaction (Config.conn){
 
                         SchemaUtils.create( ObservationTable)
 
@@ -77,7 +77,7 @@ class Repository {
 
                     LOGGER.info( "${::getRealTimeObservatory.name} [receive count[${recvData.body.item.size}]]")
 
-                    transaction (conn){
+                    transaction (Config.conn){
                         SchemaUtils.drop( ObservatoryTable)
                         SchemaUtils.create( ObservatoryTable)
                         recvData.body.item.forEach { item ->
@@ -119,17 +119,6 @@ class Repository {
         }
     }
 
-    companion object {
 
-        val config_df = DataRow.readJson(path= this::class.java.classLoader?.getResource("application.json")!!.path)
-        val url = (config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
-        val driver = (config_df["SQLITE_DB"] as DataRow<*>)["driverClassName"].toString()
-
-        val conn = Database.connect(
-            url = url,
-            driver = driver,
-        )
-
-    }
 
 }
