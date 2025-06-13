@@ -26,6 +26,7 @@ import kotlin.use
 fun getRealTimeObservation( ){
 
     val jdbcUrl = (Config.config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
+
     val urlString = makeUrl(::getRealTimeObservation.name)
     val response = java.net.URI(urlString).toURL().openStream().use { inputStream ->
         InputStreamReader(inputStream, Charset.forName("EUC-KR")).readText()
@@ -83,7 +84,9 @@ fun getRealTimeObservation( ){
 }
 
 fun getRealTimeObservatory(){
+
     val jdbcUrl = (Config.config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
+
     val urlString = makeUrl(::getRealTimeObservatory.name)
     val response = java.net.URI(urlString).toURL().openStream().use { inputStream ->
         InputStreamReader(inputStream, Charset.forName("EUC-KR")).readText()
@@ -266,16 +269,12 @@ fun makeUrl(funcName:String):String {
 
             val confData = Config.config_df["MOF_API"] as DataRow<*>
 
-            val endPoint = confData["mof_endPoint"]
-            val subPath = confData["mof_subPath"]
-            val key = confData["mof_apikey"]
-
-            "${endPoint}/${subPath}" +
+            "${confData["endPoint"]}/${confData["subPath"]}" +
                     "?wtch_dt_start=${URLEncoder.encode(previous24Hour, StandardCharsets.UTF_8.toString())}" +
                     "&wtch_dt_end=${URLEncoder.encode(currentTime, StandardCharsets.UTF_8.toString())}" +
                     "&_type=xml" +
                     "&numOfRows=${numOfRows}" +
-                    "&serviceKey=${key}"
+                    "&serviceKey=${confData["apikey"]}"
 
 
         }
