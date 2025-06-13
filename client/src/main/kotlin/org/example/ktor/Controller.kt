@@ -33,11 +33,11 @@ fun getRealTimeObservation( ){
     }
     LOGGER.debug("\n"+ response)
 
-    var df = DataFrame.readJson(response.byteInputStream())
+    val recvData = DataFrame.readJson(response.byteInputStream())
 
-    LOGGER.debug("\n"+ df.schema().toString())
+    LOGGER.debug("\n"+ recvData.schema().toString())
 
-    df = df.get("body").get("item").get(0) as AnyFrame
+    val df = recvData.get("body").get("item").get(0) as AnyFrame
 
     LOGGER.debug("\n"+ df.schema().toString())
     LOGGER.info("\n"+ df.describe().toString())
@@ -56,24 +56,33 @@ fun getRealTimeObservation( ){
             LOGGER.debug("\n"+ sql)
 
             df.forEach { it ->
-                try {
-                    conn.prepareStatement(sql)?.use { preparedStatement ->
-                        preparedStatement.setString(1, it["sta_cde"].toString())
-                        preparedStatement.setString(2, it["sta_nam_kor"].toString())
-                        preparedStatement.setString(3, it["obs_dat"].toString())
-                        preparedStatement.setString(4, it["obs_tim"].toString())
-                        preparedStatement.setString(5, "${it["obs_dat"].toString()} ${it["obs_tim"].toString()}")
-                        preparedStatement.setString(6, it["repair_gbn"].toString())
-                        preparedStatement.setString(7, it["obs_lay"].toString())
-                        preparedStatement.setString(8, it["wtr_tmp"].toString())
-                        preparedStatement.setString(9, it["dox"].toString())
-                        preparedStatement.setString(10, it["sal"].toString())
 
-                        preparedStatement.executeUpdate()
+                it["wtr_tmp"]?.let{tmp ->
+                    try {
+                        conn.prepareStatement(sql)?.use { preparedStatement ->
+                            preparedStatement.setString(1, it["sta_cde"].toString())
+                            preparedStatement.setString(2, it["sta_nam_kor"].toString())
+                            preparedStatement.setString(3, it["obs_dat"].toString())
+                            preparedStatement.setString(4, it["obs_tim"].toString())
+                            preparedStatement.setString(5, "${it["obs_dat"].toString()} ${it["obs_tim"].toString()}")
+                            preparedStatement.setString(6, it["repair_gbn"].toString())
+                            preparedStatement.setString(7, it["obs_lay"].toString())
+                            preparedStatement.setString(8, tmp.toString())
+                            it["dox"]?.let{
+                                preparedStatement.setString(9,   it.toString())
+                            }
+                            it["sal"]?.let{
+                                preparedStatement.setString(10,   it.toString())
+                            }
+
+                            preparedStatement.executeUpdate()
+                        }
+                    } catch (e: Exception){
+                        LOGGER.debug(e.localizedMessage)
                     }
-                } catch (e: Exception){
-                    LOGGER.debug(e.localizedMessage)
+
                 }
+
             }
 
         }
@@ -124,7 +133,9 @@ fun getRealTimeObservatory(){
                         preparedStatement.setString(1, it["sta_cde"].toString())
                         preparedStatement.setString(2, it["sta_nam_kor"].toString())
                         preparedStatement.setString(3, it["bld_dat"].toString())
-                        preparedStatement.setString(4, it["end_dat"].toString())
+                        it["end_dat"]?.let{
+                            preparedStatement.setString(4,   it.toString())
+                        }
                         preparedStatement.setString(5, it["gru_nam"].toString())
                         preparedStatement.setDouble(6, it["lon"].toString().toDouble())
                         preparedStatement.setDouble(7, it["lat"].toString().toDouble())
@@ -132,10 +143,15 @@ fun getRealTimeObservatory(){
                         preparedStatement.setString(9, it["mid_tmp_yn"].toString())
                         preparedStatement.setString(10, it["bot_tmp_yn"].toString())
                         preparedStatement.setString(11, it["sur_dep"].toString())
-                        preparedStatement.setString(12, it["mid_dep"].toString())
-                        preparedStatement.setString(13, it["bot_dep"].toString())
-                        preparedStatement.setString(14, it["sta_des"].toString())
-
+                        it["mid_dep"]?.let{
+                            preparedStatement.setString(12,   it.toString())
+                        }
+                        it["bot_dep"]?.let{
+                            preparedStatement.setString(13,   it.toString())
+                        }
+                        it["sta_des"]?.let{
+                            preparedStatement.setString(14,   it.toString())
+                        }
                         preparedStatement.executeUpdate()
                     }
                 } catch (e: Exception){

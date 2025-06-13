@@ -71,7 +71,7 @@ kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-co
 kotlinx-serialization = {group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization"}
 kotlinx-dataframe = {group = "org.jetbrains.kotlinx", name = "dataframe", version.ref = "dataframe"}
 kotlinx-dataframe-jdbc = {group = "org.jetbrains.kotlinx", name = "dataframe-jdbc", version.ref = "dataframe"}
-
+kotlinx-datetime-old = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.6.2" }
 
 
 ktor-server-core = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
