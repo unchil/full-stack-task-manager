@@ -1,6 +1,7 @@
 package org.example.ktor
 
 import kotlinx.serialization.Serializable
+import org.jetbrains.kotlinx.dataframe.annotations.DataSchema
 
 @Serializable
 data class Observation(
@@ -14,6 +15,19 @@ data class Observation(
     val dox: String?,
     val sal: String?,
 )
+
+@DataSchema
+interface Observation2 {
+    val sta_cde: String
+    val sta_nam_kor: String
+    val obs_dat: String
+    val obs_tim: String
+    val repair_gbn: String
+    val obs_lay: String
+    val wtr_tmp: String?
+    val dox: String?
+    val sal: String?
+}
 
 @Serializable
 data class Observatory(
