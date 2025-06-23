@@ -350,10 +350,12 @@ fun ComposeDataGrid(
                     ComposeDataGridFooter( currentPage, pageSize, presentData.size, onPageChange,)
                 }
             },
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = contentColorFor( MaterialTheme.colorScheme.surface),
         ){
 
             Box(
-                modifier = Modifier.fillMaxSize().background(Color.White),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.TopCenter
             ) {
 
@@ -378,7 +380,6 @@ fun ComposeDataGrid(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(color  =MaterialTheme.colorScheme.surface)
                                 .border( BorderStroke( width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f)) ),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
