@@ -68,12 +68,20 @@ fun getRealTimeObservation( ){
                             preparedStatement.setString(6, it["repair_gbn"].toString())
                             preparedStatement.setString(7, it["obs_lay"].toString())
                             preparedStatement.setString(8, tmp.toString())
+
+
+
+                            preparedStatement.setString(9,   "0")
+                            preparedStatement.setString(10,   "0")
+                            /*
                             it["dox"]?.let{
                                 preparedStatement.setString(9,   it.toString())
                             }
                             it["sal"]?.let{
                                 preparedStatement.setString(10,   it.toString())
                             }
+
+                             */
 
                             preparedStatement.executeUpdate()
                         }

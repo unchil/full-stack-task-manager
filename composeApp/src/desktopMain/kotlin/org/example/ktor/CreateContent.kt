@@ -44,7 +44,7 @@ fun createBarChart(data: Map<String,List<Any>>): Plot {
             ) {
                 fill = "ObservatoryDepth" } +
             labs( title="실시간 수온 정보", y="수온 °C", x="관측지점", fill="관측수심", caption="Nifs") +
-            scaleYContinuous(limits = Pair(0, 15)) +
+        //    scaleYContinuous(limits = Pair(0, 15)) +
             theme
 
 }
@@ -58,7 +58,7 @@ fun createBoxPlotChart(data: Map<String,List<Any>>): Plot {
                 y="Temperature"
                 color = "..middle.."
             } +
-            scaleYContinuous(limits = Pair(0, 15)) +
+        //    scaleYContinuous(limits = Pair(0, 15)) +
             labs(title="수온 일일 통계 정보", y="수온 °C", x="관측지점", color="수온 °C", caption="Nifs") +
             theme
 }
@@ -67,7 +67,7 @@ fun createLineChart(data: Map<String,List<Any>>): Plot {
     return letsPlot(data) +
             geomLine { x="CollectingTime"; y="Temperature"; color="ObservatoryName"} +
             labs( title="Korea EastSea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
-            scaleYContinuous(limits=Pair(4,15) ) +
+      //      scaleYContinuous(limits=Pair(4,15) ) +
             theme
 }
 
@@ -80,7 +80,7 @@ fun createRibbonChart(data: Map<String,List<Any>>): Plot {
                 fill="ObservatoryName"
             } +
             geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
-            scaleYContinuous(limits=Pair(4,15) ) +
+      //      scaleYContinuous(limits=Pair(4,15) ) +
             labs(title="Korea EastSea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
             theme
 }
