@@ -101,7 +101,8 @@ exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version
 
 ### common
 let-plot-common = { group = "org.jetbrains.lets-plot", name = "lets-plot-common", version = "4.5.2"}
-let-plot-kernel = { group = "org.jetbrains.lets-plot", name = "lets-plot-kotlin-kernel", version = "4.9.3"}
+let-plot-kernel = { group = "org.jetbrains.lets-plot", name = "lets-plot-kotlin-kernel", version = "4.10.0"}
+
 #android
 #let-plot-common = { group = "org.jetbrains.lets-plot", name = "lets-plot-common", version = "4.4.1"}
 #let-plot-kernel = { group = "org.jetbrains.lets-plot", name = "lets-plot-kotlin-kernel", version = "4.8.0"}
