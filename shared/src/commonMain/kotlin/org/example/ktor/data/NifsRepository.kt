@@ -11,7 +11,7 @@ import org.example.ktor.network.NifsApi
 
 
 enum class DATA_DIVISION {
-    oneday, current, statistics
+    oneday, grid, current, statistics
 }
 
 class NifsRepository {
@@ -22,6 +22,9 @@ class NifsRepository {
 
     val _seaWaterInfoOneDayStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
         = MutableStateFlow(emptyList())
+
+    val _seaWaterInfoOneDayGridStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
+            = MutableStateFlow(emptyList())
 
     val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
             = MutableStateFlow(emptyList())
@@ -38,6 +41,10 @@ class NifsRepository {
                 DATA_DIVISION.oneday -> {
                     _seaWaterInfoOneDayStateFlow.value = nifsApi.getSeaWaterInfo(DATA_DIVISION.oneday.name)
                     LOGGER.debug("getSeaWaterInfo() called[${_seaWaterInfoOneDayStateFlow.value.count()}]")
+                }
+                DATA_DIVISION.grid -> {
+                    _seaWaterInfoOneDayGridStateFlow.value = nifsApi.getSeaWaterInfo(DATA_DIVISION.grid.name)
+                    LOGGER.debug("getSeaWaterInfo() called[${_seaWaterInfoOneDayGridStateFlow.value.count()}]")
                 }
                 DATA_DIVISION.current -> {
                     _seaWaterInfoCurrentStateFlow.value = nifsApi.getSeaWaterInfo(DATA_DIVISION.current.name)

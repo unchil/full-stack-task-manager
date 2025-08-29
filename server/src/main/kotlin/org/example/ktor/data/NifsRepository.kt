@@ -50,6 +50,35 @@ class NifsRepository:NifsRepositoryInterface {
                 }
             }
 
+            "grid" -> {
+                val previous24Hour = Clock.System.now()
+                    .minus(24, DateTimeUnit.HOUR)
+                    .toLocalDateTime(TimeZone.of("Asia/Seoul"))
+                    .format(LocalDateTime.Format{byUnicodePattern("yyyy-MM-dd HH:mm:ss")})
+
+                ObservationTable.join(
+                    ObservatoryTable,
+                    JoinType.INNER,
+                    onColumn = ObservationTable.sta_cde,
+                    otherColumn = ObservatoryTable.sta_cde
+                ).select( ObservationTable.sta_cde,
+                    ObservationTable.sta_nam_kor,
+                    ObservationTable.obs_datetime,
+                    ObservationTable.obs_lay,
+                    ObservationTable.wtr_tmp,
+                    ObservatoryTable.gru_nam,
+                    ObservatoryTable.lon,
+                    ObservatoryTable.lat
+
+                ).where{
+                    ObservationTable.obs_datetime greaterEq previous24Hour
+                }.orderBy( ObservationTable.obs_datetime to SortOrder.DESC)
+                    .map {
+                        toSeawaterInformationByObservationPoint(it)
+                    }
+            }
+
+
             "current" -> {
                 val lastTime = ObservationTable.obs_datetime.max()
                 val currentTime = ObservationTable.select(lastTime).limit(1)
@@ -144,7 +173,8 @@ class NifsRepository:NifsRepositoryInterface {
 
                 ObservationTable.selectAll().where{
                     ObservationTable.obs_datetime greaterEq previous24Hour
-                }.map {
+                }
+                .map {
                     toObservation(it)
                 }
             }
@@ -159,7 +189,8 @@ class NifsRepository:NifsRepositoryInterface {
 
                 ObservationTable.selectAll().where{
                     ObservationTable.obs_datetime eq currentTime
-                }.map {
+                }
+                .map {
                    toObservation(it)
                 }
             }
