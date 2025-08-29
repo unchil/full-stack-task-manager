@@ -39,8 +39,6 @@ class NifsRepository:NifsRepositoryInterface {
                     ObservationTable.obs_datetime,
                     ObservationTable.obs_lay,
                     ObservationTable.wtr_tmp,
-                    ObservationTable.dox,
-                    ObservationTable.sal,
                     ObservatoryTable.gru_nam,
                     ObservatoryTable.lon,
                     ObservatoryTable.lat
@@ -69,8 +67,6 @@ class NifsRepository:NifsRepositoryInterface {
                     ObservationTable.obs_datetime,
                     ObservationTable.obs_lay,
                     ObservationTable.wtr_tmp,
-                    ObservationTable.dox,
-                    ObservationTable.sal,
                     ObservatoryTable.gru_nam,
                     ObservatoryTable.lon,
                     ObservatoryTable.lat

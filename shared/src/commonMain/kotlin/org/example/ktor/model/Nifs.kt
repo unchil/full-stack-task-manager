@@ -10,9 +10,7 @@ data class Observation(
     val obs_datetime: String,
     val repair_gbn: String,
     val obs_lay: String,
-    val wtr_tmp: String,
-    val dox: String?,
-    val sal: String?,
+    val wtr_tmp: String
 )
 
 @Serializable
@@ -41,8 +39,6 @@ data class SeawaterInformationByObservationPoint(
     val obs_datetime: String,
     val obs_lay: String,
     val wtr_tmp: String,
-    val dox: String?,
-    val sal: String?,
     val gru_nam: String,
     val lon: Double,
     val lat: Double,

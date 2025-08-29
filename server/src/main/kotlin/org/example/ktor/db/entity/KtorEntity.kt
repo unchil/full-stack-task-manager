@@ -29,8 +29,6 @@ fun toSeawaterInformationByObservationPoint(it: ResultRow) = SeawaterInformation
     it[ObservationTable.obs_datetime],
     it[ObservationTable.obs_lay],
     it[ObservationTable.wtr_tmp],
-    it[ObservationTable.dox],
-    it[ObservationTable.sal],
     it[ObservatoryTable.gru_nam],
     it[ObservatoryTable.lon],
     it[ObservatoryTable.lat]
@@ -47,8 +45,6 @@ object ObservationTable: Table("Observation"){
     val repair_gbn =  varchar("repair_gbn", 1)
     val obs_lay = varchar("obs_lay", 1)
     val wtr_tmp = varchar("wtr_tmp", 10)
-    val dox = varchar("dox", 10).nullable()
-    val sal = varchar("sal", 10).nullable()
 
     init {
         index("idx_datetime", false, columns = arrayOf(obs_datetime) )
@@ -63,9 +59,7 @@ fun toObservation(it: ResultRow) = Observation (
     it[ObservationTable.obs_datetime],
     it[ObservationTable.repair_gbn],
     it[ObservationTable.obs_lay],
-    it[ObservationTable.wtr_tmp],
-    it[ObservationTable.dox],
-    it[ObservationTable.sal]
+    it[ObservationTable.wtr_tmp]
 )
 
 

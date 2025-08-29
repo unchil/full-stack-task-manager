@@ -50,8 +50,8 @@ fun getRealTimeObservation( ){
 
             val sql = """INSERT INTO ${tableName} ( 
                     sta_cde, sta_nam_kor, obs_dat, obs_tim, obs_datetime,
-                    repair_gbn, obs_lay, wtr_tmp, dox, sal 
-                ) VALUES (?,?,?,?,?,?,?,?,?,? )""".trimIndent()
+                    repair_gbn, obs_lay, wtr_tmp
+                ) VALUES (?,?,?,?,?,?,?,? )""".trimIndent()
 
             LOGGER.debug("\n"+ sql)
 
@@ -68,21 +68,6 @@ fun getRealTimeObservation( ){
                             preparedStatement.setString(6, it["repair_gbn"].toString())
                             preparedStatement.setString(7, it["obs_lay"].toString())
                             preparedStatement.setString(8, tmp.toString())
-
-
-
-                            preparedStatement.setString(9,   "0")
-                            preparedStatement.setString(10,   "0")
-                            /*
-                            it["dox"]?.let{
-                                preparedStatement.setString(9,   it.toString())
-                            }
-                            it["sal"]?.let{
-                                preparedStatement.setString(10,   it.toString())
-                            }
-
-                             */
-
                             preparedStatement.executeUpdate()
                         }
                     } catch (e: Exception){
