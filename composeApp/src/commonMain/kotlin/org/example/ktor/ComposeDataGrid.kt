@@ -631,8 +631,8 @@ fun ComposeColumnRow(
             }
             val onClick: () -> Unit = {
                 columnInfo.sortOrder.value = when(columnInfo.sortOrder.value){
-                    0 -> 1
-                    1 -> -1
+                    0 -> -1
+                    -1 -> 1
                     else -> 0
                 }
                 onSortOrder?.invoke( columnInfo)

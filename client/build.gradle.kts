@@ -16,10 +16,6 @@ application {
 
 kotlin {
 
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21) // 또는 "17", "23" 등
-    }
-
     dependencies {
         implementation(libs.ktor.client.core)
         implementation(libs.ktor.client.cio)
