@@ -21,14 +21,12 @@ class NifsSeaWaterInfoCurrentViewModel: ViewModel() {
     val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
             = MutableStateFlow(emptyList())
 
-    val _gridDataStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
-            = MutableStateFlow(emptyList())
+
 
     init {
         viewModelScope.launch {
             repository._seaWaterInfoCurrentStateFlow.collectLatest {
                 _seaWaterInfoCurrentStateFlow.value = it
-                _gridDataStateFlow.value = it
             }
         }
     }
@@ -52,9 +50,6 @@ class NifsSeaWaterInfoCurrentViewModel: ViewModel() {
 
     suspend fun getSeaWaterInfo(division: DATA_DIVISION){
         repository.getSeaWaterInfo(division)
-        repository._seaWaterInfoCurrentStateFlow.collectLatest {
-            _seaWaterInfoCurrentStateFlow.value = it
-        }
     }
 
     suspend fun searchData(columnName: String, searchText: String){
