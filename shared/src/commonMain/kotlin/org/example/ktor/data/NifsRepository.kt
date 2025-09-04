@@ -1,9 +1,7 @@
 package org.example.ktor.data
 
-import io.ktor.util.logging.*
+import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.serialization.json.Json
-import org.example.ktor.model.GeoJson
 import org.example.ktor.model.Observatory
 import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint

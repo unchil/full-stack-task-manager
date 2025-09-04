@@ -26,10 +26,10 @@ import kotlin.js.json
 
 object ElementID {
     enum class ID {
-        LayerBars, BoxPlot, Line, Ribbon, AgGridCurrent
+        LayerBars, BoxPlot, Line, Ribbon, AgGridCurrent, ComposeDataGrid
     }
     val IDs = listOf(
-        ID.LayerBars, ID.BoxPlot, ID.Line, ID.Ribbon, ID.AgGridCurrent
+        ID.LayerBars, ID.BoxPlot, ID.Line, ID.Ribbon, ID.AgGridCurrent, ID.ComposeDataGrid
     )
 }
 
@@ -40,6 +40,7 @@ fun ElementID.ID.division(): DATA_DIVISION {
         ElementID.ID.Line -> DATA_DIVISION.oneday
         ElementID.ID.Ribbon -> DATA_DIVISION.statistics
         ElementID.ID.AgGridCurrent -> DATA_DIVISION.oneday
+        ElementID.ID.ComposeDataGrid -> DATA_DIVISION.grid
     }
 }
 
@@ -84,6 +85,10 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
                 createGrid(it, data.toGridData().toTypedArray())
             }
+        }
+
+        ElementID.ID.ComposeDataGrid -> {
+
         }
     }
 

@@ -1,12 +1,19 @@
 package org.example.ktor
 
+import androidx.compose.ui.ExperimentalComposeUiApi
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.html.*
+
+import kotlinx.html.br
+import kotlinx.html.div
 import kotlinx.html.dom.append
+import kotlinx.html.h1
+import kotlinx.html.h3
+import kotlinx.html.id
+import kotlinx.html.style
 import org.example.ktor.data.DATA_DIVISION
 import org.example.ktor.data.NifsRepository
 import org.example.ktor.model.SeawaterInformationByObservationPoint
@@ -24,6 +31,7 @@ fun main() {
             setContent(repository, ElementID.ID.Line)
             setContent(repository, ElementID.ID.Ribbon)
             setContent(repository, ElementID.ID.AgGridCurrent)
+
         }
     }
 
@@ -35,44 +43,44 @@ fun createLayOut( completeHandle:()->Unit) {
 
         h1 { +"Nifs Sea Water Temperature Infomation"; style="text-align:center;" }
 
-        h3 {+"Nifs Sea Water Temperature OneDay Data"}
+        div { id = ElementID.ID.BoxPlot.name}
 
+
+        div { id = ElementID.ID.LayerBars.name}
+
+
+        div { id = ElementID.ID.Line.name}
+
+
+        div { id = ElementID.ID.Ribbon.name}
+        br{}
         div {
             id = ElementID.ID.AgGridCurrent.name
             style="width: 1360px;height: 600px"
         }
-
-        br{}
-
-        div { id = ElementID.ID.LayerBars.name}
-
-        div { id = ElementID.ID.BoxPlot.name}
-
-        div { id = ElementID.ID.Line.name}
-
-        div { id = ElementID.ID.Ribbon.name}
 
     }
     completeHandle()
 }
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 fun setContent(
     repository: NifsRepository,
     id: ElementID.ID
 ) = CoroutineScope(Dispatchers.Default).launch {
 
     val data = when(id.division()){
-        DATA_DIVISION.current, DATA_DIVISION.oneday -> {
+        DATA_DIVISION.current,
+        DATA_DIVISION.oneday,
+        DATA_DIVISION.grid -> {
             repository.getSeaWaterInfoValues(id.division().name)
         }
         DATA_DIVISION.statistics -> {
             repository.getSeaWaterInfoStatValues()
         }
-        else ->{
-            emptyList()
-        }
     }
+
 
     createContent(id, data)
 
