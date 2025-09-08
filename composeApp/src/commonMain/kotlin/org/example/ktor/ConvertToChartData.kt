@@ -8,6 +8,10 @@ import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
 
+enum class GRU_NAME {
+    WEST, EAST, SOUTH
+}
+
 fun List<*>.toLayerBarsData():Map<String,List<Any>> {
     val sta_nam_kor = mutableListOf<String>()
     val sta_cod = mutableListOf<String>()
@@ -86,7 +90,7 @@ fun List<*>.toLineData():Map<String,List<Any>> {
     )
 }
 
-fun List<*>.toRibbonData():Map<String,List<Any>> {
+fun List<*>.toRibbonData(gruName: GRU_NAME):Map<String,List<Any>> {
     val gru_nam = mutableListOf<String>()
     val sta_cde = mutableListOf<String>()
     val sta_nam_kor = mutableListOf<String>()
@@ -95,8 +99,14 @@ fun List<*>.toRibbonData():Map<String,List<Any>> {
     val tmp_max = mutableListOf<Float>()
     val tmp_avg = mutableListOf<Float>()
 
+    val name = when(gruName) {
+        GRU_NAME.WEST -> "서해"
+        GRU_NAME.EAST -> "동해"
+        GRU_NAME.SOUTH -> "남해"
+    }
+
     this.forEach {
-        if (it is SeaWaterInfoByOneHourStat && it.gru_nam.equals("동해")) {
+        if (it is SeaWaterInfoByOneHourStat && it.gru_nam.equals(name)) {
             gru_nam.add(it.gru_nam)
             sta_cde.add(it.sta_cde)
             sta_nam_kor.add(it.sta_nam_kor)
@@ -118,6 +128,7 @@ fun List<*>.toRibbonData():Map<String,List<Any>> {
     )
 
 }
+
 
 fun SeawaterInformationByObservationPoint.toList(): List<Any?> {
     val convertList = mutableListOf<Any?>()

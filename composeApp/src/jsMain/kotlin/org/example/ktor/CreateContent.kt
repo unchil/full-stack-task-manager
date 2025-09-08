@@ -75,7 +75,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
         ElementID.ID.Ribbon -> {
             document.getElementById(ElementID.ID.Ribbon.name)?.appendChild(
                 JsFrontendUtil.createPlotDiv(
-                    createRibbonChart(data.toRibbonData())
+                    createRibbonChart(data.toRibbonData(GRU_NAME.WEST))
                 )
             )
         }
@@ -169,7 +169,7 @@ fun createRibbonChart(data: Map<String,List<Any>>):Plot {
                 fill="ObservatoryName"
             } +
             geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
-            labs(title="Korea EastSea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
+            labs(title="Korea WestSea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
             theme +
             ggsize(1400, 400)
 }
