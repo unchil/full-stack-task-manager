@@ -12,6 +12,14 @@ enum class GRU_NAME {
     WEST, EAST, SOUTH
 }
 
+fun GRU_NAME.gru_nam():String {
+    return when(this) {
+        GRU_NAME.WEST -> "서해"
+        GRU_NAME.EAST -> "동해"
+        GRU_NAME.SOUTH -> "남해"
+    }
+}
+
 fun List<*>.toLayerBarsData():Map<String,List<Any>> {
     val sta_nam_kor = mutableListOf<String>()
     val sta_cod = mutableListOf<String>()
@@ -75,15 +83,8 @@ fun List<*>.toLineData(gruName: GRU_NAME):Map<String,List<Any>> {
     val wtr_tmp = mutableListOf<Float>()
     val obs_datetime = mutableListOf<String>()
 
-    val name = when(gruName) {
-        GRU_NAME.WEST -> "서해"
-        GRU_NAME.EAST -> "동해"
-        GRU_NAME.SOUTH -> "남해"
-    }
-
-
     this.forEach {
-        if (it is SeawaterInformationByObservationPoint && it.gru_nam.equals(name) && it.obs_lay.equals("1")) {
+        if (it is SeawaterInformationByObservationPoint && it.gru_nam.equals(gruName.gru_nam()) && it.obs_lay.equals("1")) {
             sta_nam_kor.add(it.sta_nam_kor)
             obs_datetime.add(dateTimeFormatInput.parse(it.obs_datetime).format(dateTimeFormatOuput))
             wtr_tmp.add(it.wtr_tmp.trim().toFloat())
@@ -106,14 +107,8 @@ fun List<*>.toRibbonData(gruName: GRU_NAME):Map<String,List<Any>> {
     val tmp_max = mutableListOf<Float>()
     val tmp_avg = mutableListOf<Float>()
 
-    val name = when(gruName) {
-        GRU_NAME.WEST -> "서해"
-        GRU_NAME.EAST -> "동해"
-        GRU_NAME.SOUTH -> "남해"
-    }
-
     this.forEach {
-        if (it is SeaWaterInfoByOneHourStat && it.gru_nam.equals(name)) {
+        if (it is SeaWaterInfoByOneHourStat && it.gru_nam.equals(gruName.gru_nam())) {
             gru_nam.add(it.gru_nam)
             sta_cde.add(it.sta_cde)
             sta_nam_kor.add(it.sta_nam_kor)
