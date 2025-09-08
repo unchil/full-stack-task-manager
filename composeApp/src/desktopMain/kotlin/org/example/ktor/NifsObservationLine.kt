@@ -43,7 +43,7 @@ fun NifsObservationLine(modifier: Modifier = Modifier) {
         val seaWaterInfoOneday = viewModel._seaWaterInfoOneDayStateFlow.collectAsState()
 
         LaunchedEffect(key1= seaWaterInfoOneday.value){
-            figureLine = createLineChart(seaWaterInfoOneday.value.toLineData()   )
+            figureLine = createLineChart(seaWaterInfoOneday.value.toLineData(GRU_NAME.EAST)   )
         }
 
         Row(modifier = Modifier.then(modifier).padding(vertical = 8.dp)) {

@@ -67,7 +67,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
         ElementID.ID.Line -> {
             document.getElementById(ElementID.ID.Line.name)?.appendChild(
                 JsFrontendUtil.createPlotDiv(
-                    createLineChart(data.toLineData())
+                    createLineChart(data.toLineData(GRU_NAME.WEST))
                 )
             )
         }
@@ -155,7 +155,7 @@ fun createBoxPlotChart(data: Map<String,List<Any>>):Plot{
 fun createLineChart(data: Map<String,List<Any>>):Plot {
     return letsPlot(data) +
             geomLine { x="CollectingTime"; y="Temperature"; color="ObservatoryName"} +
-            labs( title="Korea EastSea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
+            labs( title="Korea WestSea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
             theme +
             ggsize( width = 1400, height = 400)
 }

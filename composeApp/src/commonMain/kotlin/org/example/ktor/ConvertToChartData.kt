@@ -67,7 +67,7 @@ fun List<*>.toBoxPlotData():Map<String,List<Any>> {
 }
 
 @OptIn(FormatStringsInDatetimeFormats::class)
-fun List<*>.toLineData():Map<String,List<Any>> {
+fun List<*>.toLineData(gruName: GRU_NAME):Map<String,List<Any>> {
     val dateTimeFormatInput = LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm:ss") }
     val dateTimeFormatOuput = LocalDateTime.Format { byUnicodePattern("yy/MM/dd HH:mm") }
 
@@ -75,8 +75,15 @@ fun List<*>.toLineData():Map<String,List<Any>> {
     val wtr_tmp = mutableListOf<Float>()
     val obs_datetime = mutableListOf<String>()
 
+    val name = when(gruName) {
+        GRU_NAME.WEST -> "서해"
+        GRU_NAME.EAST -> "동해"
+        GRU_NAME.SOUTH -> "남해"
+    }
+
+
     this.forEach {
-        if (it is SeawaterInformationByObservationPoint && it.gru_nam.equals("동해") && it.obs_lay.equals("1")) {
+        if (it is SeawaterInformationByObservationPoint && it.gru_nam.equals(name) && it.obs_lay.equals("1")) {
             sta_nam_kor.add(it.sta_nam_kor)
             obs_datetime.add(dateTimeFormatInput.parse(it.obs_datetime).format(dateTimeFormatOuput))
             wtr_tmp.add(it.wtr_tmp.trim().toFloat())
