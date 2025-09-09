@@ -4,6 +4,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
+import org.example.ktor.SEA_AREA.gru_nam
 import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
@@ -75,7 +76,7 @@ fun List<*>.toBoxPlotData():Map<String,List<Any>> {
 }
 
 @OptIn(FormatStringsInDatetimeFormats::class)
-fun List<*>.toLineData(gruName: GRU_NAME):Map<String,List<Any>> {
+fun List<*>.toLineData(gruName: SEA_AREA.GRU_NAME):Map<String,List<Any>> {
     val dateTimeFormatInput = LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm:ss") }
     val dateTimeFormatOuput = LocalDateTime.Format { byUnicodePattern("yy/MM/dd HH:mm") }
 
@@ -98,7 +99,7 @@ fun List<*>.toLineData(gruName: GRU_NAME):Map<String,List<Any>> {
     )
 }
 
-fun List<*>.toRibbonData(gruName: GRU_NAME):Map<String,List<Any>> {
+fun List<*>.toRibbonData(gruName: SEA_AREA.GRU_NAME):Map<String,List<Any>> {
     val gru_nam = mutableListOf<String>()
     val sta_cde = mutableListOf<String>()
     val sta_nam_kor = mutableListOf<String>()

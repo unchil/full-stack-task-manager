@@ -40,7 +40,7 @@ fun NifsObservationRibbon(modifier: Modifier = Modifier) {
         val seaWaterInfoStat = viewModel._seaWaterInfoStatStateFlow.collectAsState()
 
         LaunchedEffect(key1= seaWaterInfoStat.value){
-            figureLine = createRibbonChart(seaWaterInfoStat.value.toRibbonData(GRU_NAME.EAST))
+            figureLine = createRibbonChart(seaWaterInfoStat.value.toRibbonData(SEA_AREA.GRU_NAME.EAST))
         }
 
         Row(modifier = Modifier.then(modifier).padding(vertical = 8.dp)) {

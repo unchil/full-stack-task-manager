@@ -67,7 +67,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
         ElementID.ID.Line -> {
             document.getElementById(ElementID.ID.Line.name)?.appendChild(
                 JsFrontendUtil.createPlotDiv(
-                    createLineChart(data.toLineData(GRU_NAME.WEST))
+                    createLineChart(data.toLineData(SEA_AREA.GRU_NAME.WEST))
                 )
             )
         }
@@ -75,7 +75,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
         ElementID.ID.Ribbon -> {
             document.getElementById(ElementID.ID.Ribbon.name)?.appendChild(
                 JsFrontendUtil.createPlotDiv(
-                    createRibbonChart(data.toRibbonData(GRU_NAME.WEST))
+                    createRibbonChart(data.toRibbonData(SEA_AREA.GRU_NAME.WEST))
                 )
             )
         }
