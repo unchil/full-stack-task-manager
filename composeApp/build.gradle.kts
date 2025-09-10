@@ -132,6 +132,10 @@ kotlin {
             implementation(libs.ktor.serialization.json)
             implementation(libs.lets.plot.kotlin.js)
             implementation(libs.kotlinx.html.js)
+
+            implementation(libs.react)
+            implementation(libs.reactDom)
+
         }
 
 

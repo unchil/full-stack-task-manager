@@ -6,22 +6,57 @@ import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 import kotlinx.html.br
 import kotlinx.html.div
 import kotlinx.html.dom.append
 import kotlinx.html.h1
-import kotlinx.html.h3
 import kotlinx.html.id
 import kotlinx.html.style
 import org.example.ktor.data.DATA_DIVISION
 import org.example.ktor.data.NifsRepository
 import org.example.ktor.model.SeawaterInformationByObservationPoint
+import react.FC
+import react.Props
+import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.input
+import react.dom.html.ReactHTML.label
+import web.html.InputType
 import kotlin.js.Json
 import kotlin.js.json
 
-fun main() {
 
+external interface SeaSelectionProps : Props {
+    var selectedSea: String
+    var onSelect: (String) -> Unit
+}
+
+val SeaSelection = FC<SeaSelectionProps> { props ->
+    val seas = SEA_AREA.gruNames
+    div {
+        seas.forEach { sea ->
+            div {
+                this.asDynamic().key = sea // sea 값을 key로 사용 (고유하다면)
+                // The rest of your input and label elements
+                input {
+                    type = InputType.radio
+                    id = sea
+                    name = "seaAreaRadioBtnGroup" // 모든 라디오 버튼에 동일한 name 부여
+                    value = sea
+                    checked = props.selectedSea == sea
+                    onChange = {
+                        props.onSelect(it.target.value)
+                    }
+                }
+                label {
+                    htmlFor = sea
+                    +sea
+                }
+            }
+        }
+    }
+}
+
+fun main() {
     val repository = getPlatform().nifsRepository
 
     window.onload = {
@@ -32,10 +67,13 @@ fun main() {
             setContent(repository, ElementID.ID.Ribbon)
             setContent(repository, ElementID.ID.AgGridCurrent)
 
+            setContent(repository, ElementID.ID.SeaArea)
         }
     }
 
 }
+
+
 
 fun createLayOut( completeHandle:()->Unit) {
     val body = document.body ?: error("No body")
@@ -48,6 +86,7 @@ fun createLayOut( completeHandle:()->Unit) {
 
         div { id = ElementID.ID.LayerBars.name}
 
+        div { id = ElementID.ID.SeaArea.name}
 
         div { id = ElementID.ID.Line.name}
 

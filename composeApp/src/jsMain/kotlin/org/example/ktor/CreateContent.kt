@@ -21,15 +21,17 @@ import org.jetbrains.letsPlot.themes.elementText
 import org.jetbrains.letsPlot.themes.theme
 import org.jetbrains.letsPlot.tooltips.layerTooltips
 import org.w3c.dom.Element
+import react.create
+import react.dom.client.createRoot
 import kotlin.js.Json
 import kotlin.js.json
 
 object ElementID {
     enum class ID {
-        LayerBars, BoxPlot, Line, Ribbon, AgGridCurrent, ComposeDataGrid
+        LayerBars, BoxPlot, Line, Ribbon, AgGridCurrent, ComposeDataGrid, SeaArea
     }
     val IDs = listOf(
-        ID.LayerBars, ID.BoxPlot, ID.Line, ID.Ribbon, ID.AgGridCurrent, ID.ComposeDataGrid
+        ID.LayerBars, ID.BoxPlot, ID.Line, ID.Ribbon, ID.AgGridCurrent, ID.ComposeDataGrid, ID.SeaArea
     )
 }
 
@@ -41,6 +43,7 @@ fun ElementID.ID.division(): DATA_DIVISION {
         ElementID.ID.Ribbon -> DATA_DIVISION.statistics
         ElementID.ID.AgGridCurrent -> DATA_DIVISION.oneday
         ElementID.ID.ComposeDataGrid -> DATA_DIVISION.grid
+        ElementID.ID.SeaArea -> DATA_DIVISION.oneday
     }
 }
 
@@ -88,6 +91,36 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
         }
 
         ElementID.ID.ComposeDataGrid -> {
+
+        }
+
+        ElementID.ID.SeaArea -> {
+
+            // 1. Define an initial selected sea
+            var currentSelectedSea = SEA_AREA.gruNames[0] // Or any default value
+
+            val container: web.dom.Element =
+                document.getElementById(ElementID.ID.SeaArea.name) as web.dom.Element? ?: error("Couldn't find "+ElementID.ID.SeaArea.name +" container!")
+
+            val root = createRoot(container)// 루트를 한 번만 생성
+
+
+            fun renderSeaAreaRadioBtn() { // 앱을 렌더링하는 함수
+                val seaAreaRadioBtn = SeaSelection.create {
+                    this.selectedSea = currentSelectedSea
+                    this.onSelect = { selectedSeaValue: String ->
+                        println("Sea selected: $selectedSeaValue")
+                        currentSelectedSea = selectedSeaValue // 상태 업데이트
+                        renderSeaAreaRadioBtn() // 상태 변경 후 다시 렌더링
+                    }
+                }
+
+                root.render(seaAreaRadioBtn)
+            }
+
+
+            renderSeaAreaRadioBtn() // 초기 렌더링
+
 
         }
     }
