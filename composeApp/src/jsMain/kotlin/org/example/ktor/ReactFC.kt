@@ -23,7 +23,7 @@ val SeaSelection = FC<SeaSelectionProps> { props ->
         seas.forEach { it ->
             div {
                 this.asDynamic().key = it // sea 값을 key로 사용 (고유하다면)
-                // The rest of your input and label elements
+
                 input {
                     type = InputType.radio
                     id = it.name
@@ -52,8 +52,8 @@ val RibbonSelection = FC<SeaSelectionProps> { props ->
 
         seas.forEach { it ->
             div {
-                this.asDynamic().key = it.name + "_ribbon"  // sea 값을 key로 사용 (고유하다면)
-                // The rest of your input and label elements
+                this.asDynamic().key = it   // sea 값을 key로 사용 (고유하다면)
+
                 input {
                     type = InputType.radio
                     id = it.name
