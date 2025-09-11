@@ -125,12 +125,11 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
                     }
                 }
 
-                val childHTMLDivElement: Node =  JsFrontendUtil.createPlotDiv(
-                    createLineChart(selectedOption, data.toLineData(selectedOption))
+                document.getElementById(ElementID.ID.Line.name)?.appendChild(
+                    JsFrontendUtil.createPlotDiv(
+                        createLineChart(selectedOption, data.toLineData(selectedOption))
+                    )
                 )
-
-                document.getElementById(ElementID.ID.Line.name)?.appendChild(childHTMLDivElement)
-
 
             }
 

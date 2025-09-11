@@ -15,7 +15,6 @@ import kotlinx.html.style
 import org.example.ktor.data.DATA_DIVISION
 import org.example.ktor.data.NifsRepository
 import org.example.ktor.model.SeawaterInformationByObservationPoint
-import web.html.HTMLDivElement
 import kotlin.js.Json
 import kotlin.js.json
 
@@ -30,7 +29,6 @@ fun main() {
         createLayOut{
             setContent(repository, ElementID.ID.LayerBars)
             setContent(repository, ElementID.ID.BoxPlot)
-        //    setContent(repository, ElementID.ID.Line)
             setContent(repository, ElementID.ID.Ribbon)
             setContent(repository, ElementID.ID.AgGridCurrent)
 
