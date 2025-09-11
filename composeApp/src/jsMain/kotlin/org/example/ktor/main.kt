@@ -19,8 +19,8 @@ import kotlin.js.Json
 import kotlin.js.json
 
 
-var selectedOption:SEA_AREA.GRU_NAME = SEA_AREA.GRU_NAME.entries[1]
-
+var selectedOptionLine:SEA_AREA.GRU_NAME = SEA_AREA.GRU_NAME.entries[1]
+var selectedOptionRibbon:SEA_AREA.GRU_NAME = SEA_AREA.GRU_NAME.entries[1]
 
 fun main() {
     val repository = getPlatform().nifsRepository
@@ -29,10 +29,11 @@ fun main() {
         createLayOut{
             setContent(repository, ElementID.ID.LayerBars)
             setContent(repository, ElementID.ID.BoxPlot)
-            setContent(repository, ElementID.ID.Ribbon)
+      //      setContent(repository, ElementID.ID.Ribbon)
             setContent(repository, ElementID.ID.AgGridCurrent)
 
             setContent(repository, ElementID.ID.SeaArea)
+            setContent(repository, ElementID.ID.RibbonArea)
         }
     }
 
@@ -51,10 +52,9 @@ fun createLayOut( completeHandle:()->Unit) {
         div { id = ElementID.ID.LayerBars.name}
 
         div { id = ElementID.ID.SeaArea.name}
-
         div { id = ElementID.ID.Line.name}
 
-
+        div { id = ElementID.ID.RibbonArea.name}
         div { id = ElementID.ID.Ribbon.name}
 
         br{}

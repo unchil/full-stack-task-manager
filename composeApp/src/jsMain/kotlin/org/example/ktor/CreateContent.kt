@@ -28,10 +28,10 @@ import kotlin.js.json
 
 object ElementID {
     enum class ID {
-        LayerBars, BoxPlot, Line, Ribbon, AgGridCurrent, ComposeDataGrid, SeaArea
+        LayerBars, BoxPlot, Line, Ribbon, AgGridCurrent, ComposeDataGrid, SeaArea, RibbonArea
     }
     val IDs = listOf(
-        ID.LayerBars, ID.BoxPlot, ID.Line, ID.Ribbon, ID.AgGridCurrent, ID.ComposeDataGrid, ID.SeaArea
+        ID.LayerBars, ID.BoxPlot, ID.Line, ID.Ribbon, ID.AgGridCurrent, ID.ComposeDataGrid, ID.SeaArea, ID.RibbonArea
     )
 }
 
@@ -44,6 +44,7 @@ fun ElementID.ID.division(): DATA_DIVISION {
         ElementID.ID.AgGridCurrent -> DATA_DIVISION.oneday
         ElementID.ID.ComposeDataGrid -> DATA_DIVISION.grid
         ElementID.ID.SeaArea -> DATA_DIVISION.oneday
+        ElementID.ID.RibbonArea -> DATA_DIVISION.statistics
     }
 }
 
@@ -72,7 +73,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
         ElementID.ID.Line -> {
             document.getElementById(ElementID.ID.Line.name)?.appendChild(
                 JsFrontendUtil.createPlotDiv(
-                    createLineChart(selectedOption, data.toLineData(selectedOption))
+                    createLineChart(selectedOptionLine, data.toLineData(selectedOptionLine))
                 )
             )
         }
@@ -80,7 +81,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
         ElementID.ID.Ribbon -> {
             document.getElementById(ElementID.ID.Ribbon.name)?.appendChild(
                 JsFrontendUtil.createPlotDiv(
-                    createRibbonChart(data.toRibbonData(SEA_AREA.GRU_NAME.WEST))
+                    createRibbonChart(selectedOptionLine, data.toRibbonData(selectedOptionLine))
                 )
             )
         }
@@ -98,7 +99,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
         ElementID.ID.SeaArea -> {
 
-            var currentSelectedSea = SEA_AREA.GRU_NAME.entries.find { it == selectedOption  }?.name ?: ""
+            var currentSelectedSea = SEA_AREA.GRU_NAME.entries.find { it == selectedOptionLine  }?.name ?: ""
 
             val container: web.dom.Element =
                 document.getElementById(ElementID.ID.SeaArea.name) as web.dom.Element? ?: error("Couldn't find "+ElementID.ID.SeaArea.name +" container!")
@@ -112,7 +113,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
                     this.onSelect = { selectedSeaValue: String ->
                         currentSelectedSea = selectedSeaValue // 상태 업데이트
 
-                        selectedOption = SEA_AREA.GRU_NAME.entries.find { it.name == selectedSeaValue  } ?: SEA_AREA.GRU_NAME.entries[1]
+                        selectedOptionLine = SEA_AREA.GRU_NAME.entries.find { it.name == selectedSeaValue  } ?: SEA_AREA.GRU_NAME.entries[1]
                         renderSeaAreaRadioBtn() // 상태 변경 후 다시 렌더링
                     }
                 }
@@ -127,7 +128,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
                 document.getElementById(ElementID.ID.Line.name)?.appendChild(
                     JsFrontendUtil.createPlotDiv(
-                        createLineChart(selectedOption, data.toLineData(selectedOption))
+                        createLineChart(selectedOptionLine, data.toLineData(selectedOptionLine))
                     )
                 )
 
@@ -135,6 +136,48 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
             renderSeaAreaRadioBtn() // 초기 렌더링
 
+
+        }
+
+        ElementID.ID.RibbonArea -> {
+
+
+            var currentSelectedSea = SEA_AREA.GRU_NAME.entries.find { it == selectedOptionRibbon  }?.name ?: ""
+
+            val container: web.dom.Element =
+                document.getElementById(ElementID.ID.RibbonArea.name) as web.dom.Element? ?: error("Couldn't find "+ElementID.ID.RibbonArea.name +" container!")
+
+            val root = createRoot(container)// 루트를 한 번만 생성
+
+
+            fun renderRibbonAreaRadioBtn() { // 앱을 렌더링하는 함수
+                val ribbonAreaRadioBtn = RibbonSelection.create {
+                    this.selectedSea = currentSelectedSea
+                    this.onSelect = { selectedSeaValue: String ->
+                        currentSelectedSea = selectedSeaValue // 상태 업데이트
+
+                        selectedOptionRibbon = SEA_AREA.GRU_NAME.entries.find { it.name == selectedSeaValue  } ?: SEA_AREA.GRU_NAME.entries[1]
+                        renderRibbonAreaRadioBtn() // 상태 변경 후 다시 렌더링
+                    }
+                }
+
+                root.render(ribbonAreaRadioBtn)
+
+                document.getElementById(ElementID.ID.Ribbon.name)?.let { it ->
+                    while (it.firstChild != null) {
+                        it.removeChild(it.firstChild!!)
+                    }
+                }
+
+                document.getElementById(ElementID.ID.Ribbon.name)?.appendChild(
+                    JsFrontendUtil.createPlotDiv(
+                        createRibbonChart(selectedOptionRibbon, data.toRibbonData(selectedOptionRibbon))
+                    )
+                )
+
+            }
+
+            renderRibbonAreaRadioBtn() // 초기 렌더링
 
         }
     }
@@ -208,7 +251,7 @@ fun createLineChart(entrie:SEA_AREA.GRU_NAME, data: Map<String,List<Any>>): Plot
             ggsize( width = 1400, height = 400)
 }
 
-fun createRibbonChart(data: Map<String,List<Any>>):Plot {
+fun createRibbonChart(entrie:SEA_AREA.GRU_NAME, data: Map<String,List<Any>>):Plot {
     return letsPlot(data) +
             geomRibbon(alpha = 0.1){
                 x="CollectingTime"
@@ -217,7 +260,7 @@ fun createRibbonChart(data: Map<String,List<Any>>):Plot {
                 fill="ObservatoryName"
             } +
             geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
-            labs(title="Korea WestSea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
+            labs( title="Korea "+ entrie.name +" Sea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
             theme +
             ggsize(1400, 400)
 }
