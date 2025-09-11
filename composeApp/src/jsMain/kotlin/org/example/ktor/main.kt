@@ -15,46 +15,13 @@ import kotlinx.html.style
 import org.example.ktor.data.DATA_DIVISION
 import org.example.ktor.data.NifsRepository
 import org.example.ktor.model.SeawaterInformationByObservationPoint
-import react.FC
-import react.Props
-import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.input
-import react.dom.html.ReactHTML.label
-import web.html.InputType
+import web.html.HTMLDivElement
 import kotlin.js.Json
 import kotlin.js.json
 
 
-external interface SeaSelectionProps : Props {
-    var selectedSea: String
-    var onSelect: (String) -> Unit
-}
+var selectedOption:SEA_AREA.GRU_NAME = SEA_AREA.GRU_NAME.entries[1]
 
-val SeaSelection = FC<SeaSelectionProps> { props ->
-    val seas = SEA_AREA.gruNames
-    div {
-        seas.forEach { sea ->
-            div {
-                this.asDynamic().key = sea // sea 값을 key로 사용 (고유하다면)
-                // The rest of your input and label elements
-                input {
-                    type = InputType.radio
-                    id = sea
-                    name = "seaAreaRadioBtnGroup" // 모든 라디오 버튼에 동일한 name 부여
-                    value = sea
-                    checked = props.selectedSea == sea
-                    onChange = {
-                        props.onSelect(it.target.value)
-                    }
-                }
-                label {
-                    htmlFor = sea
-                    +sea
-                }
-            }
-        }
-    }
-}
 
 fun main() {
     val repository = getPlatform().nifsRepository
@@ -63,7 +30,7 @@ fun main() {
         createLayOut{
             setContent(repository, ElementID.ID.LayerBars)
             setContent(repository, ElementID.ID.BoxPlot)
-            setContent(repository, ElementID.ID.Line)
+        //    setContent(repository, ElementID.ID.Line)
             setContent(repository, ElementID.ID.Ribbon)
             setContent(repository, ElementID.ID.AgGridCurrent)
 
@@ -83,7 +50,6 @@ fun createLayOut( completeHandle:()->Unit) {
 
         div { id = ElementID.ID.BoxPlot.name}
 
-
         div { id = ElementID.ID.LayerBars.name}
 
         div { id = ElementID.ID.SeaArea.name}
@@ -92,7 +58,9 @@ fun createLayOut( completeHandle:()->Unit) {
 
 
         div { id = ElementID.ID.Ribbon.name}
+
         br{}
+
         div {
             id = ElementID.ID.AgGridCurrent.name
             style="width: 1360px;height: 600px"
@@ -119,7 +87,6 @@ fun setContent(
             repository.getSeaWaterInfoStatValues()
         }
     }
-
 
     createContent(id, data)
 

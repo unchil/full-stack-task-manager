@@ -16,11 +16,11 @@ import org.jetbrains.letsPlot.label.labs
 import org.jetbrains.letsPlot.letsPlot
 import org.jetbrains.letsPlot.pos.positionDodge
 import org.jetbrains.letsPlot.scale.scaleColorViridis
-import org.jetbrains.letsPlot.scale.scaleYContinuous
 import org.jetbrains.letsPlot.themes.elementText
 import org.jetbrains.letsPlot.themes.theme
 import org.jetbrains.letsPlot.tooltips.layerTooltips
 import org.w3c.dom.Element
+import org.w3c.dom.Node
 import react.create
 import react.dom.client.createRoot
 import kotlin.js.Json
@@ -49,6 +49,8 @@ fun ElementID.ID.division(): DATA_DIVISION {
 
 fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
+
+
     when(elementId) {
 
         ElementID.ID.LayerBars -> {
@@ -70,7 +72,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
         ElementID.ID.Line -> {
             document.getElementById(ElementID.ID.Line.name)?.appendChild(
                 JsFrontendUtil.createPlotDiv(
-                    createLineChart(data.toLineData(SEA_AREA.GRU_NAME.WEST))
+                    createLineChart(selectedOption, data.toLineData(selectedOption))
                 )
             )
         }
@@ -96,8 +98,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
         ElementID.ID.SeaArea -> {
 
-            // 1. Define an initial selected sea
-            var currentSelectedSea = SEA_AREA.gruNames[0] // Or any default value
+            var currentSelectedSea = SEA_AREA.GRU_NAME.entries.find { it == selectedOption  }?.name ?: ""
 
             val container: web.dom.Element =
                 document.getElementById(ElementID.ID.SeaArea.name) as web.dom.Element? ?: error("Couldn't find "+ElementID.ID.SeaArea.name +" container!")
@@ -109,15 +110,29 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
                 val seaAreaRadioBtn = SeaSelection.create {
                     this.selectedSea = currentSelectedSea
                     this.onSelect = { selectedSeaValue: String ->
-                        println("Sea selected: $selectedSeaValue")
                         currentSelectedSea = selectedSeaValue // 상태 업데이트
+
+                        selectedOption = SEA_AREA.GRU_NAME.entries.find { it.name == selectedSeaValue  } ?: SEA_AREA.GRU_NAME.entries[1]
                         renderSeaAreaRadioBtn() // 상태 변경 후 다시 렌더링
                     }
                 }
 
                 root.render(seaAreaRadioBtn)
-            }
 
+                document.getElementById(ElementID.ID.Line.name)?.let { it ->
+                    while (it.firstChild != null) {
+                        it.removeChild(it.firstChild!!)
+                    }
+                }
+
+                val childHTMLDivElement: Node =  JsFrontendUtil.createPlotDiv(
+                    createLineChart(selectedOption, data.toLineData(selectedOption))
+                )
+
+                document.getElementById(ElementID.ID.Line.name)?.appendChild(childHTMLDivElement)
+
+
+            }
 
             renderSeaAreaRadioBtn() // 초기 렌더링
 
@@ -185,10 +200,11 @@ fun createBoxPlotChart(data: Map<String,List<Any>>):Plot{
             ggsize(1400, 400)
 }
 
-fun createLineChart(data: Map<String,List<Any>>):Plot {
+
+fun createLineChart(entrie:SEA_AREA.GRU_NAME, data: Map<String,List<Any>>): Plot {
     return letsPlot(data) +
             geomLine { x="CollectingTime"; y="Temperature"; color="ObservatoryName"} +
-            labs( title="Korea WestSea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
+            labs( title="Korea "+ entrie.name +" Sea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
             theme +
             ggsize( width = 1400, height = 400)
 }
