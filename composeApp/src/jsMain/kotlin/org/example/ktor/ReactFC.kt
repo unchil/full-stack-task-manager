@@ -7,6 +7,7 @@ import react.dom.html.ReactHTML.input
 import react.dom.html.ReactHTML.label
 import web.html.InputType
 
+import web.cssom.ClassName
 
 external interface SeaSelectionProps : Props {
     var selectedSea: String
@@ -16,6 +17,9 @@ external interface SeaSelectionProps : Props {
 val SeaSelection = FC<SeaSelectionProps> { props ->
     val seas = SEA_AREA.GRU_NAME.entries
     div {
+
+        className = ClassName("horizontal-div") // Corrected line
+
         seas.forEach { it ->
             div {
                 this.asDynamic().key = it // sea 값을 key로 사용 (고유하다면)
