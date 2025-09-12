@@ -1,7 +1,6 @@
 package org.example.ktor
 
 
-import kotlinx.browser.document
 import org.jetbrains.letsPlot.frontend.JsFrontendUtil
 import org.w3c.dom.Element
 import react.FC
@@ -14,11 +13,6 @@ import react.useState
 import web.cssom.ClassName
 import web.html.InputType
 
-
-// SeaSelectionProps 및 SeaSelection 컴포넌트는 이전과 유사하게 유지될 수 있지만,
-// 여기서는 SeaAreaRadioBtn 컴포넌트에 로직을 통합합니다.
-
-// 이 Props는 외부에서 초기 선택값과 차트 데이터 및 업데이트 함수를 받을 수 있도록 합니다.
 external interface SeaAreaRadioBtnProps : Props {
     var initialSelectedSea: SEA_AREA.GRU_NAME
     var chartDiv: Element?
@@ -42,23 +36,19 @@ val SeaAreaRadioBtn = FC<SeaAreaRadioBtnProps> { props ->
     // 차트 업데이트 로직 (useEffect 사용)
     // selectedSea 상태가 변경될 때마다 차트를 다시 그림
     useEffect(selectedSea) {
-       // val lineDiv = document.getElementById(ElementID.ID.Line.name)
-        val lineDiv = props.chartDiv
-        lineDiv?.let {
+
+        props.chartDiv?.let {
             // 기존 차트 내용 지우기
             while (it.firstChild != null) {
                 it.removeChild(it.firstChild!!)
             }
-
-
             // 새 차트 추가
             it.appendChild(
             JsFrontendUtil.createPlotDiv(
                 props.createLineChartFunction(
-                    selectedSea,
-                    props.lineChartDataMapper(selectedSea, props.chartData)
+                        selectedSea,
+                        props.lineChartDataMapper(selectedSea, props.chartData) )
                 )
-             )
             )
         }
     }

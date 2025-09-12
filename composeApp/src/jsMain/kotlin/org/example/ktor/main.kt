@@ -26,11 +26,11 @@ fun main() {
 
     window.onload = {
         createLayOut{
-            setContent(repository, ElementID.ID.LayerBars)
-            setContent(repository, ElementID.ID.BoxPlot)
-            setContent(repository, ElementID.ID.SeaArea)
-            setContent(repository, ElementID.ID.RibbonArea)
-            setContent(repository, ElementID.ID.AgGridCurrent)
+            setContent(repository, ContainerDiv.ID.LayerBars)
+            setContent(repository, ContainerDiv.ID.BoxPlot)
+            setContent(repository, ContainerDiv.ID.SeaArea)
+            setContent(repository, ContainerDiv.ID.RibbonArea)
+            setContent(repository, ContainerDiv.ID.AgGridCurrent)
         }
     }
 
@@ -44,20 +44,20 @@ fun createLayOut( completeHandle:()->Unit) {
 
         h1 { +"Nifs Sea Water Temperature Infomation"; style="text-align:center;" }
 
-        div { id = ElementID.ID.BoxPlot.name}
+        div { id = ContainerDiv.ID.BoxPlot.name}
 
-        div { id = ElementID.ID.LayerBars.name}
+        div { id = ContainerDiv.ID.LayerBars.name}
 
-        div { id = ElementID.ID.SeaArea.name}
-        div { id = ElementID.ID.Line.name}
+        div { id = ContainerDiv.ID.SeaArea.name}
+        div { id = ContainerDiv.ID.Line.name}
 
-        div { id = ElementID.ID.RibbonArea.name}
-        div { id = ElementID.ID.Ribbon.name}
+        div { id = ContainerDiv.ID.RibbonArea.name}
+        div { id = ContainerDiv.ID.Ribbon.name}
 
         br{}
 
         div {
-            id = ElementID.ID.AgGridCurrent.name
+            id = ContainerDiv.ID.AgGridCurrent.name
             style="width: 1360px;height: 600px"
         }
 
@@ -69,7 +69,7 @@ fun createLayOut( completeHandle:()->Unit) {
 @OptIn(ExperimentalComposeUiApi::class)
 fun setContent(
     repository: NifsRepository,
-    id: ElementID.ID
+    id: ContainerDiv.ID
 ) = CoroutineScope(Dispatchers.Default).launch {
 
     val data = when(id.division()){

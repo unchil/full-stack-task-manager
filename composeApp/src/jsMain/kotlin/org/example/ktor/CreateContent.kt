@@ -27,7 +27,7 @@ import kotlin.js.json
 
 import web.dom.Element as WasmElement // web.dom.Element의 별칭 사용
 
-object ElementID {
+object ContainerDiv {
     enum class ID {
         LayerBars, BoxPlot, Line, Ribbon, AgGridCurrent, ComposeDataGrid, SeaArea, RibbonArea
     }
@@ -36,35 +36,35 @@ object ElementID {
     )
 }
 
-fun ElementID.ID.division(): DATA_DIVISION {
+fun ContainerDiv.ID.division(): DATA_DIVISION {
     return when(this){
-        ElementID.ID.LayerBars -> DATA_DIVISION.current
-        ElementID.ID.BoxPlot -> DATA_DIVISION.oneday
-        ElementID.ID.Line -> DATA_DIVISION.oneday
-        ElementID.ID.Ribbon -> DATA_DIVISION.statistics
-        ElementID.ID.AgGridCurrent -> DATA_DIVISION.oneday
-        ElementID.ID.ComposeDataGrid -> DATA_DIVISION.grid
-        ElementID.ID.SeaArea -> DATA_DIVISION.oneday
-        ElementID.ID.RibbonArea -> DATA_DIVISION.statistics
+        ContainerDiv.ID.LayerBars -> DATA_DIVISION.current
+        ContainerDiv.ID.BoxPlot -> DATA_DIVISION.oneday
+        ContainerDiv.ID.Line -> DATA_DIVISION.oneday
+        ContainerDiv.ID.Ribbon -> DATA_DIVISION.statistics
+        ContainerDiv.ID.AgGridCurrent -> DATA_DIVISION.oneday
+        ContainerDiv.ID.ComposeDataGrid -> DATA_DIVISION.grid
+        ContainerDiv.ID.SeaArea -> DATA_DIVISION.oneday
+        ContainerDiv.ID.RibbonArea -> DATA_DIVISION.statistics
     }
 }
 
-fun createContent(elementId: ElementID.ID, data:List<Any>)   {
+fun createContent(elementId: ContainerDiv.ID, data:List<Any>)   {
 
     val selectedOptionLine:SEA_AREA.GRU_NAME = SEA_AREA.GRU_NAME.entries[1]
 
     when(elementId) {
 
-        ElementID.ID.LayerBars -> {
-            document.getElementById(ElementID.ID.LayerBars.name)?.appendChild(
+        ContainerDiv.ID.LayerBars -> {
+            document.getElementById(ContainerDiv.ID.LayerBars.name)?.appendChild(
                 JsFrontendUtil.createPlotDiv(
                     createBarChart(data.toLayerBarsData())
                 )
             )
         }
 
-        ElementID.ID.BoxPlot -> {
-            document.getElementById(ElementID.ID.BoxPlot.name)?.appendChild(
+        ContainerDiv.ID.BoxPlot -> {
+            document.getElementById(ContainerDiv.ID.BoxPlot.name)?.appendChild(
                 JsFrontendUtil.createPlotDiv(
                     createBoxPlotChart(data.toBoxPlotData())
                 )
@@ -72,16 +72,16 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
         }
 
 
-        ElementID.ID.Line -> {
-            document.getElementById(ElementID.ID.Line.name)?.appendChild(
+        ContainerDiv.ID.Line -> {
+            document.getElementById(ContainerDiv.ID.Line.name)?.appendChild(
                 JsFrontendUtil.createPlotDiv(
                     createLineChart(selectedOptionLine, data.toLineData(selectedOptionLine))
                 )
             )
         }
 
-        ElementID.ID.Ribbon -> {
-            document.getElementById(ElementID.ID.Ribbon.name)?.appendChild(
+        ContainerDiv.ID.Ribbon -> {
+            document.getElementById(ContainerDiv.ID.Ribbon.name)?.appendChild(
                 JsFrontendUtil.createPlotDiv(
                     createRibbonChart(selectedOptionLine, data.toRibbonData(selectedOptionLine))
                 )
@@ -90,35 +90,30 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
 
 
-        ElementID.ID.AgGridCurrent -> {
-            document.getElementById(ElementID.ID.AgGridCurrent.name)?.let {
+        ContainerDiv.ID.AgGridCurrent -> {
+            document.getElementById(ContainerDiv.ID.AgGridCurrent.name)?.let {
 
                 createGrid(it, data.toGridData().toTypedArray())
             }
         }
 
-        ElementID.ID.ComposeDataGrid -> {
+        ContainerDiv.ID.ComposeDataGrid -> {
 
         }
 
 
-        ElementID.ID.SeaArea -> {
+        ContainerDiv.ID.SeaArea -> {
             val container: WasmElement =
-                document.getElementById(ElementID.ID.SeaArea.name) as? WasmElement
-                    ?: error("Couldn't find ${ElementID.ID.SeaArea.name} container!")
-
-            // createRoot는 한 번만 호출되도록 관리하거나,
-            // 이 함수가 여러 번 호출될 수 있다면 root 인스턴스를 저장해두는 로직이 필요할 수 있습니다.
-            // 여기서는 단순화를 위해 매번 생성합니다.
-            val root = createRoot(container)
+                document.getElementById(ContainerDiv.ID.SeaArea.name) as? WasmElement
+                    ?: error("Couldn't find ${ContainerDiv.ID.SeaArea.name} container!")
 
             // SeaAreaRadioBtn 컴포넌트 렌더링
             // selectedOptionLine은 이제 컴포넌트 내부 상태로 관리되므로, 초기값만 전달
 
-            root.render(
+            createRoot(container).render(
                 SeaAreaRadioBtn.create {
                     initialSelectedSea = selectedOptionLine // 기존 selectedOptionLine을 초기값으로 전달
-                    chartDiv = document.getElementById(ElementID.ID.Line.name)
+                    chartDiv = document.getElementById(ContainerDiv.ID.Line.name)
                     chartData = data // 전체 원본 데이터 전달
                     createLineChartFunction = ::createLineChart // createLineChart 함수 자체를 전달
                     lineChartDataMapper =
@@ -127,17 +122,15 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
             )
         }
 
-        ElementID.ID.RibbonArea -> {
+        ContainerDiv.ID.RibbonArea -> {
             val container: WasmElement =
-                document.getElementById(ElementID.ID.RibbonArea.name) as? WasmElement
-                    ?: error("Couldn't find ${ElementID.ID.RibbonArea.name} container!")
+                document.getElementById(ContainerDiv.ID.RibbonArea.name) as? WasmElement
+                    ?: error("Couldn't find ${ContainerDiv.ID.RibbonArea.name} container!")
 
-            val root = createRoot(container)
-
-            root.render(
+                createRoot(container).render(
                 RibbonAreaRadioBtn.create {
                     initialSelectedSea = selectedOptionLine
-                    chartDiv = document.getElementById(ElementID.ID.Ribbon.name)
+                    chartDiv = document.getElementById(ContainerDiv.ID.Ribbon.name)
                     chartData = data
                     createLineChartFunction = ::createRibbonChart
                     lineChartDataMapper =
