@@ -9,18 +9,6 @@ import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 
 
-enum class GRU_NAME {
-    WEST, EAST, SOUTH
-}
-
-fun GRU_NAME.gru_nam():String {
-    return when(this) {
-        GRU_NAME.WEST -> "서해"
-        GRU_NAME.EAST -> "동해"
-        GRU_NAME.SOUTH -> "남해"
-    }
-}
-
 fun List<*>.toLayerBarsData():Map<String,List<Any>> {
     val sta_nam_kor = mutableListOf<String>()
     val sta_cod = mutableListOf<String>()
