@@ -118,6 +118,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
             root.render(
                 SeaAreaRadioBtn.create {
                     initialSelectedSea = selectedOptionLine // 기존 selectedOptionLine을 초기값으로 전달
+                    chartDiv = document.getElementById(ElementID.ID.Line.name)
                     chartData = data // 전체 원본 데이터 전달
                     createLineChartFunction = ::createLineChart // createLineChart 함수 자체를 전달
                     lineChartDataMapper =
@@ -135,11 +136,12 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
             root.render(
                 RibbonAreaRadioBtn.create {
-                    initialSelectedSea = selectedOptionLine // 기존 selectedOptionLine을 초기값으로 전달
-                    chartData = data // 전체 원본 데이터 전달
-                    createLineChartFunction = ::createRibbonChart // createLineChart 함수 자체를 전달
+                    initialSelectedSea = selectedOptionLine
+                    chartDiv = document.getElementById(ElementID.ID.Ribbon.name)
+                    chartData = data
+                    createLineChartFunction = ::createRibbonChart
                     lineChartDataMapper =
-                        { sea, listData -> listData.toRibbonData(sea) } // 데이터 변환 로직 전달
+                        { sea, listData -> listData.toRibbonData(sea) }
                 }
             )
         }

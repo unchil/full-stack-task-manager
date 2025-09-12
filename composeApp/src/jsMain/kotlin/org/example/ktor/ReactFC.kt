@@ -3,6 +3,7 @@ package org.example.ktor
 
 import kotlinx.browser.document
 import org.jetbrains.letsPlot.frontend.JsFrontendUtil
+import org.w3c.dom.Element
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
@@ -20,7 +21,7 @@ import web.html.InputType
 // 이 Props는 외부에서 초기 선택값과 차트 데이터 및 업데이트 함수를 받을 수 있도록 합니다.
 external interface SeaAreaRadioBtnProps : Props {
     var initialSelectedSea: SEA_AREA.GRU_NAME
-
+    var chartDiv: Element?
     var chartData: List<Any> // 차트 그리기에 필요한 전체 데이터
     var createLineChartFunction: (SEA_AREA.GRU_NAME, Map<String, List<Any>>) -> org.jetbrains.letsPlot.intern.Plot // 함수 타입 명시
     var lineChartDataMapper: (SEA_AREA.GRU_NAME, List<Any>) -> Map<String, List<Any>> // 데이터 매핑 함수 타입
@@ -41,8 +42,8 @@ val SeaAreaRadioBtn = FC<SeaAreaRadioBtnProps> { props ->
     // 차트 업데이트 로직 (useEffect 사용)
     // selectedSea 상태가 변경될 때마다 차트를 다시 그림
     useEffect(selectedSea) {
-        val lineDiv = document.getElementById(ElementID.ID.Line.name)
-
+       // val lineDiv = document.getElementById(ElementID.ID.Line.name)
+        val lineDiv = props.chartDiv
         lineDiv?.let {
             // 기존 차트 내용 지우기
             while (it.firstChild != null) {
@@ -101,7 +102,7 @@ val RibbonAreaRadioBtn = FC<SeaAreaRadioBtnProps> { props ->
     }
 
     useEffect(selectedSea) {
-        val lineDiv = document.getElementById(ElementID.ID.Ribbon.name)
+        val lineDiv = props.chartDiv
 
         lineDiv?.let {
             while (it.firstChild != null) {

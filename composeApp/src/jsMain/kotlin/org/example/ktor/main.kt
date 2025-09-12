@@ -28,11 +28,9 @@ fun main() {
         createLayOut{
             setContent(repository, ElementID.ID.LayerBars)
             setContent(repository, ElementID.ID.BoxPlot)
-      //      setContent(repository, ElementID.ID.Ribbon)
-            setContent(repository, ElementID.ID.AgGridCurrent)
-
             setContent(repository, ElementID.ID.SeaArea)
             setContent(repository, ElementID.ID.RibbonArea)
+            setContent(repository, ElementID.ID.AgGridCurrent)
         }
     }
 
