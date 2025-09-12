@@ -19,8 +19,7 @@ import kotlin.js.Json
 import kotlin.js.json
 
 
-var selectedOptionLine:SEA_AREA.GRU_NAME = SEA_AREA.GRU_NAME.entries[1]
-var selectedOptionRibbon:SEA_AREA.GRU_NAME = SEA_AREA.GRU_NAME.entries[1]
+
 
 fun main() {
     val repository = getPlatform().nifsRepository

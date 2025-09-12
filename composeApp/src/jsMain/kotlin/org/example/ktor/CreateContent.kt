@@ -20,11 +20,12 @@ import org.jetbrains.letsPlot.themes.elementText
 import org.jetbrains.letsPlot.themes.theme
 import org.jetbrains.letsPlot.tooltips.layerTooltips
 import org.w3c.dom.Element
-import org.w3c.dom.Node
 import react.create
 import react.dom.client.createRoot
 import kotlin.js.Json
 import kotlin.js.json
+
+import web.dom.Element as WasmElement // web.dom.Element의 별칭 사용
 
 object ElementID {
     enum class ID {
@@ -50,7 +51,7 @@ fun ElementID.ID.division(): DATA_DIVISION {
 
 fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
-
+    val selectedOptionLine:SEA_AREA.GRU_NAME = SEA_AREA.GRU_NAME.entries[1]
 
     when(elementId) {
 
@@ -70,6 +71,7 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
             )
         }
 
+
         ElementID.ID.Line -> {
             document.getElementById(ElementID.ID.Line.name)?.appendChild(
                 JsFrontendUtil.createPlotDiv(
@@ -86,6 +88,8 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
             )
         }
 
+
+
         ElementID.ID.AgGridCurrent -> {
             document.getElementById(ElementID.ID.AgGridCurrent.name)?.let {
 
@@ -97,94 +101,55 @@ fun createContent(elementId: ElementID.ID, data:List<Any>)   {
 
         }
 
+
         ElementID.ID.SeaArea -> {
+            val container: WasmElement =
+                document.getElementById(ElementID.ID.SeaArea.name) as? WasmElement
+                    ?: error("Couldn't find ${ElementID.ID.SeaArea.name} container!")
 
-            var currentSelectedSea = SEA_AREA.GRU_NAME.entries.find { it == selectedOptionLine  }?.name ?: ""
+            // createRoot는 한 번만 호출되도록 관리하거나,
+            // 이 함수가 여러 번 호출될 수 있다면 root 인스턴스를 저장해두는 로직이 필요할 수 있습니다.
+            // 여기서는 단순화를 위해 매번 생성합니다.
+            val root = createRoot(container)
 
-            val container: web.dom.Element =
-                document.getElementById(ElementID.ID.SeaArea.name) as web.dom.Element? ?: error("Couldn't find "+ElementID.ID.SeaArea.name +" container!")
+            // SeaAreaRadioBtn 컴포넌트 렌더링
+            // selectedOptionLine은 이제 컴포넌트 내부 상태로 관리되므로, 초기값만 전달
 
-            val root = createRoot(container)// 루트를 한 번만 생성
-
-
-            fun renderSeaAreaRadioBtn() { // 앱을 렌더링하는 함수
-                val seaAreaRadioBtn = SeaSelection.create {
-                    this.selectedSea = currentSelectedSea
-                    this.onSelect = { selectedSeaValue: String ->
-                        currentSelectedSea = selectedSeaValue // 상태 업데이트
-
-                        selectedOptionLine = SEA_AREA.GRU_NAME.entries.find { it.name == selectedSeaValue  } ?: SEA_AREA.GRU_NAME.entries[1]
-                        renderSeaAreaRadioBtn() // 상태 변경 후 다시 렌더링
-                    }
+            root.render(
+                SeaAreaRadioBtn.create {
+                    initialSelectedSea = selectedOptionLine // 기존 selectedOptionLine을 초기값으로 전달
+                    chartData = data // 전체 원본 데이터 전달
+                    createLineChartFunction = ::createLineChart // createLineChart 함수 자체를 전달
+                    lineChartDataMapper =
+                        { sea, listData -> listData.toLineData(sea) } // 데이터 변환 로직 전달
                 }
-
-                root.render(seaAreaRadioBtn)
-
-                document.getElementById(ElementID.ID.Line.name)?.let { it ->
-                    while (it.firstChild != null) {
-                        it.removeChild(it.firstChild!!)
-                    }
-                }
-
-                document.getElementById(ElementID.ID.Line.name)?.appendChild(
-                    JsFrontendUtil.createPlotDiv(
-                        createLineChart(selectedOptionLine, data.toLineData(selectedOptionLine))
-                    )
-                )
-
-            }
-
-            renderSeaAreaRadioBtn() // 초기 렌더링
-
-
+            )
         }
 
         ElementID.ID.RibbonArea -> {
+            val container: WasmElement =
+                document.getElementById(ElementID.ID.RibbonArea.name) as? WasmElement
+                    ?: error("Couldn't find ${ElementID.ID.RibbonArea.name} container!")
 
+            val root = createRoot(container)
 
-            var currentSelectedSea = SEA_AREA.GRU_NAME.entries.find { it == selectedOptionRibbon  }?.name ?: ""
-
-            val container: web.dom.Element =
-                document.getElementById(ElementID.ID.RibbonArea.name) as web.dom.Element? ?: error("Couldn't find "+ElementID.ID.RibbonArea.name +" container!")
-
-            val root = createRoot(container)// 루트를 한 번만 생성
-
-
-            fun renderRibbonAreaRadioBtn() { // 앱을 렌더링하는 함수
-                val ribbonAreaRadioBtn = RibbonSelection.create {
-                    this.selectedSea = currentSelectedSea
-                    this.onSelect = { selectedSeaValue: String ->
-                        currentSelectedSea = selectedSeaValue // 상태 업데이트
-
-                        selectedOptionRibbon = SEA_AREA.GRU_NAME.entries.find { it.name == selectedSeaValue  } ?: SEA_AREA.GRU_NAME.entries[1]
-                        renderRibbonAreaRadioBtn() // 상태 변경 후 다시 렌더링
-                    }
+            root.render(
+                RibbonAreaRadioBtn.create {
+                    initialSelectedSea = selectedOptionLine // 기존 selectedOptionLine을 초기값으로 전달
+                    chartData = data // 전체 원본 데이터 전달
+                    createLineChartFunction = ::createRibbonChart // createLineChart 함수 자체를 전달
+                    lineChartDataMapper =
+                        { sea, listData -> listData.toRibbonData(sea) } // 데이터 변환 로직 전달
                 }
-
-                root.render(ribbonAreaRadioBtn)
-
-                document.getElementById(ElementID.ID.Ribbon.name)?.let { it ->
-                    while (it.firstChild != null) {
-                        it.removeChild(it.firstChild!!)
-                    }
-                }
-
-                document.getElementById(ElementID.ID.Ribbon.name)?.appendChild(
-                    JsFrontendUtil.createPlotDiv(
-                        createRibbonChart(selectedOptionRibbon, data.toRibbonData(selectedOptionRibbon))
-                    )
-                )
-
-            }
-
-            renderRibbonAreaRadioBtn() // 초기 렌더링
-
+            )
         }
+
     }
 
 }
 
-fun createGrid(gridDiv:Element, data:Array<Json>)  {
+// import org.w3c.dom.Element
+fun createGrid(gridDiv: Element, data:Array<Json>)  {
     val columnDefs = arrayOf(
         json( "field" to "sta_cde", "width" to 150),
         json( "field" to "sta_nam_kor", "width" to 150),

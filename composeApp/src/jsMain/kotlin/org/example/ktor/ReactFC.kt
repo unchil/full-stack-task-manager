@@ -1,42 +1,87 @@
 package org.example.ktor
 
+
+import kotlinx.browser.document
+import org.jetbrains.letsPlot.frontend.JsFrontendUtil
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.input
 import react.dom.html.ReactHTML.label
+import react.useEffect
+import react.useState
+import web.cssom.ClassName
 import web.html.InputType
 
-import web.cssom.ClassName
 
-external interface SeaSelectionProps : Props {
-    var selectedSea: String
-    var onSelect: (String) -> Unit
+// SeaSelectionProps 및 SeaSelection 컴포넌트는 이전과 유사하게 유지될 수 있지만,
+// 여기서는 SeaAreaRadioBtn 컴포넌트에 로직을 통합합니다.
+
+// 이 Props는 외부에서 초기 선택값과 차트 데이터 및 업데이트 함수를 받을 수 있도록 합니다.
+external interface SeaAreaRadioBtnProps : Props {
+    var initialSelectedSea: SEA_AREA.GRU_NAME
+
+    var chartData: List<Any> // 차트 그리기에 필요한 전체 데이터
+    var createLineChartFunction: (SEA_AREA.GRU_NAME, Map<String, List<Any>>) -> org.jetbrains.letsPlot.intern.Plot // 함수 타입 명시
+    var lineChartDataMapper: (SEA_AREA.GRU_NAME, List<Any>) -> Map<String, List<Any>> // 데이터 매핑 함수 타입
 }
 
-val SeaSelection = FC<SeaSelectionProps> { props ->
-    val seas = SEA_AREA.GRU_NAME.entries
+val SeaAreaRadioBtn = FC<SeaAreaRadioBtnProps> { props ->
+    // useState 훅을 사용하여 선택된 바다를 상태로 관리
+    var selectedSea by useState(props.initialSelectedSea)
+
+    // 선택 변경 시 호출될 함수
+    val handleSeaChange = { newSeaName: String ->
+        val newSelectedSeaEnum = SEA_AREA.GRU_NAME.entries.find { it.name == newSeaName }
+        newSelectedSeaEnum?.let {
+            selectedSea = it // 상태 업데이트 -> 리렌더링 유발
+        }
+    }
+
+    // 차트 업데이트 로직 (useEffect 사용)
+    // selectedSea 상태가 변경될 때마다 차트를 다시 그림
+    useEffect(selectedSea) {
+        val lineDiv = document.getElementById(ElementID.ID.Line.name)
+
+        lineDiv?.let {
+            // 기존 차트 내용 지우기
+            while (it.firstChild != null) {
+                it.removeChild(it.firstChild!!)
+            }
+
+
+            // 새 차트 추가
+            it.appendChild(
+            JsFrontendUtil.createPlotDiv(
+                props.createLineChartFunction(
+                    selectedSea,
+                    props.lineChartDataMapper(selectedSea, props.chartData)
+                )
+             )
+            )
+        }
+    }
+
     div {
+        className = ClassName("horizontal-div") // 수평 정렬을 위한 클래스 (CSS 필요)
 
-        className = ClassName("horizontal-div") // Corrected line
-
-        seas.forEach { it ->
+        SEA_AREA.GRU_NAME.entries.forEach { seaEnumEntry ->
             div {
-                this.asDynamic().key = it // sea 값을 key로 사용 (고유하다면)
+                key = seaEnumEntry.name // React 리스트 렌더링을 위한 key
 
                 input {
                     type = InputType.radio
-                    id = it.name
-                    name = "seaAreaRadioBtnGroup" // 모든 라디오 버튼에 동일한 name 부여
-                    value = it
-                    checked = props.selectedSea == it.name
-                    onChange = {
-                        props.onSelect(it.target.value)
+                    id = "line_chart_sea_${seaEnumEntry.name}" // 고유 ID
+                    name = "seaAreaRadioBtnGroupLine"        // 그룹명
+                    value = seaEnumEntry.name
+                    checked = selectedSea == seaEnumEntry
+                    onChange = { event ->
+                        handleSeaChange(event.target.value)
                     }
                 }
                 label {
-                    htmlFor = it.name
-                    +it.name
+                    htmlFor = "line_chart_sea_${seaEnumEntry.name}"
+                    +seaEnumEntry.name
                 }
             }
         }
@@ -44,31 +89,61 @@ val SeaSelection = FC<SeaSelectionProps> { props ->
 }
 
 
-val RibbonSelection = FC<SeaSelectionProps> { props ->
-    val seas = SEA_AREA.GRU_NAME.entries
+val RibbonAreaRadioBtn = FC<SeaAreaRadioBtnProps> { props ->
+
+    var selectedSea by useState(props.initialSelectedSea)
+
+    val handleSeaChange = { newSeaName: String ->
+        val newSelectedSeaEnum = SEA_AREA.GRU_NAME.entries.find { it.name == newSeaName }
+        newSelectedSeaEnum?.let {
+            selectedSea = it
+        }
+    }
+
+    useEffect(selectedSea) {
+        val lineDiv = document.getElementById(ElementID.ID.Ribbon.name)
+
+        lineDiv?.let {
+            while (it.firstChild != null) {
+                it.removeChild(it.firstChild!!)
+            }
+
+            it.appendChild(
+                JsFrontendUtil.createPlotDiv(
+                    props.createLineChartFunction(
+                        selectedSea,
+                        props.lineChartDataMapper(selectedSea, props.chartData)
+                    )
+                )
+            )
+        }
+    }
+
     div {
+        className = ClassName("horizontal-div")
 
-        className = ClassName("horizontal-div") // Corrected line
-
-        seas.forEach { it ->
+        SEA_AREA.GRU_NAME.entries.forEach { seaEnumEntry ->
             div {
-                this.asDynamic().key = it   // sea 값을 key로 사용 (고유하다면)
+                key = seaEnumEntry.name
 
                 input {
                     type = InputType.radio
-                    id = it.name
-                    name = "ribbonAreaRadioBtnGroup" // 모든 라디오 버튼에 동일한 name 부여
-                    value = it
-                    checked = props.selectedSea == it.name
-                    onChange = {
-                        props.onSelect(it.target.value)
+                    id = "ribbon_chart_sea_${seaEnumEntry.name}"
+                    name = "ribbonAreaRadioBtnGroupLine"
+                    value = seaEnumEntry.name
+                    checked = selectedSea == seaEnumEntry
+                    onChange = { event ->
+                        handleSeaChange(event.target.value)
                     }
                 }
                 label {
-                    htmlFor = it.name
-                    +it.name
+                    htmlFor = "ribbon_chart_sea_${seaEnumEntry.name}"
+                    +seaEnumEntry.name
                 }
             }
         }
     }
 }
+
+
+
