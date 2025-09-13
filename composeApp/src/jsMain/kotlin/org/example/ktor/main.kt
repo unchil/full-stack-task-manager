@@ -1,41 +1,30 @@
 package org.example.ktor
 
-import androidx.compose.ui.ExperimentalComposeUiApi
 import kotlinx.browser.document
 import kotlinx.browser.window
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.html.br
 import kotlinx.html.div
 import kotlinx.html.dom.append
 import kotlinx.html.h1
 import kotlinx.html.id
 import kotlinx.html.style
-import org.example.ktor.data.DATA_DIVISION
-import org.example.ktor.data.NifsRepository
-import org.example.ktor.model.SeawaterInformationByObservationPoint
-import kotlin.js.Json
-import kotlin.js.json
-
-
-
 
 fun main() {
-    val repository = getPlatform().nifsRepository
-
     window.onload = {
         createLayOut{
-            setContent(repository, ContainerDiv.ID.LayerBars)
-            setContent(repository, ContainerDiv.ID.BoxPlot)
-            setContent(repository, ContainerDiv.ID.SeaArea)
-            setContent(repository, ContainerDiv.ID.RibbonArea)
-            setContent(repository, ContainerDiv.ID.AgGridCurrent)
+
+            createContent(ContainerDiv.ID.BoxPlot)
+
+            createContent(ContainerDiv.ID.LayerBars)
+
+            createContent(ContainerDiv.ID.SeaArea)
+
+            createContent(ContainerDiv.ID.RibbonArea)
+
+            createContent(ContainerDiv.ID.AgGridCurrent)
+
         }
     }
-
 }
-
 
 
 fun createLayOut( completeHandle:()->Unit) {
@@ -54,8 +43,6 @@ fun createLayOut( completeHandle:()->Unit) {
         div { id = ContainerDiv.ID.RibbonArea.name}
         div { id = ContainerDiv.ID.Ribbon.name}
 
-        br{}
-
         div {
             id = ContainerDiv.ID.AgGridCurrent.name
             style="width: 1360px;height: 600px"
@@ -63,57 +50,4 @@ fun createLayOut( completeHandle:()->Unit) {
 
     }
     completeHandle()
-}
-
-
-@OptIn(ExperimentalComposeUiApi::class)
-fun setContent(
-    repository: NifsRepository,
-    id: ContainerDiv.ID
-) = CoroutineScope(Dispatchers.Default).launch {
-
-    val data = when(id.division()){
-        DATA_DIVISION.current,
-        DATA_DIVISION.oneday,
-        DATA_DIVISION.grid -> {
-            repository.getSeaWaterInfoValues(id.division().name)
-        }
-        DATA_DIVISION.statistics -> {
-            repository.getSeaWaterInfoStatValues()
-        }
-    }
-
-    createContent(id, data)
-
-}
-
-fun List<*>.toGridData():MutableList<Json>{
-
-    val rawData = mutableListOf<SeawaterInformationByObservationPoint>()
-
-    this.forEach {
-        if(it is SeawaterInformationByObservationPoint){
-            rawData.add(it)
-        }
-    }
-
-    val jsonData = mutableListOf<Json>()
-
-    rawData.sortedByDescending { it.obs_datetime }
-        .forEach {
-            val item = json(
-                "sta_cde" to it.sta_cde,
-                "sta_nam_kor" to it.sta_nam_kor,
-                "obs_datetime" to it.obs_datetime,
-                "obs_lay" to it.obs_lay,
-                "wtr_tmp" to it.wtr_tmp,
-                "gru_nam" to it.gru_nam,
-                "lon" to it.lon,
-                "lat" to it.lat
-            )
-            jsonData.add(item)
-
-        }
-
-    return jsonData
 }

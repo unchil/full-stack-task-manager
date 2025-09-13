@@ -3,9 +3,11 @@ package org.example.ktor
 
 
 import kotlinx.browser.document
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.asDiscrete
-import org.jetbrains.letsPlot.frontend.JsFrontendUtil
 import org.jetbrains.letsPlot.geom.geomBar
 import org.jetbrains.letsPlot.geom.geomBoxplot
 import org.jetbrains.letsPlot.geom.geomLine
@@ -24,8 +26,7 @@ import react.create
 import react.dom.client.createRoot
 import kotlin.js.Json
 import kotlin.js.json
-
-import web.dom.Element as WasmElement // web.dom.Element의 별칭 사용
+import web.dom.Element as WasmElement
 
 object ContainerDiv {
     enum class ID {
@@ -49,101 +50,107 @@ fun ContainerDiv.ID.division(): DATA_DIVISION {
     }
 }
 
-fun createContent(elementId: ContainerDiv.ID, data:List<Any>)   {
+suspend fun loadData(
+    id: DATA_DIVISION
+) :List<Any> {
+
+    val repository = getPlatform().nifsRepository
+
+    return when(id){
+        DATA_DIVISION.current,
+        DATA_DIVISION.oneday,
+        DATA_DIVISION.grid -> {
+            repository.getSeaWaterInfoValues(id.name)
+        }
+        DATA_DIVISION.statistics -> {
+            repository.getSeaWaterInfoStatValues()
+        }
+    }
+}
+
+
+fun createContent(elementId: ContainerDiv.ID){
+
+    val container: WasmElement =
+        document.getElementById(elementId.name) as? WasmElement
+            ?: error("Couldn't find ${elementId.name} container!")
 
     val selectedOptionLine:SEA_AREA.GRU_NAME = SEA_AREA.GRU_NAME.entries[1]
 
     when(elementId) {
-
-        ContainerDiv.ID.LayerBars -> {
-            document.getElementById(ContainerDiv.ID.LayerBars.name)?.appendChild(
-                JsFrontendUtil.createPlotDiv(
-                    createBarChart(data.toLayerBarsData())
-                )
-            )
-        }
-
-        ContainerDiv.ID.BoxPlot -> {
-            document.getElementById(ContainerDiv.ID.BoxPlot.name)?.appendChild(
-                JsFrontendUtil.createPlotDiv(
-                    createBoxPlotChart(data.toBoxPlotData())
-                )
-            )
-        }
-
-
-        ContainerDiv.ID.Line -> {
-            document.getElementById(ContainerDiv.ID.Line.name)?.appendChild(
-                JsFrontendUtil.createPlotDiv(
-                    createLineChart(selectedOptionLine, data.toLineData(selectedOptionLine))
-                )
-            )
-        }
-
-        ContainerDiv.ID.Ribbon -> {
-            document.getElementById(ContainerDiv.ID.Ribbon.name)?.appendChild(
-                JsFrontendUtil.createPlotDiv(
-                    createRibbonChart(selectedOptionLine, data.toRibbonData(selectedOptionLine))
-                )
-            )
-        }
-
-
-
-        ContainerDiv.ID.AgGridCurrent -> {
-            document.getElementById(ContainerDiv.ID.AgGridCurrent.name)?.let {
-
-                createGrid(it, data.toGridData().toTypedArray())
-            }
-        }
-
-        ContainerDiv.ID.ComposeDataGrid -> {
-
-        }
-
-
-        ContainerDiv.ID.SeaArea -> {
-            val container: WasmElement =
-                document.getElementById(ContainerDiv.ID.SeaArea.name) as? WasmElement
-                    ?: error("Couldn't find ${ContainerDiv.ID.SeaArea.name} container!")
-
-            // SeaAreaRadioBtn 컴포넌트 렌더링
-            // selectedOptionLine은 이제 컴포넌트 내부 상태로 관리되므로, 초기값만 전달
-
+        ContainerDiv.ID.LayerBars ->  CoroutineScope(Dispatchers.Default).launch {
             createRoot(container).render(
-                SeaAreaRadioBtn.create {
-                    initialSelectedSea = selectedOptionLine // 기존 selectedOptionLine을 초기값으로 전달
+                SeaWaterInfoChart.create {
+                    chartDiv = document.getElementById(elementId.name)
+                    dataDivision = elementId.division()
+                    loadDataFunction = ::loadData
+                    createChartFunction = ::createBarChart
+                    chartDataMapper =
+                        {  listData -> listData.toLayerBarsData() } // 데이터 변환 로직 전달
+                }
+            )
+
+        }
+        ContainerDiv.ID.BoxPlot -> CoroutineScope(Dispatchers.Default).launch {
+            createRoot(container).render(
+                SeaWaterInfoChart.create {
+                    chartDiv = document.getElementById(elementId.name)
+                    dataDivision = elementId.division()
+                    loadDataFunction = ::loadData
+                    createChartFunction = ::createBoxPlotChart
+                    chartDataMapper =
+                        {  listData -> listData.toBoxPlotData() } // 데이터 변환 로직 전달
+                }
+            )
+        }
+
+        ContainerDiv.ID.AgGridCurrent -> CoroutineScope(Dispatchers.Default).launch {
+            createRoot(container).render(
+                SeaWaterInfoDataGrid.create {
+                    chartDiv = document.getElementById(elementId.name)
+                    dataDivision = elementId.division()
+                    loadDataFunction = ::loadData
+                    createDataGridFunction = ::createGrid
+                    gridDataMapper =
+                        {  listData -> listData.toGridData() }
+                }
+            )
+
+        }
+
+        ContainerDiv.ID.SeaArea ->  CoroutineScope(Dispatchers.Default).launch {
+            createRoot(container).render(
+                SeaAreaLineChart.create {
+                    initialSelectedSea = selectedOptionLine
                     chartDiv = document.getElementById(ContainerDiv.ID.Line.name)
-                    chartData = data // 전체 원본 데이터 전달
-                    createLineChartFunction = ::createLineChart // createLineChart 함수 자체를 전달
-                    lineChartDataMapper =
+                    dataDivision = ContainerDiv.ID.Line.division()
+                    loadDataFunction = ::loadData
+                    createChartFunction = ::createLineChart
+                    chartDataMapper =
                         { sea, listData -> listData.toLineData(sea) } // 데이터 변환 로직 전달
                 }
             )
         }
-
-        ContainerDiv.ID.RibbonArea -> {
-            val container: WasmElement =
-                document.getElementById(ContainerDiv.ID.RibbonArea.name) as? WasmElement
-                    ?: error("Couldn't find ${ContainerDiv.ID.RibbonArea.name} container!")
-
-                createRoot(container).render(
-                RibbonAreaRadioBtn.create {
+        ContainerDiv.ID.RibbonArea ->  CoroutineScope(Dispatchers.Default).launch {
+            createRoot(container).render(
+                SeaAreaRibbonChart.create {
                     initialSelectedSea = selectedOptionLine
                     chartDiv = document.getElementById(ContainerDiv.ID.Ribbon.name)
-                    chartData = data
-                    createLineChartFunction = ::createRibbonChart
-                    lineChartDataMapper =
+                    dataDivision = ContainerDiv.ID.Ribbon.division()
+                    loadDataFunction = ::loadData
+                    createChartFunction = ::createRibbonChart
+                    chartDataMapper =
                         { sea, listData -> listData.toRibbonData(sea) }
                 }
             )
         }
-
+        ContainerDiv.ID.Line -> TODO()
+        ContainerDiv.ID.Ribbon -> TODO()
+        ContainerDiv.ID.ComposeDataGrid -> TODO()
     }
 
 }
 
-// import org.w3c.dom.Element
 fun createGrid(gridDiv: Element, data:Array<Json>)  {
     val columnDefs = arrayOf(
         json( "field" to "sta_cde", "width" to 150),
@@ -203,15 +210,15 @@ fun createBoxPlotChart(data: Map<String,List<Any>>):Plot{
 }
 
 
-fun createLineChart(entrie:SEA_AREA.GRU_NAME, data: Map<String,List<Any>>): Plot {
+fun createLineChart(entrie:SEA_AREA.GRU_NAME?, data: Map<String,List<Any>>): Plot {
     return letsPlot(data) +
             geomLine { x="CollectingTime"; y="Temperature"; color="ObservatoryName"} +
-            labs( title="Korea "+ entrie.name +" Sea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
+            labs( title="Korea "+ entrie?.name +" Sea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
             theme +
             ggsize( width = 1400, height = 400)
 }
 
-fun createRibbonChart(entrie:SEA_AREA.GRU_NAME, data: Map<String,List<Any>>):Plot {
+fun createRibbonChart(entrie:SEA_AREA.GRU_NAME?, data: Map<String,List<Any>>):Plot {
     return letsPlot(data) +
             geomRibbon(alpha = 0.1){
                 x="CollectingTime"
@@ -220,7 +227,7 @@ fun createRibbonChart(entrie:SEA_AREA.GRU_NAME, data: Map<String,List<Any>>):Plo
                 fill="ObservatoryName"
             } +
             geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
-            labs( title="Korea "+ entrie.name +" Sea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
+            labs( title="Korea "+ entrie?.name +" Sea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
             theme +
             ggsize(1400, 400)
 }
