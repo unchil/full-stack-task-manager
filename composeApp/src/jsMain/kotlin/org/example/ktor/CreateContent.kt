@@ -1,7 +1,5 @@
 package org.example.ktor
 
-
-
 import kotlinx.browser.document
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,30 +30,27 @@ object ContainerDiv {
     enum class ID {
         LayerBars, BoxPlot, Line, Ribbon, AgGridCurrent, ComposeDataGrid, SeaArea, RibbonArea
     }
-    val IDs = listOf(
-        ID.LayerBars, ID.BoxPlot, ID.Line, ID.Ribbon, ID.AgGridCurrent, ID.ComposeDataGrid, ID.SeaArea, ID.RibbonArea
-    )
 }
 
 fun ContainerDiv.ID.division(): DATA_DIVISION {
     return when(this){
-        ContainerDiv.ID.LayerBars -> DATA_DIVISION.current
-        ContainerDiv.ID.BoxPlot -> DATA_DIVISION.oneday
-        ContainerDiv.ID.Line -> DATA_DIVISION.oneday
-        ContainerDiv.ID.Ribbon -> DATA_DIVISION.statistics
-        ContainerDiv.ID.AgGridCurrent -> DATA_DIVISION.oneday
-        ContainerDiv.ID.ComposeDataGrid -> DATA_DIVISION.grid
-        ContainerDiv.ID.SeaArea -> DATA_DIVISION.oneday
-        ContainerDiv.ID.RibbonArea -> DATA_DIVISION.statistics
+        ContainerDiv.ID.LayerBars
+            -> DATA_DIVISION.current
+        ContainerDiv.ID.BoxPlot,
+        ContainerDiv.ID.Line,
+        ContainerDiv.ID.AgGridCurrent,
+        ContainerDiv.ID.SeaArea
+            -> DATA_DIVISION.oneday
+        ContainerDiv.ID.Ribbon,
+        ContainerDiv.ID.RibbonArea
+            -> DATA_DIVISION.statistics
+        ContainerDiv.ID.ComposeDataGrid
+            -> DATA_DIVISION.grid
     }
 }
 
-suspend fun loadData(
-    id: DATA_DIVISION
-) :List<Any> {
-
+suspend fun loadData( id: DATA_DIVISION) :List<Any> {
     val repository = getPlatform().nifsRepository
-
     return when(id){
         DATA_DIVISION.current,
         DATA_DIVISION.oneday,
@@ -75,8 +70,6 @@ fun createContent(elementId: ContainerDiv.ID){
         document.getElementById(elementId.name) as? WasmElement
             ?: error("Couldn't find ${elementId.name} container!")
 
-    val selectedOptionLine:SEA_AREA.GRU_NAME = SEA_AREA.GRU_NAME.entries[1]
-
     when(elementId) {
         ContainerDiv.ID.LayerBars ->  CoroutineScope(Dispatchers.Default).launch {
             createRoot(container).render(
@@ -86,7 +79,7 @@ fun createContent(elementId: ContainerDiv.ID){
                     loadDataFunction = ::loadData
                     createChartFunction = ::createBarChart
                     chartDataMapper =
-                        {  listData -> listData.toLayerBarsData() } // 데이터 변환 로직 전달
+                        {  listData -> listData.toLayerBarsData() }
                 }
             )
 
@@ -99,7 +92,7 @@ fun createContent(elementId: ContainerDiv.ID){
                     loadDataFunction = ::loadData
                     createChartFunction = ::createBoxPlotChart
                     chartDataMapper =
-                        {  listData -> listData.toBoxPlotData() } // 데이터 변환 로직 전달
+                        {  listData -> listData.toBoxPlotData() }
                 }
             )
         }
@@ -121,20 +114,20 @@ fun createContent(elementId: ContainerDiv.ID){
         ContainerDiv.ID.SeaArea ->  CoroutineScope(Dispatchers.Default).launch {
             createRoot(container).render(
                 SeaAreaLineChart.create {
-                    initialSelectedSea = selectedOptionLine
+                    initialSelectedSea =  SEA_AREA.GRU_NAME.entries[1]
                     chartDiv = document.getElementById(ContainerDiv.ID.Line.name)
                     dataDivision = ContainerDiv.ID.Line.division()
                     loadDataFunction = ::loadData
                     createChartFunction = ::createLineChart
                     chartDataMapper =
-                        { sea, listData -> listData.toLineData(sea) } // 데이터 변환 로직 전달
+                        { sea, listData -> listData.toLineData(sea) }
                 }
             )
         }
         ContainerDiv.ID.RibbonArea ->  CoroutineScope(Dispatchers.Default).launch {
             createRoot(container).render(
                 SeaAreaRibbonChart.create {
-                    initialSelectedSea = selectedOptionLine
+                    initialSelectedSea =  SEA_AREA.GRU_NAME.entries[1]
                     chartDiv = document.getElementById(ContainerDiv.ID.Ribbon.name)
                     dataDivision = ContainerDiv.ID.Ribbon.division()
                     loadDataFunction = ::loadData
