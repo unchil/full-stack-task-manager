@@ -43,6 +43,7 @@ external interface RadioButtonProps : Props {
 	var label: String
 	var checked: Boolean
 	var onChange: (Event: ChangeEvent<HTMLInputElement>) -> Unit
+	var id:String
 }
 
 val RadioButton = FC<RadioButtonProps> { props ->
@@ -52,9 +53,11 @@ val RadioButton = FC<RadioButtonProps> { props ->
 		value = props.value
 		checked = props.checked
 		onChange = props.onChange
+		id = props.id
 	}
 	label {
-		htmlFor = props.value // 라벨 클릭 시 라디오 버튼이 선택되도록 연결
+		// 라벨 클릭 시 라디오 버튼이 선택되도록 연결( input 의 id 와 label의 id 가 같아야 함)
+		htmlFor = props.id
 		+props.label
 	}
 }
@@ -121,10 +124,12 @@ val SeaAreaLineChart = FC<SeaWaterInfoChartProps> { props ->
 			div {
 				RadioButton {
 					name = "RadioGroup_line"+ props.chartDiv?.id  // 그룹별 고유 네임으로 설정( checked 관련 중요  )
+					id = seaEnumEntry.name + props.chartDiv?.id
 					value = seaEnumEntry.name
 					label = seaEnumEntry.name
 					checked = selectedSea == seaEnumEntry.name
 					onChange = handleOptionChange
+
 				}
 			}
 		}
