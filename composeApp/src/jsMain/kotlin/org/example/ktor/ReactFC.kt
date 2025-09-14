@@ -2,6 +2,7 @@ package org.example.ktor
 
 
 import kotlinx.dom.clear
+import org.example.ktor.SEA_AREA.gru_nam
 import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.frontend.JsFrontendUtil
 import org.w3c.dom.Element
@@ -17,12 +18,12 @@ import web.html.InputType
 import kotlin.js.Json
 
 external interface SeaWaterInfoChartProps : Props {
-	var initialSelectedSea: SEA_AREA.GRU_NAME
+	var initialSelectedSea: String
 	var chartDiv: Element?
 	var dataDivision : DATA_DIVISION
 	var loadDataFunction: suspend (DATA_DIVISION) -> List<Any>
-	var createChartFunction: ( Map<String, List<Any>>, SEA_AREA.GRU_NAME?) -> org.jetbrains.letsPlot.intern.Plot
-	var chartDataMapper: ( List<Any>, SEA_AREA.GRU_NAME?) -> Map<String, List<Any>>
+	var createChartFunction: ( Map<String, List<Any>>, String?) -> org.jetbrains.letsPlot.intern.Plot
+	var chartDataMapper: ( List<Any>, String?) -> Map<String, List<Any>>
 }
 
 external interface SeaWaterInfoDataGridProps : Props {
@@ -41,7 +42,6 @@ val SeaWaterInfoDataGrid = FC<SeaWaterInfoDataGridProps> { props ->
 			props.loadDataFunction(props.dataDivision).let { it ->
 				props.createDataGridFunction( currentDiv, props.gridDataMapper(it) )
 			}
-
 		}
 	}
 }
@@ -67,10 +67,7 @@ val SeaAreaLineChart = FC<SeaWaterInfoChartProps> { props ->
 	var selectedSea by useState(props.initialSelectedSea)
 
 	val handleSeaChange = { newSeaName: String ->
-		val newSelectedSeaEnum = SEA_AREA.GRU_NAME.entries.find { it.name == newSeaName }
-		newSelectedSeaEnum?.let {
-			selectedSea = it
-		}
+		selectedSea = SEA_AREA.GRU_NAME.entries.findLast{ it.name == newSeaName }?.name ?: SEA_AREA.GRU_NAME.entries[0].name
 	}
 
 	useEffect(selectedSea) {
@@ -81,8 +78,9 @@ val SeaAreaLineChart = FC<SeaWaterInfoChartProps> { props ->
 				currentDiv.appendChild(
 					JsFrontendUtil.createPlotDiv(
 						props.createChartFunction(
-							props.chartDataMapper( it, selectedSea) ,
-							selectedSea)
+							props.chartDataMapper(it, SEA_AREA.GRU_NAME.entries.findLast{ it.name == selectedSea }?.gru_nam()) ,
+							selectedSea
+						)
 					)
 				)
 			}
@@ -102,7 +100,7 @@ val SeaAreaLineChart = FC<SeaWaterInfoChartProps> { props ->
 					id = "line_chart_sea_${seaEnumEntry.name}" // 고유 ID
 					name = "seaAreaRadioBtnGroupLine"        // 그룹명
 					value = seaEnumEntry.name
-					checked = selectedSea == seaEnumEntry
+					checked = selectedSea == seaEnumEntry.name
 					onChange = { event ->
 						handleSeaChange(event.target.value)
 					}
@@ -122,10 +120,7 @@ val SeaAreaRibbonChart = FC<SeaWaterInfoChartProps> { props ->
 	var selectedSea by useState(props.initialSelectedSea)
 
 	val handleSeaChange = { newSeaName: String ->
-		val newSelectedSeaEnum = SEA_AREA.GRU_NAME.entries.find { it.name == newSeaName }
-		newSelectedSeaEnum?.let {
-			selectedSea = it
-		}
+		selectedSea = SEA_AREA.GRU_NAME.entries.findLast{ it.name == newSeaName }?.name ?: SEA_AREA.GRU_NAME.entries[0].name
 	}
 
 	useEffect(selectedSea) {
@@ -136,7 +131,7 @@ val SeaAreaRibbonChart = FC<SeaWaterInfoChartProps> { props ->
 				currentDiv.appendChild(
 					JsFrontendUtil.createPlotDiv(
 						props.createChartFunction(
-							props.chartDataMapper(it, selectedSea) ,
+							props.chartDataMapper(it, SEA_AREA.GRU_NAME.entries.findLast{ it.name == selectedSea }?.gru_nam()),
 							selectedSea
 						)
 					)
@@ -157,7 +152,7 @@ val SeaAreaRibbonChart = FC<SeaWaterInfoChartProps> { props ->
 					id = "ribbon_chart_sea_${seaEnumEntry.name}"
 					name = "ribbonAreaRadioBtnGroupLine"
 					value = seaEnumEntry.name
-					checked = selectedSea == seaEnumEntry
+					checked = selectedSea == seaEnumEntry.name
 					onChange = { event ->
 						handleSeaChange(event.target.value)
 					}

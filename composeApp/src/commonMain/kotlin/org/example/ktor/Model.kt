@@ -13,11 +13,4 @@ object SEA_AREA {
             GRU_NAME.SOUTH -> "남해"
         }
     }
-
-    val gruNames = listOf(
-        GRU_NAME.WEST.gru_nam(),
-        GRU_NAME.SOUTH.gru_nam(),
-        GRU_NAME.EAST.gru_nam()
-    )
-
 }

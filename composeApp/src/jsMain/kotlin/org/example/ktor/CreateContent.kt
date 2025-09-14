@@ -4,6 +4,7 @@ import kotlinx.browser.document
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.example.ktor.SEA_AREA.gru_nam
 import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.asDiscrete
 import org.jetbrains.letsPlot.geom.geomBar
@@ -114,14 +115,14 @@ fun createContent(elementId: ContainerDiv.ID){
         ContainerDiv.ID.SeaArea ->  CoroutineScope(Dispatchers.Default).launch {
             createRoot(container).render(
                 SeaAreaLineChart.create {
-                    initialSelectedSea =  SEA_AREA.GRU_NAME.entries[1]
+                    initialSelectedSea =  SEA_AREA.GRU_NAME.entries[1].name
                     chartDiv = document.getElementById(ContainerDiv.ID.Line.name)
                     dataDivision = ContainerDiv.ID.Line.division()
                     loadDataFunction = ::loadData
                     createChartFunction = ::createLineChart
                     chartDataMapper =
                         { listData, gruName ->
-                            listData.toLineData(gruName ?: SEA_AREA.GRU_NAME.entries[0])
+                            listData.toLineData(gruName ?: SEA_AREA.GRU_NAME.entries[0].gru_nam() )
                         }
                 }
             )
@@ -129,14 +130,14 @@ fun createContent(elementId: ContainerDiv.ID){
         ContainerDiv.ID.RibbonArea ->  CoroutineScope(Dispatchers.Default).launch {
             createRoot(container).render(
                 SeaAreaRibbonChart.create {
-                    initialSelectedSea =  SEA_AREA.GRU_NAME.entries[1]
+                    initialSelectedSea =  SEA_AREA.GRU_NAME.entries[1].name
                     chartDiv = document.getElementById(ContainerDiv.ID.Ribbon.name)
                     dataDivision = ContainerDiv.ID.Ribbon.division()
                     loadDataFunction = ::loadData
                     createChartFunction = ::createRibbonChart
                     chartDataMapper =
                         {  listData, gruName ->
-                            listData.toRibbonData(gruName ?: SEA_AREA.GRU_NAME.entries[0])
+                            listData.toRibbonData(gruName ?: SEA_AREA.GRU_NAME.entries[0].gru_nam())
                         }
                 }
             )
@@ -173,7 +174,7 @@ fun createGrid(gridDiv: Element, data:Array<Json>)  {
 
 val theme = theme( axisTextX= elementText( angle=45))
 
-fun createBarChart(data: Map<String,List<Any>>, entrie:SEA_AREA.GRU_NAME?): Plot {
+fun createBarChart(data: Map<String,List<Any>>, entrie:String?): Plot {
     return letsPlot(data) {
         x = "ObservatoryName"
         weight = "Temperature" } +
@@ -192,7 +193,7 @@ fun createBarChart(data: Map<String,List<Any>>, entrie:SEA_AREA.GRU_NAME?): Plot
             ggsize(width = 1400, height = 400)
 }
 
-fun createBoxPlotChart(data: Map<String,List<Any>>, entrie:SEA_AREA.GRU_NAME?):Plot{
+fun createBoxPlotChart(data: Map<String,List<Any>>, entrie:String?):Plot{
     val sta_nam_korByMiddle = asDiscrete("ObservatoryName", orderBy = "..middle..", order = 1)
     return letsPlot(data)  +
             scaleColorViridis(option = "C", end = 0.8) +
@@ -207,15 +208,15 @@ fun createBoxPlotChart(data: Map<String,List<Any>>, entrie:SEA_AREA.GRU_NAME?):P
 }
 
 
-fun createLineChart( data: Map<String,List<Any>>, entrie:SEA_AREA.GRU_NAME?): Plot {
+fun createLineChart( data: Map<String,List<Any>>, entrie:String?): Plot {
     return letsPlot(data) +
             geomLine { x="CollectingTime"; y="Temperature"; color="ObservatoryName"} +
-            labs( title="Korea ${entrie?.name} Sea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
+            labs( title="Korea ${entrie?: ""} Sea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
             theme +
             ggsize( width = 1400, height = 400)
 }
 
-fun createRibbonChart( data: Map<String,List<Any>>, entrie:SEA_AREA.GRU_NAME?):Plot {
+fun createRibbonChart( data: Map<String,List<Any>>, entrie:String?):Plot {
     return letsPlot(data) +
             geomRibbon(alpha = 0.1){
                 x="CollectingTime"
@@ -224,7 +225,7 @@ fun createRibbonChart( data: Map<String,List<Any>>, entrie:SEA_AREA.GRU_NAME?):P
                 fill="ObservatoryName"
             } +
             geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
-            labs( title="Korea ${entrie?.name} Sea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
+            labs( title="Korea ${entrie?:""} Sea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
             theme +
             ggsize(1400, 400)
 }

@@ -64,7 +64,7 @@ fun List<*>.toBoxPlotData():Map<String,List<Any>> {
 }
 
 @OptIn(FormatStringsInDatetimeFormats::class)
-fun List<*>.toLineData(gruName: SEA_AREA.GRU_NAME):Map<String,List<Any>> {
+fun List<*>.toLineData(gruName: String):Map<String,List<Any>> {
     val dateTimeFormatInput = LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm:ss") }
     val dateTimeFormatOuput = LocalDateTime.Format { byUnicodePattern("yy/MM/dd HH:mm") }
 
@@ -73,7 +73,7 @@ fun List<*>.toLineData(gruName: SEA_AREA.GRU_NAME):Map<String,List<Any>> {
     val obs_datetime = mutableListOf<String>()
 
     this.forEach {
-        if (it is SeawaterInformationByObservationPoint && it.gru_nam.equals(gruName.gru_nam()) && it.obs_lay.equals("1")) {
+        if (it is SeawaterInformationByObservationPoint && it.gru_nam.equals(gruName) && it.obs_lay.equals("1")) {
             sta_nam_kor.add(it.sta_nam_kor)
             obs_datetime.add(dateTimeFormatInput.parse(it.obs_datetime).format(dateTimeFormatOuput))
             wtr_tmp.add(it.wtr_tmp.trim().toFloat())
@@ -87,7 +87,7 @@ fun List<*>.toLineData(gruName: SEA_AREA.GRU_NAME):Map<String,List<Any>> {
     )
 }
 
-fun List<*>.toRibbonData(gruName: SEA_AREA.GRU_NAME):Map<String,List<Any>> {
+fun List<*>.toRibbonData(gruName: String):Map<String,List<Any>> {
     val gru_nam = mutableListOf<String>()
     val sta_cde = mutableListOf<String>()
     val sta_nam_kor = mutableListOf<String>()
@@ -97,7 +97,7 @@ fun List<*>.toRibbonData(gruName: SEA_AREA.GRU_NAME):Map<String,List<Any>> {
     val tmp_avg = mutableListOf<Float>()
 
     this.forEach {
-        if (it is SeaWaterInfoByOneHourStat && it.gru_nam.equals(gruName.gru_nam())) {
+        if (it is SeaWaterInfoByOneHourStat && it.gru_nam.equals(gruName)) {
             gru_nam.add(it.gru_nam)
             sta_cde.add(it.sta_cde)
             sta_nam_kor.add(it.sta_nam_kor)
