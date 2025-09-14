@@ -11,7 +11,6 @@ import kotlinx.html.style
 fun main() {
     window.onload = {
         createLayOut{
-
             createContent(ContainerDiv.ID.BoxPlot)
 
             createContent(ContainerDiv.ID.LayerBars)
@@ -32,6 +31,7 @@ fun createLayOut( completeHandle:()->Unit) {
     body.append {
 
         h1 { +"Nifs Sea Water Temperature Infomation"; style="text-align:center;" }
+
 
         div { id = ContainerDiv.ID.BoxPlot.name}
 

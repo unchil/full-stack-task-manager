@@ -47,6 +47,7 @@ fun ContainerDiv.ID.division(): DATA_DIVISION {
             -> DATA_DIVISION.statistics
         ContainerDiv.ID.ComposeDataGrid
             -> DATA_DIVISION.grid
+
     }
 }
 
@@ -129,7 +130,7 @@ fun createContent(elementId: ContainerDiv.ID){
         }
         ContainerDiv.ID.RibbonArea ->  CoroutineScope(Dispatchers.Default).launch {
             createRoot(container).render(
-                SeaAreaRibbonChart.create {
+                SeaAreaLineChart.create {
                     initialSelectedSea =  SEA_AREA.GRU_NAME.entries[1].name
                     chartDiv = document.getElementById(ContainerDiv.ID.Ribbon.name)
                     dataDivision = ContainerDiv.ID.Ribbon.division()

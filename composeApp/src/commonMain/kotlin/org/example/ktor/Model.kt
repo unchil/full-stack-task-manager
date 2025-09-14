@@ -6,6 +6,7 @@ object SEA_AREA {
         WEST, EAST, SOUTH
     }
 
+
     fun GRU_NAME.gru_nam():String {
         return when(this) {
             GRU_NAME.WEST -> "서해"
@@ -13,4 +14,5 @@ object SEA_AREA {
             GRU_NAME.SOUTH -> "남해"
         }
     }
+    
 }
