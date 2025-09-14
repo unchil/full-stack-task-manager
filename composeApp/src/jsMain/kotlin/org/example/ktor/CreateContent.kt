@@ -79,7 +79,7 @@ fun createContent(elementId: ContainerDiv.ID){
                     loadDataFunction = ::loadData
                     createChartFunction = ::createBarChart
                     chartDataMapper =
-                        {  listData -> listData.toLayerBarsData() }
+                        {  listData, _ -> listData.toLayerBarsData() }
                 }
             )
 
@@ -92,7 +92,7 @@ fun createContent(elementId: ContainerDiv.ID){
                     loadDataFunction = ::loadData
                     createChartFunction = ::createBoxPlotChart
                     chartDataMapper =
-                        {  listData -> listData.toBoxPlotData() }
+                        {  listData, _ -> listData.toBoxPlotData() }
                 }
             )
         }
@@ -120,7 +120,9 @@ fun createContent(elementId: ContainerDiv.ID){
                     loadDataFunction = ::loadData
                     createChartFunction = ::createLineChart
                     chartDataMapper =
-                        { sea, listData -> listData.toLineData(sea) }
+                        { listData, gruName ->
+                            listData.toLineData(gruName ?: SEA_AREA.GRU_NAME.entries[0])
+                        }
                 }
             )
         }
@@ -133,7 +135,9 @@ fun createContent(elementId: ContainerDiv.ID){
                     loadDataFunction = ::loadData
                     createChartFunction = ::createRibbonChart
                     chartDataMapper =
-                        { sea, listData -> listData.toRibbonData(sea) }
+                        {  listData, gruName ->
+                            listData.toRibbonData(gruName ?: SEA_AREA.GRU_NAME.entries[0])
+                        }
                 }
             )
         }
@@ -169,7 +173,7 @@ fun createGrid(gridDiv: Element, data:Array<Json>)  {
 
 val theme = theme( axisTextX= elementText( angle=45))
 
-fun createBarChart(data: Map<String,List<Any>>): Plot {
+fun createBarChart(data: Map<String,List<Any>>, entrie:SEA_AREA.GRU_NAME?): Plot {
     return letsPlot(data) {
         x = "ObservatoryName"
         weight = "Temperature" } +
@@ -188,7 +192,7 @@ fun createBarChart(data: Map<String,List<Any>>): Plot {
             ggsize(width = 1400, height = 400)
 }
 
-fun createBoxPlotChart(data: Map<String,List<Any>>):Plot{
+fun createBoxPlotChart(data: Map<String,List<Any>>, entrie:SEA_AREA.GRU_NAME?):Plot{
     val sta_nam_korByMiddle = asDiscrete("ObservatoryName", orderBy = "..middle..", order = 1)
     return letsPlot(data)  +
             scaleColorViridis(option = "C", end = 0.8) +
@@ -203,15 +207,15 @@ fun createBoxPlotChart(data: Map<String,List<Any>>):Plot{
 }
 
 
-fun createLineChart(entrie:SEA_AREA.GRU_NAME?, data: Map<String,List<Any>>): Plot {
+fun createLineChart( data: Map<String,List<Any>>, entrie:SEA_AREA.GRU_NAME?): Plot {
     return letsPlot(data) +
             geomLine { x="CollectingTime"; y="Temperature"; color="ObservatoryName"} +
-            labs( title="Korea "+ entrie?.name +" Sea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
+            labs( title="Korea ${entrie?.name} Sea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
             theme +
             ggsize( width = 1400, height = 400)
 }
 
-fun createRibbonChart(entrie:SEA_AREA.GRU_NAME?, data: Map<String,List<Any>>):Plot {
+fun createRibbonChart( data: Map<String,List<Any>>, entrie:SEA_AREA.GRU_NAME?):Plot {
     return letsPlot(data) +
             geomRibbon(alpha = 0.1){
                 x="CollectingTime"
@@ -220,7 +224,7 @@ fun createRibbonChart(entrie:SEA_AREA.GRU_NAME?, data: Map<String,List<Any>>):Pl
                 fill="ObservatoryName"
             } +
             geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
-            labs( title="Korea "+ entrie?.name +" Sea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
+            labs( title="Korea ${entrie?.name} Sea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
             theme +
             ggsize(1400, 400)
 }
