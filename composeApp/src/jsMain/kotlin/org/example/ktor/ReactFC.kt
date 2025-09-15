@@ -67,14 +67,14 @@ val RadioButton = FC<RadioButtonProps> { props ->
 
 val SeaWaterInfoDataGrid = FC<SeaWaterInfoDataGridProps> { props ->
 	// 1. 현재 시각을 저장하는 상태(state) 생성
-	val (currentTime, setCurrentTime) = useState(Date().toLocaleString())
+	var currentTime by useState(Date().toLocaleString())
 
-	// 2. 10분(600,000 밀리초)마다 실행되는 타이머 설정
+	// 2. 1분(600,000 밀리초)마다 실행되는 타이머 설정
 	useEffect {
 		window.setInterval({
 			println("화면 업데이트: ${Date().toLocaleString()}")
-			setCurrentTime(Date().toLocaleString())
-		}, 10 * 60 * 1000)
+			currentTime = Date().toLocaleString()
+		}, 1 * 60 * 1000)
 	}
 	// 3. currentTime 에 변화가 있을때
 	useEffect(currentTime){
@@ -89,12 +89,12 @@ val SeaWaterInfoDataGrid = FC<SeaWaterInfoDataGridProps> { props ->
 
 
 val SeaWaterInfoChart = FC<SeaWaterInfoChartProps> { props ->
-	val (currentTime, setCurrentTime) = useState(Date().toLocaleString())
+	var currentTime by useState(Date().toLocaleString())
 	useEffect {
 		window.setInterval({
 			println("화면 업데이트: ${Date().toLocaleString()}")
-			setCurrentTime(Date().toLocaleString())
-		}, 10 * 60 * 1000)
+			currentTime = Date().toLocaleString()
+		}, 1 * 60 * 1000)
 	}
 	useEffect(currentTime){
 		props.chartDiv?.let { currentDiv ->
@@ -116,12 +116,12 @@ val SeaAreaLineChart = FC<SeaWaterInfoChartProps> { props ->
 		val newSeaName = event.target.asDynamic().value as String
 		selectedSea = SEA_AREA.GRU_NAME.entries.findLast{ it.name == newSeaName }?.name ?: SEA_AREA.GRU_NAME.entries[0].name
 	}
-	val (currentTime, setCurrentTime) = useState(Date().toLocaleString())
+	var currentTime by useState(Date().toLocaleString())
 	useEffect {
 		window.setInterval({
 			println("화면 업데이트: ${Date().toLocaleString()}")
-			setCurrentTime(Date().toLocaleString())
-		}, 10 * 60 * 1000)
+			currentTime = Date().toLocaleString()
+		}, 1 * 60 * 1000)
 	}
 
 	useEffect(selectedSea, currentTime) {
