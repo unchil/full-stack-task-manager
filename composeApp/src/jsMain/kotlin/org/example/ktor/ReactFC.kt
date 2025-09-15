@@ -53,11 +53,10 @@ val RadioButton = FC<RadioButtonProps> { props ->
 		value = props.value
 		checked = props.checked
 		onChange = props.onChange
-		id = props.id
+		id = props.id // 라벨 클릭 시 라디오 버튼이 선택되도록 연결( input 의 id 와 label의 id 가 같아야 함)
 	}
 	label {
-		// 라벨 클릭 시 라디오 버튼이 선택되도록 연결( input 의 id 와 label의 id 가 같아야 함)
-		htmlFor = props.id
+		htmlFor = props.id  // 라벨 클릭 시 라디오 버튼이 선택되도록 연결( input 의 id 와 label의 id 가 같아야 함)
 		+props.label
 	}
 }

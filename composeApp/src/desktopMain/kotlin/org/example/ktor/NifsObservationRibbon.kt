@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import org.example.ktor.SEA_AREA.gru_nam
 import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.geom.geomLine
 import org.jetbrains.letsPlot.geom.geomRibbon
@@ -47,7 +48,7 @@ fun NifsObservationRibbon(modifier: Modifier = Modifier) {
         val seaWaterInfoStat = viewModel._seaWaterInfoStatStateFlow.collectAsState()
 
         LaunchedEffect(key1= seaWaterInfoStat.value, key2=selectedOption){
-            figureLine = createRibbonChart(selectedOption, seaWaterInfoStat.value.toRibbonData(selectedOption))
+            figureLine = createRibbonChart( seaWaterInfoStat.value.toRibbonData(selectedOption.gru_nam()), selectedOption.name)
         }
 
         Column (modifier = Modifier.then(modifier).padding(vertical = 8.dp)) {

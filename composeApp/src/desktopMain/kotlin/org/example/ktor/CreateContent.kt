@@ -61,14 +61,14 @@ fun createBoxPlotChart(data: Map<String,List<Any>>): Plot {
             theme
 }
 
-fun createLineChart(entrie:SEA_AREA.GRU_NAME, data: Map<String,List<Any>>): Plot {
+fun createLineChart( data: Map<String,List<Any>> , entrie:String?): Plot {
     return letsPlot(data) +
             geomLine { x="CollectingTime"; y="Temperature"; color="ObservatoryName"} +
-            labs( title="Korea "+ entrie.name +" Sea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
+            labs( title="Korea ${entrie?:""} Sea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
             theme
 }
 
-fun createRibbonChart(entrie:SEA_AREA.GRU_NAME, data: Map<String,List<Any>>): Plot {
+fun createRibbonChart(data: Map<String,List<Any>>, entrie:String?): Plot {
     return letsPlot(data) +
             geomRibbon(alpha = 0.1){
                 x="CollectingTime"
@@ -77,6 +77,6 @@ fun createRibbonChart(entrie:SEA_AREA.GRU_NAME, data: Map<String,List<Any>>): Pl
                 fill="ObservatoryName"
             } +
             geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
-            labs(title="Korea "+ entrie.name + " Sea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
+            labs(title="Korea ${entrie?:""} Sea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
             theme
 }

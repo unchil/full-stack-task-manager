@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import org.example.ktor.SEA_AREA.gru_nam
 import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.geom.geomLine
 import org.jetbrains.letsPlot.intern.Plot
@@ -47,7 +48,7 @@ fun NifsObservationLine(modifier: Modifier = Modifier) {
         val seaWaterInfoOneday = viewModel._seaWaterInfoOneDayStateFlow.collectAsState()
 
         LaunchedEffect(key1= seaWaterInfoOneday.value, key2=selectedOption){
-            figureLine = createLineChart(selectedOption, seaWaterInfoOneday.value.toLineData(selectedOption)   )
+            figureLine = createLineChart( seaWaterInfoOneday.value.toLineData(selectedOption.gru_nam()) , selectedOption.name  )
         }
 
         Column (modifier = Modifier.then(modifier).padding(vertical = 8.dp)) {
