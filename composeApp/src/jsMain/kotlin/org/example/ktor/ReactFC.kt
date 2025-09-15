@@ -72,7 +72,7 @@ val SeaWaterInfoDataGrid = FC<SeaWaterInfoDataGridProps> { props ->
 	// 2. 1분(600,000 밀리초)마다 실행되는 타이머 설정
 	useEffect {
 		window.setInterval({
-			println("화면 업데이트: ${Date().toLocaleString()}")
+			println("Schedule Start_SeaWaterInfoDataGrid_${props.chartDiv?.id}: ${Date().toLocaleString()}")
 			currentTime = Date().toLocaleString()
 		}, 1 * 60 * 1000)
 	}
@@ -81,6 +81,7 @@ val SeaWaterInfoDataGrid = FC<SeaWaterInfoDataGridProps> { props ->
 		props.chartDiv?.let { currentDiv ->
 			currentDiv.clear()
 			props.loadDataFunction(props.dataDivision).let { it ->
+				println("Screen Refresh_SeaWaterInfoDataGrid_${props.chartDiv?.id}: ${Date().toLocaleString()}")
 				props.createDataGridFunction( currentDiv, props.gridDataMapper(it) )
 			}
 		}
@@ -92,7 +93,7 @@ val SeaWaterInfoChart = FC<SeaWaterInfoChartProps> { props ->
 	var currentTime by useState(Date().toLocaleString())
 	useEffect {
 		window.setInterval({
-			println("화면 업데이트: ${Date().toLocaleString()}")
+			println("Schedule Start_SeaWaterInfoChart_${props.chartDiv?.id}: ${Date().toLocaleString()}")
 			currentTime = Date().toLocaleString()
 		}, 1 * 60 * 1000)
 	}
@@ -100,6 +101,7 @@ val SeaWaterInfoChart = FC<SeaWaterInfoChartProps> { props ->
 		props.chartDiv?.let { currentDiv ->
 			currentDiv.clear()
 			props.loadDataFunction(props.dataDivision).let { it ->
+				println("Screen Refresh_SeaWaterInfoChart_${props.chartDiv?.id}: ${Date().toLocaleString()}")
 				currentDiv.appendChild(
 					JsFrontendUtil.createPlotDiv(
 						props.createChartFunction( props.chartDataMapper( it, null), null )
@@ -119,7 +121,7 @@ val SeaAreaLineChart = FC<SeaWaterInfoChartProps> { props ->
 	var currentTime by useState(Date().toLocaleString())
 	useEffect {
 		window.setInterval({
-			println("화면 업데이트: ${Date().toLocaleString()}")
+			println("Schedule Start_SeaAreaLineChart_${props.chartDiv?.id}: ${Date().toLocaleString()}")
 			currentTime = Date().toLocaleString()
 		}, 1 * 60 * 1000)
 	}
@@ -128,6 +130,7 @@ val SeaAreaLineChart = FC<SeaWaterInfoChartProps> { props ->
 		props.chartDiv?.let { currentDiv ->
 			currentDiv.clear()
 			props.loadDataFunction(props.dataDivision).let { it ->
+				println("Screen Refresh_SeaAreaLineChart_${props.chartDiv?.id}: ${Date().toLocaleString()}")
 				currentDiv.appendChild(
 					JsFrontendUtil.createPlotDiv(
 						props.createChartFunction(

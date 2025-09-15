@@ -1,9 +1,6 @@
 package org.example.ktor
 
 import kotlinx.browser.document
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.example.ktor.SEA_AREA.gru_nam
 import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.asDiscrete
@@ -73,7 +70,7 @@ fun createContent(elementId: ContainerDiv.ID){
             ?: error("Couldn't find ${elementId.name} container!")
 
     when(elementId) {
-        ContainerDiv.ID.LayerBars ->  CoroutineScope(Dispatchers.Default).launch {
+        ContainerDiv.ID.LayerBars ->  {
             createRoot(container).render(
                 SeaWaterInfoChart.create {
                     chartDiv = document.getElementById(elementId.name)
@@ -86,7 +83,7 @@ fun createContent(elementId: ContainerDiv.ID){
             )
 
         }
-        ContainerDiv.ID.BoxPlot -> CoroutineScope(Dispatchers.Default).launch {
+        ContainerDiv.ID.BoxPlot ->  {
             createRoot(container).render(
                 SeaWaterInfoChart.create {
                     chartDiv = document.getElementById(elementId.name)
@@ -99,7 +96,7 @@ fun createContent(elementId: ContainerDiv.ID){
             )
         }
 
-        ContainerDiv.ID.AgGridCurrent -> CoroutineScope(Dispatchers.Default).launch {
+        ContainerDiv.ID.AgGridCurrent -> {
             createRoot(container).render(
                 SeaWaterInfoDataGrid.create {
                     chartDiv = document.getElementById(elementId.name)
@@ -113,7 +110,7 @@ fun createContent(elementId: ContainerDiv.ID){
 
         }
 
-        ContainerDiv.ID.SeaArea ->  CoroutineScope(Dispatchers.Default).launch {
+        ContainerDiv.ID.SeaArea ->  {
             createRoot(container).render(
                 SeaAreaLineChart.create {
                     initialSelectedSea =  SEA_AREA.GRU_NAME.entries[1].name
@@ -128,7 +125,7 @@ fun createContent(elementId: ContainerDiv.ID){
                 }
             )
         }
-        ContainerDiv.ID.RibbonArea ->  CoroutineScope(Dispatchers.Default).launch {
+        ContainerDiv.ID.RibbonArea -> {
             createRoot(container).render(
                 SeaAreaLineChart.create {
                     initialSelectedSea =  SEA_AREA.GRU_NAME.entries[1].name
