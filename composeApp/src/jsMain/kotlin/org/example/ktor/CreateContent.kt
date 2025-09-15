@@ -169,7 +169,7 @@ fun createGrid(gridDiv: Element, data:Array<Json>)  {
     gridOptions["paginationPageSize"] = 20
     gridOptions["paginationPageSizeSelector"] = arrayOf(20, 100, 1000)
 
-    js( " gridApi = agGrid.createGrid(gridDiv, gridOptions)")
+    js( "agGrid.createGrid(gridDiv, gridOptions)")
 
 }
 
