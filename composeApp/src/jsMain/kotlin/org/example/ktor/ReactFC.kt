@@ -1,6 +1,7 @@
 package org.example.ktor
 
 
+import kotlinx.browser.window
 import kotlinx.dom.clear
 import org.example.ktor.SEA_AREA.gru_nam
 import org.example.ktor.data.DATA_DIVISION
@@ -17,6 +18,7 @@ import react.useState
 import web.cssom.ClassName
 import web.html.HTMLInputElement
 import web.html.InputType
+import kotlin.js.Date
 import kotlin.js.Json
 
 external interface SeaWaterInfoChartProps : Props {
@@ -64,7 +66,18 @@ val RadioButton = FC<RadioButtonProps> { props ->
 
 
 val SeaWaterInfoDataGrid = FC<SeaWaterInfoDataGridProps> { props ->
+	// 1. 현재 시각을 저장하는 상태(state) 생성
+	val (currentTime, setCurrentTime) = useState(Date().toLocaleString())
+
+	// 2. 10분(600,000 밀리초)마다 실행되는 타이머 설정
 	useEffect {
+		window.setInterval({
+			println("화면 업데이트: ${Date().toLocaleString()}")
+			setCurrentTime(Date().toLocaleString())
+		}, 10 * 60 * 1000)
+	}
+	// 3. currentTime 에 변화가 있을때
+	useEffect(currentTime){
 		props.chartDiv?.let { currentDiv ->
 			currentDiv.clear()
 			props.loadDataFunction(props.dataDivision).let { it ->
@@ -76,7 +89,14 @@ val SeaWaterInfoDataGrid = FC<SeaWaterInfoDataGridProps> { props ->
 
 
 val SeaWaterInfoChart = FC<SeaWaterInfoChartProps> { props ->
+	val (currentTime, setCurrentTime) = useState(Date().toLocaleString())
 	useEffect {
+		window.setInterval({
+			println("화면 업데이트: ${Date().toLocaleString()}")
+			setCurrentTime(Date().toLocaleString())
+		}, 10 * 60 * 1000)
+	}
+	useEffect(currentTime){
 		props.chartDiv?.let { currentDiv ->
 			currentDiv.clear()
 			props.loadDataFunction(props.dataDivision).let { it ->
@@ -91,16 +111,20 @@ val SeaWaterInfoChart = FC<SeaWaterInfoChartProps> { props ->
 }
 
 val SeaAreaLineChart = FC<SeaWaterInfoChartProps> { props ->
-
 	var selectedSea by useState(props.initialSelectedSea)
-
 	val handleOptionChange: (Event:ChangeEvent<HTMLInputElement>) -> Unit = { event ->
 		val newSeaName = event.target.asDynamic().value as String
 		selectedSea = SEA_AREA.GRU_NAME.entries.findLast{ it.name == newSeaName }?.name ?: SEA_AREA.GRU_NAME.entries[0].name
 	}
+	val (currentTime, setCurrentTime) = useState(Date().toLocaleString())
+	useEffect {
+		window.setInterval({
+			println("화면 업데이트: ${Date().toLocaleString()}")
+			setCurrentTime(Date().toLocaleString())
+		}, 10 * 60 * 1000)
+	}
 
-
-	useEffect(selectedSea) {
+	useEffect(selectedSea, currentTime) {
 		props.chartDiv?.let { currentDiv ->
 			currentDiv.clear()
 			props.loadDataFunction(props.dataDivision).let { it ->
