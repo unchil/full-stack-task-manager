@@ -32,7 +32,7 @@ fun NifsObservationLayerBars(modifier:Modifier = Modifier) {
         LaunchedEffect(key1 = viewModel){
             viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh(DATA_DIVISION.current))
             while(true){
-                delay(1800 * 1000).let {
+                delay(10 * 60 * 1000L).let{
                     viewModel.onEvent(NifsSeaWaterInfoCurrentViewModel.Event.ObservationRefresh(DATA_DIVISION.current))
                 }
             }

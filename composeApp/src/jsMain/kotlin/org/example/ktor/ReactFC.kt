@@ -69,12 +69,12 @@ val SeaWaterInfoDataGrid = FC<SeaWaterInfoDataGridProps> { props ->
 	// 1. 현재 시각을 저장하는 상태(state) 생성
 	var currentTime by useState(Date().toLocaleString())
 
-	// 2. 1분(600,000 밀리초)마다 실행되는 타이머 설정
+	// 2. 10분(600,000 밀리초)마다 실행되는 타이머 설정
 	useEffect {
 		window.setInterval({
 			println("Schedule Start_SeaWaterInfoDataGrid_${props.chartDiv?.id}: ${Date().toLocaleString()}")
 			currentTime = Date().toLocaleString()
-		}, 1 * 60 * 1000)
+		}, 10 * 60 * 1000)
 	}
 	// 3. currentTime 에 변화가 있을때
 	useEffect(currentTime){
@@ -95,7 +95,7 @@ val SeaWaterInfoChart = FC<SeaWaterInfoChartProps> { props ->
 		window.setInterval({
 			println("Schedule Start_SeaWaterInfoChart_${props.chartDiv?.id}: ${Date().toLocaleString()}")
 			currentTime = Date().toLocaleString()
-		}, 1 * 60 * 1000)
+		}, 10 * 60 * 1000)
 	}
 	useEffect(currentTime){
 		props.chartDiv?.let { currentDiv ->
@@ -123,7 +123,7 @@ val SeaAreaLineChart = FC<SeaWaterInfoChartProps> { props ->
 		window.setInterval({
 			println("Schedule Start_SeaAreaLineChart_${props.chartDiv?.id}: ${Date().toLocaleString()}")
 			currentTime = Date().toLocaleString()
-		}, 1 * 60 * 1000)
+		}, 10 * 60 * 1000)
 	}
 
 	useEffect(selectedSea, currentTime) {

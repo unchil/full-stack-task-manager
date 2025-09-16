@@ -20,7 +20,7 @@ fun NifsSeaWaterInfoDataGrid(modifier: Modifier = Modifier) {
     LaunchedEffect(key1 = viewModel){
         viewModel.onEvent(NifsSeaWaterInfoOneDayGridViewModel.Event.ObservationRefresh(DATA_DIVISION.grid))
         while(true){
-            delay(1800 * 1000).let {
+            delay(10 * 60 * 1000L).let{
                 viewModel.onEvent(NifsSeaWaterInfoOneDayGridViewModel.Event.ObservationRefresh(DATA_DIVISION.grid))
             }
         }

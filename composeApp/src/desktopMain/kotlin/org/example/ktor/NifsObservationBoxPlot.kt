@@ -30,7 +30,9 @@ fun NifsObservationBoxPlot(modifier: Modifier = Modifier) {
             viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.oneday))
 
             while(true){
-                delay(1800 * 1000).let {
+                // 10분(600,000 밀리초)마다 실행되는 타이머 설정
+                // Long 타입으로 명시 (권장)
+                delay(10 * 60 * 1000L).let{
                     viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.oneday))
                 }
             }

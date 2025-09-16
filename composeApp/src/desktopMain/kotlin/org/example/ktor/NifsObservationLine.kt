@@ -37,7 +37,7 @@ fun NifsObservationLine(modifier: Modifier = Modifier) {
         LaunchedEffect(key1 = viewModel){
             viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.oneday))
             while(true){
-                delay(1800 * 1000).let {
+                delay(10 * 60 * 1000L).let{
                     viewModel.onEvent(NifsSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.oneday))
                 }
             }
