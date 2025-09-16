@@ -51,7 +51,8 @@ import kotlin.math.roundToInt
 fun ComposeDataGrid(
     modifier:Modifier = Modifier,
     columnNames:List<String>,
-    data:List<List<Any?>>, ){
+    data:List<List<Any?>>,
+    reloadData :()->Unit){
 
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
@@ -291,6 +292,7 @@ fun ComposeDataGrid(
     }
 
     val onRefresh:()-> Unit = {
+        reloadData()
         presentData = data
         currentPage.value = 1
         columnInfo.value =  makeColInfo(columnNames, data)
