@@ -58,8 +58,12 @@ fun ComposeDataGrid(
     val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
     val columnInfo = remember { mutableStateOf(makeColInfo(columnNames, data) ) }
     val enablePagingGrid = remember { mutableStateOf(false) }
-    var presentData by  remember { mutableStateOf<List<Any?>>(data) }
-    var pagingData by  remember { mutableStateOf<List<Any?>>(data) }
+
+// No Remember
+    var presentData by mutableStateOf<List<Any?>>(data)
+    var pagingData by  mutableStateOf<List<Any?>>(data)
+//
+
     var sortedIndexList = remember { mutableListOf<Int>() }
     var startRowNum by remember {  mutableStateOf(0)}
     val currentPage = remember {  mutableStateOf(1)}

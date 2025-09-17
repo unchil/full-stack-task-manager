@@ -24,6 +24,8 @@ fun NifsSeaWaterInfoDataGrid(modifier: Modifier = Modifier) {
 
     val viewModel = remember { NifsSeaWaterInfoOneDayGridViewModel() }
     val coroutineScope = rememberCoroutineScope()
+    var isVisible by remember { mutableStateOf(false) }
+    val data = remember { mutableStateOf(emptyList<List<Any?>>()) }
 
     LaunchedEffect(key1 = viewModel){
         viewModel.onEvent(NifsSeaWaterInfoOneDayGridViewModel.Event.ObservationRefresh(DATA_DIVISION.grid))
@@ -37,13 +39,19 @@ fun NifsSeaWaterInfoDataGrid(modifier: Modifier = Modifier) {
 
     val seaWaterInfoCurrent = viewModel._seaWaterInfoOneDayGridStateFlow.collectAsState()
 
+    LaunchedEffect(seaWaterInfoCurrent.value){
+        isVisible = seaWaterInfoCurrent.value.isNotEmpty()
+        if(isVisible){
+            data.value = seaWaterInfoCurrent.value.map { it.toList() }
+        }
+    }
     val columnNames = listOf("수집시간", "해역", "관측지점", "지점코드", "수심", "수온", "경도", "위도")
 
-    if(seaWaterInfoCurrent.value.size > 0){
+    if(isVisible){
         ComposeDataGrid(
             modifier = modifier,
             columnNames = columnNames,
-            data = seaWaterInfoCurrent.value.map { it.toList() },
+            data = data.value,
             reloadData = reloadData
         )
     }
