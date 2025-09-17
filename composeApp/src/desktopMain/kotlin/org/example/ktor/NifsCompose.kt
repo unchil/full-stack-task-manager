@@ -19,7 +19,6 @@ fun NifsCompose(){
     Column(
         modifier = Modifier.fillMaxSize()
             .background(Color.White)
-            .padding(20.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
