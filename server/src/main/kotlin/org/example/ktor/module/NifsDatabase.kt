@@ -66,7 +66,7 @@ fun Application.configureNifsDatabase() {
                 initMemoryDb(database)
             }
             startsWith("sqlite") -> {
-                initSqliteDbTable( (database as Database))
+                initSqliteDbTable(database)
             }
             else -> {
                 initMemoryDb(database)
