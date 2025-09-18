@@ -7,19 +7,24 @@ import kotlinx.html.dom.append
 import kotlinx.html.h1
 import kotlinx.html.id
 import kotlinx.html.style
+import kotlin.coroutines.cancellation.CancellationException
 
 fun main() {
     window.onload = {
         createLayOut{
-            createContent(ContainerDiv.ID.BoxPlot)
-
-            createContent(ContainerDiv.ID.LayerBars)
-
-            createContent(ContainerDiv.ID.SeaArea)
-
-            createContent(ContainerDiv.ID.RibbonArea)
-
-            createContent(ContainerDiv.ID.AgGridCurrent)
+            try {
+                createContent(ContainerDiv.ID.BoxPlot)
+                createContent(ContainerDiv.ID.LayerBars)
+                createContent(ContainerDiv.ID.SeaArea)
+                createContent(ContainerDiv.ID.RibbonArea)
+                createContent(ContainerDiv.ID.AgGridCurrent)
+            } catch (e: CancellationException) {
+                // CancellationException은 코루틴 취소 시 발생하는 특별한 예외이므로,
+                // 일반적인 에러와 분리하여 처리하는 것이 좋습니다.
+                println("An error occurred: ${e.message}")
+            } catch (e: Exception) {
+                println("An error occurred: ${e.message}")
+            }
 
         }
     }

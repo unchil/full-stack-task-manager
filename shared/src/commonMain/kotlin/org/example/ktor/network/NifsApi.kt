@@ -30,13 +30,13 @@ class NifsApi {
         }
 
         install(Logging) {
-            logger = Logger.DEFAULT
+            logger = Logger.EMPTY
         }
 
         install(HttpTimeout) {
-            requestTimeoutMillis = 10000
-            connectTimeoutMillis = 3000
-            socketTimeoutMillis = 3000
+            requestTimeoutMillis = 10 * 1000
+            connectTimeoutMillis = 10 * 1000
+            socketTimeoutMillis = 10 * 1000
         }
     }
 
