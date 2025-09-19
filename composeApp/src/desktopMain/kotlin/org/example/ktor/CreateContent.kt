@@ -1,6 +1,5 @@
 package org.example.ktor
 
-import org.jetbrains.letsPlot.asDiscrete
 import org.jetbrains.letsPlot.geom.geomBar
 import org.jetbrains.letsPlot.geom.geomBoxplot
 import org.jetbrains.letsPlot.geom.geomLine
@@ -10,7 +9,6 @@ import org.jetbrains.letsPlot.label.labs
 import org.jetbrains.letsPlot.letsPlot
 import org.jetbrains.letsPlot.pos.positionDodge
 import org.jetbrains.letsPlot.scale.scaleColorViridis
-import org.jetbrains.letsPlot.scale.scaleYContinuous
 import org.jetbrains.letsPlot.themes.elementText
 import org.jetbrains.letsPlot.themes.theme
 import org.jetbrains.letsPlot.tooltips.layerTooltips
@@ -49,12 +47,17 @@ fun createBarChart(data: Map<String,List<Any>>): Plot {
 }
 
 fun createBoxPlotChart(data: Map<String,List<Any>>): Plot {
-    val sta_nam_korByMiddle = asDiscrete("ObservatoryName", orderBy = "..middle..", order = 1)
+     //val sta_nam_korByMiddle = asDiscrete("ObservatoryName", orderBy = "..middle..", order = 1)
+    // ERROR SpecTransformBackendUtil - Internal error: IllegalStateException : Undefined variable 'ObservatoryName' in order options. Full variable list: ['..width..', '..prop..', '..middle..', '..ymin..', '..sumpct..', '..level..', '..scaled..', '..group..', '..theoretical..', '..x..', '..proppct..', '..se..', '..density..', '..sumprop..', '..quantile..', '..lower..', '..sample..', '..height..', '..binwidth..', '..count..', '..violinwidth..', '..ymax..', '..y..', '..upper..', '..n..', '..sum..']
+    //java.lang.IllegalStateException: Undefined variable 'ObservatoryName' in order options. Full variable list: ['..width..', '..prop..', '..middle..', '..ymin..', '..sumpct..', '..level..', '..scaled..', '..group..', '..theoretical..', '..x..', '..proppct..', '..se..', '..density..', '..sumprop..', '..quantile..', '..lower..', '..sample..', '..height..', '..binwidth..', '..count..', '..violinwidth..', '..ymax..', '..y..', '..upper..', '..n..', '..sum..']
+
+
     return letsPlot(data)  +
             scaleColorViridis(option = "C", end = 0.8) +
             geomBoxplot{
-                x= sta_nam_korByMiddle
-                y="Temperature"
+            //    x = sta_nam_korByMiddle
+                x = "ObservatoryName" // sta_nam_korByMiddle
+                y ="Temperature"
                 color = "..middle.."
             } +
             labs(title="수온 일일 통계 정보", y="수온 °C", x="관측지점", color="수온 °C", caption="Nifs") +

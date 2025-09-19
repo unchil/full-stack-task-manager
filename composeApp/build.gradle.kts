@@ -116,6 +116,8 @@ kotlin {
 
             implementation(libs.let.plot.platf.awt)
             implementation(libs.let.plot.compose)
+
+            implementation(libs.ktor.client.logging)
         }
 
 

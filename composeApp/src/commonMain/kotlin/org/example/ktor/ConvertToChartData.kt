@@ -4,7 +4,6 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
-import org.example.ktor.SEA_AREA.gru_nam
 import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 

@@ -5,6 +5,17 @@ ktor:
   deployment:
     port: 7788
     host: "127.0.0.1"
+    ### https://api.ktor.io/ktor-server/ktor-server-netty/io.ktor.server.netty/-netty-application-engine/-configuration/index.html?_cl=MTsxOzE7UXdnblZJc0QxRXFIQkhWZEZPdGNnaGdqa2dwMGhiWnBjOWJFTTNIZmNzR015cHl6TERTTnVqeGR2ME1uVzl4czs=
+    ## options common for all engines
+    # connectionGroupSize: 2
+    # workerGroupSize: 5
+    # callGroupSize: 10
+    # shutdownGracePeriod: 2000
+    # shutdownTimeout: 3000
+    ## Netty-specific options
+    # maxInitialLineLength: 2048
+    # maxHeaderSize: 1024
+    # maxChunkSize: 42
 
 
 storage:
