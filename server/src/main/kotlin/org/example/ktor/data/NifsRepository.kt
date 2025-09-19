@@ -63,7 +63,7 @@ class NifsRepository:NifsRepositoryInterface {
                 return@suspendTransaction it.first
             }
         }
-
+        LOGGER.info("Serving from DB for ID: $division")
         val result = when(division) {
             "oneday" -> {
                 val previous24Hour = Clock.System.now()
@@ -164,7 +164,7 @@ class NifsRepository:NifsRepositoryInterface {
                 return@suspendTransaction it.first
             }
         }
-
+        LOGGER.info("Serving from DB for ID: stat")
         val previous24Hour = Clock.System.now()
             .minus(24, DateTimeUnit.HOUR)
             .toLocalDateTime(TimeZone.of("Asia/Seoul"))
