@@ -9,5 +9,9 @@
     </root>
     <logger name="org.eclipse.jetty" level="INFO"/>
     <logger name="io.netty" level="INFO"/>
+    <logger name="org.sqlite.core.NativeDB" level="INFO"/>
     <logger name="io.ktor.server.Application" level="INFO"/>
+    <logger name="io.ktor.server.routing.Routing" level="INFO"/>
+    <logger name="Application" level="INFO"/>
+    <logger name="Exposed" level="INFO"/>
 </configuration>

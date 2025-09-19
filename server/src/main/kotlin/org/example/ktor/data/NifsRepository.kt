@@ -1,19 +1,40 @@
 package org.example.ktor.data
 
-import io.ktor.server.response.respond
 import kotlinx.coroutines.Dispatchers
-import kotlinx.datetime.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
-import org.example.ktor.db.entity.*
+import kotlinx.datetime.minus
+import kotlinx.datetime.toLocalDateTime
+import org.example.ktor.db.entity.ObservationTable
+import org.example.ktor.db.entity.ObservatoryTable
+import org.example.ktor.db.entity.toObservation
+import org.example.ktor.db.entity.toObservatory
+import org.example.ktor.db.entity.toSeawaterInformationByObservationPoint
 import org.example.ktor.model.Observation
 import org.example.ktor.model.Observatory
 import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeawaterInformationByObservationPoint
-import org.jetbrains.exposed.sql.*
+import org.example.ktor.module.LOGGER
+import org.jetbrains.exposed.sql.FloatColumnType
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.Transaction
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.avg
+import org.jetbrains.exposed.sql.castTo
+import org.jetbrains.exposed.sql.max
+import org.jetbrains.exposed.sql.min
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.substring
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
+
 
 // 캐시를 저장할 ConcurrentHashMap. 스레드 안전성을 보장합니다.
 private val cache_SeawaterInfo = ConcurrentHashMap<String, Pair<List<SeawaterInformationByObservationPoint>, Long>>()
@@ -38,7 +59,7 @@ class NifsRepository:NifsRepositoryInterface {
         // 캐시에서 데이터 조회
         cache_SeawaterInfo[key_SeawaterInfo]?.let { it ->
             if( (now - it.second) < TimeUnit.SECONDS.toMillis(CACHE_EXPIRY_SECONDS) ){
-                println("Serving from cache for ID: $division")
+                LOGGER.info("Serving from cache for ID: $division")
                 return@suspendTransaction it.first
             }
         }
@@ -139,7 +160,7 @@ class NifsRepository:NifsRepositoryInterface {
         val now = System.currentTimeMillis()
         cache_SeaWaterInfoStatistics[key_SeaWaterInfoStatistics]?.let {
             if( (now - it.second) < TimeUnit.SECONDS.toMillis(CACHE_EXPIRY_SECONDS) ){
-                println("Serving from cache for ID: stat")
+                LOGGER.info("Serving from cache for ID: stat")
                 return@suspendTransaction it.first
             }
         }

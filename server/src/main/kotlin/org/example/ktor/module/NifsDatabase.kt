@@ -1,8 +1,7 @@
 package org.example.ktor.module
 
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -50,13 +49,13 @@ fun Application.configureNifsDatabase() {
 
     fun initMemoryDb(db:Database){
         transaction(db) {
-            addLogger(StdOutSqlLogger)
+            addLogger(DBSqlLogger)
         }
     }
 
     fun initSqliteDbTable(db:Database){
         transaction (db){
-            addLogger(StdOutSqlLogger)
+            addLogger(DBSqlLogger)
         }
     }
 

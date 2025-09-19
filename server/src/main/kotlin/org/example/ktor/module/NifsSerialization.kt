@@ -1,18 +1,18 @@
 package org.example.ktor.module
 
 
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.defaultheaders.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.defaultheaders.DefaultHeaders
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.get
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
 import org.example.ktor.data.NifsRepository
-import org.example.ktor.model.SeaWaterInfoByOneHourStat
-import org.example.ktor.model.SeawaterInformationByObservationPoint
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.TimeUnit
 
 fun Application.configureNifsSerialization(repository: NifsRepository) {
 
