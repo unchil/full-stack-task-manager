@@ -26,4 +26,5 @@
     <logger name="io.ktor.server.routing.Routing" level="INFO"/>
     <logger name="Application" level="INFO"/>
     <logger name="Exposed" level="INFO"/>
+    <logger name="com.zaxxer.hikari" level="INFO"/>
 </configuration>

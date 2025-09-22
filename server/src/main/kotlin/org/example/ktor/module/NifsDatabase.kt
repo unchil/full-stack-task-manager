@@ -4,6 +4,8 @@ import io.ktor.server.application.Application
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 
 fun Application.configureNifsDatabase() {
 
@@ -24,12 +26,15 @@ fun Application.configureNifsDatabase() {
                 )
             }
             startsWith("sqlite") -> {
-                val url = environment.config.property("storage.database.sqlite.jdbcURL").getString()
-                val driver = environment.config.property("storage.database.sqlite.driverClassName").getString()
-                Database.connect(
-                    url = url,
-                    driver = driver
-                )
+                val config = HikariConfig().apply {
+                    jdbcUrl = environment.config.property("storage.database.sqlite.jdbcURL").getString()
+                    driverClassName = environment.config.property("storage.database.sqlite.driverClassName").getString()
+                    maximumPoolSize = 10
+                    isAutoCommit = false
+                    validate()
+                }
+                val dataSource = HikariDataSource(config)
+                Database.connect(dataSource)
             }
             else -> {
                 val driver = environment.config.property("storage.database.h2.driverClassName").getString()

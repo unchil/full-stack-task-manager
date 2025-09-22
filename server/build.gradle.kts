@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
     implementation(libs.logback)
+    implementation(libs.hikaricp)
 
     testImplementation(libs.kotlin.test)
     testImplementation(libs.ktor.server.tests)

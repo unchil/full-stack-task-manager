@@ -13,7 +13,6 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.module_Serialization(){
     LOGGER.info("Start Ktor Server")
-  //  log.info("Start Ktor Server")
     configureNifsDatabase()
     configureNifsSerialization(NifsRepository())
 }
