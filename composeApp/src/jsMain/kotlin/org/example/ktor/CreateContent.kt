@@ -192,11 +192,11 @@ fun createBarChart(data: Map<String,List<Any>>, entrie:String?): Plot {
 }
 
 fun createBoxPlotChart(data: Map<String,List<Any>>, entrie:String?):Plot{
-    val sta_nam_korByMiddle = asDiscrete("ObservatoryName", orderBy = "..middle..", order = 1)
+   // val sta_nam_korByMiddle = asDiscrete("ObservatoryName", orderBy = "..middle..", order = 1)
     return letsPlot(data)  +
             scaleColorViridis(option = "C", end = 0.8) +
             geomBoxplot{
-                x= sta_nam_korByMiddle
+                x= "ObservatoryName"
                 y="Temperature"
                 color = "..middle.."
             } +
