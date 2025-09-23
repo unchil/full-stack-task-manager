@@ -24,10 +24,10 @@ class NifsRepository {
     val _seaWaterInfoOneDayGridStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
             = MutableStateFlow(emptyList())
 
-    val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>?
+    val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
             = MutableStateFlow(emptyList())
 
-    val _seaWaterInfoStatStateFlow: MutableStateFlow<List<SeaWaterInfoByOneHourStat>>?
+    val _seaWaterInfoStatStateFlow: MutableStateFlow<List<SeaWaterInfoByOneHourStat>>
             = MutableStateFlow(emptyList())
 
     val _observatoryStateFlow: MutableStateFlow<List<Observatory>>
@@ -38,24 +38,24 @@ class NifsRepository {
             when(division) {
                 DATA_DIVISION.oneday -> {
                     nifsApi.getSeaWaterInfo(DATA_DIVISION.oneday.name)?.let { it ->
-                        _seaWaterInfoOneDayStateFlow?.value = it
+                        _seaWaterInfoOneDayStateFlow.value = it
                         LOGGER.debug("getSeaWaterInfo() called[${it.count()}]")
                     }
                 }
                 DATA_DIVISION.grid -> {
                     nifsApi.getSeaWaterInfo(DATA_DIVISION.grid.name)?.let { it ->
-                        _seaWaterInfoOneDayGridStateFlow?.value = it
+                        _seaWaterInfoOneDayGridStateFlow.value = it
                         LOGGER.debug("getSeaWaterInfo() called[${it.count()}]")
                     }
                 }
                 DATA_DIVISION.current -> {
                     nifsApi.getSeaWaterInfo(DATA_DIVISION.current.name)?.let { it ->
-                        _seaWaterInfoCurrentStateFlow?.value = it
+                        _seaWaterInfoCurrentStateFlow.value = it
                         LOGGER.debug("getSeaWaterInfo() called[${it.count()}]")
                     }
                 }
                 else -> {
-                    _seaWaterInfoCurrentStateFlow?.value =emptyList()
+                    _seaWaterInfoCurrentStateFlow.value =emptyList()
                 }
             }
 
@@ -67,7 +67,7 @@ class NifsRepository {
     suspend fun getSeaWaterInfoStat() {
         try {
             nifsApi.getSeaWaterInfoStat()?.let { it ->
-                _seaWaterInfoStatStateFlow?.value = it
+                _seaWaterInfoStatStateFlow.value = it
                 LOGGER.debug("getSeaWaterInfoStat() called[${it.count()}]")
             }
 
