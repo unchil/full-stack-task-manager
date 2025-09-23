@@ -24,10 +24,10 @@ class NifsRepository {
     val _seaWaterInfoOneDayGridStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
             = MutableStateFlow(emptyList())
 
-    val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>
+    val _seaWaterInfoCurrentStateFlow: MutableStateFlow<List<SeawaterInformationByObservationPoint>>?
             = MutableStateFlow(emptyList())
 
-    val _seaWaterInfoStatStateFlow: MutableStateFlow<List<SeaWaterInfoByOneHourStat>>
+    val _seaWaterInfoStatStateFlow: MutableStateFlow<List<SeaWaterInfoByOneHourStat>>?
             = MutableStateFlow(emptyList())
 
     val _observatoryStateFlow: MutableStateFlow<List<Observatory>>
@@ -37,51 +37,65 @@ class NifsRepository {
         try {
             when(division) {
                 DATA_DIVISION.oneday -> {
-                    _seaWaterInfoOneDayStateFlow.value = nifsApi.getSeaWaterInfo(DATA_DIVISION.oneday.name)
-                    LOGGER.debug("getSeaWaterInfo() called[${_seaWaterInfoOneDayStateFlow.value.count()}]")
+                    nifsApi.getSeaWaterInfo(DATA_DIVISION.oneday.name)?.let { it ->
+                        _seaWaterInfoOneDayStateFlow?.value = it
+                        LOGGER.debug("getSeaWaterInfo() called[${it.count()}]")
+                    }
                 }
                 DATA_DIVISION.grid -> {
-                    _seaWaterInfoOneDayGridStateFlow.value = nifsApi.getSeaWaterInfo(DATA_DIVISION.grid.name)
-                    LOGGER.debug("getSeaWaterInfo() called[${_seaWaterInfoOneDayGridStateFlow.value.count()}]")
+                    nifsApi.getSeaWaterInfo(DATA_DIVISION.grid.name)?.let { it ->
+                        _seaWaterInfoOneDayGridStateFlow?.value = it
+                        LOGGER.debug("getSeaWaterInfo() called[${it.count()}]")
+                    }
                 }
                 DATA_DIVISION.current -> {
-                    _seaWaterInfoCurrentStateFlow.value = nifsApi.getSeaWaterInfo(DATA_DIVISION.current.name)
-                    LOGGER.debug("getSeaWaterInfo() called[${_seaWaterInfoCurrentStateFlow.value.count()}]")
+                    nifsApi.getSeaWaterInfo(DATA_DIVISION.current.name)?.let { it ->
+                        _seaWaterInfoCurrentStateFlow?.value = it
+                        LOGGER.debug("getSeaWaterInfo() called[${it.count()}]")
+                    }
                 }
                 else -> {
-                    _seaWaterInfoCurrentStateFlow.value =emptyList()
+                    _seaWaterInfoCurrentStateFlow?.value =emptyList()
                 }
             }
 
         }catch (e:Exception){
-            e.message?.let { LOGGER.error(it) }
+            LOGGER.error(e.message ?: "Error ")
         }
     }
 
     suspend fun getSeaWaterInfoStat() {
         try {
-            _seaWaterInfoStatStateFlow.value = nifsApi.getSeaWaterInfoStat()
-            LOGGER.debug("getSeaWaterInfoStat() called[${_seaWaterInfoStatStateFlow.value.count()}]")
+            nifsApi.getSeaWaterInfoStat()?.let { it ->
+                _seaWaterInfoStatStateFlow?.value = it
+                LOGGER.debug("getSeaWaterInfoStat() called[${it.count()}]")
+            }
+
         }catch (e:Exception){
-            e.message?.let { LOGGER.error(it) }
+            LOGGER.error(e.message ?: "Error ")
         }
     }
 
     suspend fun getObservatory() {
         try {
-            _observatoryStateFlow.value = nifsApi.getObservatory()
-            LOGGER.debug("getObservatory() called[${_observatoryStateFlow.value.count()}]")
+            nifsApi.getObservatory()?.let { it ->
+                _observatoryStateFlow.value = it
+                LOGGER.debug("getObservatory() called[${it.count()}]")
+            }
+
         }catch (e:Exception){
-            e.message?.let { LOGGER.error(it) }
+            LOGGER.error(e.message ?: "Error ")
         }
     }
 
     suspend fun getSeaWaterInfoValues(division: String) : List<SeawaterInformationByObservationPoint> {
         var result: List<SeawaterInformationByObservationPoint> = emptyList()
         try {
-            result =  nifsApi.getSeaWaterInfo(division)
+            nifsApi.getSeaWaterInfo(division)?.let { it ->
+                result = it
+            }
         }catch (e:Exception){
-            e.message?.let { LOGGER.error(it) }
+            LOGGER.error(e.message ?: "Error ")
         }
         return result
     }
@@ -89,9 +103,11 @@ class NifsRepository {
     suspend fun getSeaWaterInfoStatValues() : List<SeaWaterInfoByOneHourStat> {
         var result: List<SeaWaterInfoByOneHourStat> = emptyList()
         try {
-            result =  nifsApi.getSeaWaterInfoStat()
+            nifsApi.getSeaWaterInfoStat()?.let {
+                result = it
+            }
         }catch (e:Exception){
-            e.message?.let { LOGGER.error(it) }
+            LOGGER.error(e.message ?: "Error ")
         }
         return result
     }

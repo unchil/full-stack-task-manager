@@ -25,7 +25,7 @@ class NifsSeaWaterInfoCurrentViewModel: ViewModel() {
 
     init {
         viewModelScope.launch {
-            repository._seaWaterInfoCurrentStateFlow.collectLatest {
+            repository._seaWaterInfoCurrentStateFlow?.collectLatest {
                 _seaWaterInfoCurrentStateFlow.value = it
             }
         }

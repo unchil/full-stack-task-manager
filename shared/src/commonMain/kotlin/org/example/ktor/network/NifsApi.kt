@@ -40,27 +40,21 @@ class NifsApi {
         }
     }
 
-    suspend fun getSeaWaterInfo(division:String): List<SeawaterInformationByObservationPoint> {
+    suspend fun getSeaWaterInfo(division:String): List<SeawaterInformationByObservationPoint>? {
         val url = "${endPoint}/nifs/seawaterinfo/$division"
-        val result = httpClient.get(url).body<List<SeawaterInformationByObservationPoint>>()
-        return result
+        return httpClient.get(url).body<List<SeawaterInformationByObservationPoint>>()
     }
 
 
-    suspend fun getSeaWaterInfoStat(): List<SeaWaterInfoByOneHourStat> {
+    suspend fun getSeaWaterInfoStat(): List<SeaWaterInfoByOneHourStat>? {
         val url = "${endPoint}/nifs/stat"
-
-        val result = httpClient.get(url).body<List<SeaWaterInfoByOneHourStat>>()
-        return result
+        return httpClient.get(url).body<List<SeaWaterInfoByOneHourStat>>()
 
     }
 
-    suspend fun getObservatory(): List<Observatory> {
+    suspend fun getObservatory(): List<Observatory>? {
         val url = "${endPoint}/nifs/observatory"
-
-            val result = httpClient.get(url).body<List<Observatory>>()
-            return result
-
+        return httpClient.get(url).body<List<Observatory>>()
     }
 
 }
