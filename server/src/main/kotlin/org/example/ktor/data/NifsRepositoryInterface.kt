@@ -7,8 +7,8 @@ import org.example.ktor.model.SeawaterInformationByObservationPoint
 
 interface NifsRepositoryInterface {
 
-    suspend fun seaWaterInfo(division:String):List<SeawaterInformationByObservationPoint>
-    suspend fun seaWaterInfoStatistics():List<SeaWaterInfoByOneHourStat>
+    suspend fun fetchSeaWaterInfoFromDb(division:String, ):List<SeawaterInformationByObservationPoint>
+    suspend fun fetchSeaWaterInfoStatisticsFromDb():List<SeaWaterInfoByOneHourStat>
     suspend fun observationList(division:String):List<Observation>
     suspend fun observatoryInfo():List<Observatory>
 }

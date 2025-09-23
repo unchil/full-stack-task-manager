@@ -37,8 +37,8 @@ import java.util.concurrent.TimeUnit
 
 
 // 캐시를 저장할 ConcurrentHashMap. 스레드 안전성을 보장합니다.
-private val cache_SeawaterInfo = ConcurrentHashMap<String, Pair<List<SeawaterInformationByObservationPoint>, Long>>()
-private val cache_SeaWaterInfoStatistics = ConcurrentHashMap<String, Pair<List<SeaWaterInfoByOneHourStat>, Long>>()
+private val cacheStorage_SeawaterInfo = ConcurrentHashMap<String, Pair<List<SeawaterInformationByObservationPoint>, Long>>()
+private val cacheStorage_SeaWaterInfoStatistics = ConcurrentHashMap<String, Pair<List<SeaWaterInfoByOneHourStat>, Long>>()
 private const val CACHE_EXPIRY_SECONDS =  10 * 60L  // 10분
 
 
@@ -49,20 +49,30 @@ class NifsRepository:NifsRepositoryInterface {
     suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
         newSuspendedTransaction(Dispatchers.IO, statement = block)
 
-
-    @OptIn(FormatStringsInDatetimeFormats::class)
-    override suspend fun seaWaterInfo(division: String): List<SeawaterInformationByObservationPoint>  = suspendTransaction {
-
-        val key_SeawaterInfo = "cache_$division"
+    // 캐시 로직과 DB 조회 호출을 담당하는 메인 함수
+    suspend fun seaWaterInfo(division: String): List<SeawaterInformationByObservationPoint> {
+        val key = "cache_$division"
         val now = System.currentTimeMillis()
 
-        // 캐시에서 데이터 조회
-        cache_SeawaterInfo[key_SeawaterInfo]?.let { it ->
-            if( (now - it.second) < TimeUnit.SECONDS.toMillis(CACHE_EXPIRY_SECONDS) ){
+        // 캐시에서 데이터 조회 (suspendTransaction 외부)
+        cacheStorage_SeawaterInfo[key]?.let { cachedData ->
+            if ((now - cachedData.second) < TimeUnit.SECONDS.toMillis(CACHE_EXPIRY_SECONDS)) {
                 LOGGER.info("Serving from cache for ID: $division")
-                return@suspendTransaction it.first
+                return cachedData.first
             }
         }
+        // 캐시에 없거나 만료된 경우 DB에서 데이터 조회 (suspendTransaction 내부 호출)
+        val resultFromDb = fetchSeaWaterInfoFromDb(division)
+        // 새로운 데이터를 캐시에 저장 (suspendTransaction 외부)
+        if (resultFromDb.isNotEmpty() || division == "current") { // current는 결과가 없어도 캐시 만료 의미로 저장할 수 있음
+            cacheStorage_SeawaterInfo[key] = Pair(resultFromDb, now)
+        }
+        return resultFromDb
+    }
+
+
+    @OptIn(FormatStringsInDatetimeFormats::class)
+    override suspend fun fetchSeaWaterInfoFromDb(division: String): List<SeawaterInformationByObservationPoint>  = suspendTransaction {
         LOGGER.info("Serving from DB for ID: $division")
         val result = when(division) {
             "oneday" -> {
@@ -119,51 +129,64 @@ class NifsRepository:NifsRepositoryInterface {
             }
 
             "current" -> {
-                val lastTime = ObservationTable.obs_datetime.max()
-                val currentTime = ObservationTable.select(lastTime).limit(1).map {
-                    it[lastTime].toString()
-                }.last()
+                val lastTimeExpression = ObservationTable.obs_datetime.max()
+                val currentTime = ObservationTable.select(lastTimeExpression).limit(1).map {
+                    it[lastTimeExpression].toString()
+                }.singleOrNull()
 
-                ObservationTable.join(
-                    ObservatoryTable,
-                    JoinType.INNER,
-                    onColumn = ObservationTable.sta_cde,
-                    otherColumn = ObservatoryTable.sta_cde
-                ).select( ObservationTable.sta_cde,
-                    ObservationTable.sta_nam_kor,
-                    ObservationTable.obs_datetime,
-                    ObservationTable.obs_lay,
-                    ObservationTable.wtr_tmp,
-                    ObservatoryTable.gru_nam,
-                    ObservatoryTable.lon,
-                    ObservatoryTable.lat
+                if (currentTime == null) {
+                    emptyList() // 현재 데이터가 없는 경우
+                } else {
+                    ObservationTable.join(
+                        ObservatoryTable,
+                        JoinType.INNER,
+                        onColumn = ObservationTable.sta_cde,
+                        otherColumn = ObservatoryTable.sta_cde
+                    ).select( ObservationTable.sta_cde,
+                        ObservationTable.sta_nam_kor,
+                        ObservationTable.obs_datetime,
+                        ObservationTable.obs_lay,
+                        ObservationTable.wtr_tmp,
+                        ObservatoryTable.gru_nam,
+                        ObservatoryTable.lon,
+                        ObservatoryTable.lat
 
-                ).where{
-                    ObservationTable.obs_datetime eq currentTime
-                }.map {
-                    toSeawaterInformationByObservationPoint(it)
+                    ).where{
+                        ObservationTable.obs_datetime eq currentTime
+                    }.map {
+                        toSeawaterInformationByObservationPoint(it)
+                    }
                 }
+
             }
 
             else -> {emptyList()}
         }
-        // 새로운 데이터를 캐시에 저장
-        cache_SeawaterInfo[key_SeawaterInfo] = Pair(result, now)
         return@suspendTransaction result
     }
 
-
-    @OptIn(FormatStringsInDatetimeFormats::class)
-    override suspend fun seaWaterInfoStatistics(): List<SeaWaterInfoByOneHourStat>  = suspendTransaction {
-
-        val key_SeaWaterInfoStatistics = "cache_stat"
+    suspend fun seaWaterInfoStatistics(): List<SeaWaterInfoByOneHourStat>{
+        val key = "cache_stat"
         val now = System.currentTimeMillis()
-        cache_SeaWaterInfoStatistics[key_SeaWaterInfoStatistics]?.let {
+        cacheStorage_SeaWaterInfoStatistics[key]?.let { it ->
             if( (now - it.second) < TimeUnit.SECONDS.toMillis(CACHE_EXPIRY_SECONDS) ){
                 LOGGER.info("Serving from cache for ID: stat")
-                return@suspendTransaction it.first
+                return it.first
             }
         }
+
+        val resultFromDb = fetchSeaWaterInfoStatisticsFromDb()
+        if (resultFromDb.isNotEmpty()) {
+            cacheStorage_SeaWaterInfoStatistics[key] = Pair(resultFromDb, now)
+        }
+        return resultFromDb
+
+
+    }
+
+    @OptIn(FormatStringsInDatetimeFormats::class)
+    override suspend fun fetchSeaWaterInfoStatisticsFromDb(): List<SeaWaterInfoByOneHourStat>  = suspendTransaction {
+
         LOGGER.info("Serving from DB for ID: stat")
         val previous24Hour = Clock.System.now()
             .minus(24, DateTimeUnit.HOUR)
@@ -206,8 +229,6 @@ class NifsRepository:NifsRepositoryInterface {
                         it[tmp_avg].toString()
                     )
                 }
-
-        cache_SeaWaterInfoStatistics[key_SeaWaterInfoStatistics] = Pair(result, now)
         return@suspendTransaction result
     }
 
