@@ -64,7 +64,8 @@ class NifsRepository:NifsRepositoryInterface {
         // 캐시에 없거나 만료된 경우 DB에서 데이터 조회 (suspendTransaction 내부 호출)
         val resultFromDb = fetchSeaWaterInfoFromDb(division)
         // 새로운 데이터를 캐시에 저장 (suspendTransaction 외부)
-        if (resultFromDb.isNotEmpty() || division == "current") { // current는 결과가 없어도 캐시 만료 의미로 저장할 수 있음
+       // if (resultFromDb.isNotEmpty() || division == "current") { // current는 결과가 없어도 캐시 만료 의미로 저장할 수 있음
+        if (resultFromDb.isNotEmpty() ) {
             cacheStorage_SeawaterInfo[key] = Pair(resultFromDb, now)
         }
         return resultFromDb
