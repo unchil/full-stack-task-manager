@@ -17,7 +17,7 @@ ktor:
     # maxHeaderSize: 1024
     # maxChunkSize: 42
 
-# time sec * 1000
+# time MilliSec
 storage:
   dbName: "sqlite"
   dbcp:
