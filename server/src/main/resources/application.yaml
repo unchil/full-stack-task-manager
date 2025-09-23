@@ -20,6 +20,15 @@ ktor:
 
 storage:
   dbName: "sqlite"
+  dbcp:
+    maxPoolSize: "10"
+    maxLifetime: "30"
+    connectionTimeout: "30"
+    validationTimeout: "5"
+    idleTimeout: "10"
+    initializationFailTimeout: "1"
+    isAutoCommit: "false"
+    keepaliveTime: "2"
   database:
     h2:
       driverClassName: "org.h2.Driver"
