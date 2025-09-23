@@ -17,18 +17,18 @@ ktor:
     # maxHeaderSize: 1024
     # maxChunkSize: 42
 
-
+# time sec * 1000
 storage:
   dbName: "sqlite"
   dbcp:
     maxPoolSize: "10"
-    maxLifetime: "30"
-    connectionTimeout: "30"
-    validationTimeout: "5"
-    idleTimeout: "10"
+    maxLifetime: "1800000" # 30 MIN
+    connectionTimeout: "30000" # 30 SEC
+    validationTimeout: "5000" # 5 SEC
+    idleTimeout: "600000" # 10 MIN
     initializationFailTimeout: "1"
     isAutoCommit: "false"
-    keepaliveTime: "2"
+    keepaliveTime: "120000" # 2 MIN
   database:
     h2:
       driverClassName: "org.h2.Driver"
