@@ -129,11 +129,11 @@ class NifsRepository:NifsRepositoryInterface {
 
             "current" -> {
                 val lastTimeExpression = ObservationTable.obs_datetime.max()
-                val currentTime = ObservationTable.select(lastTimeExpression).limit(1).map {
+                val lastTime = ObservationTable.select(lastTimeExpression).limit(1).map {
                     it[lastTimeExpression].toString()
                 }.singleOrNull()
 
-                if (currentTime == null) {
+                if (lastTime == null) {
                     emptyList() // 현재 데이터가 없는 경우
                 } else {
                     ObservationTable.join(
@@ -151,7 +151,7 @@ class NifsRepository:NifsRepositoryInterface {
                         ObservatoryTable.lat
 
                     ).where{
-                        ObservationTable.obs_datetime eq currentTime
+                        ObservationTable.obs_datetime eq lastTime
                     }.map {
                         toSeawaterInformationByObservationPoint(it)
                     }
