@@ -13,18 +13,6 @@ fun Application.configureNifsDatabase() {
 
     val database = with(databaseName) {
         when{
-            startsWith("h2") -> {
-                val driver = environment.config.property("storage.database.h2.driverClassName").getString()
-                val url = environment.config.property("storage.database.h2.jdbcURL").getString()
-                val user = environment.config.property("storage.database.h2.user").getString()
-                val password = environment.config.property("storage.database.h2.password").getString()
-                Database.connect(
-                    url = url,
-                    driver = driver,
-                    user = user,
-                    password = password
-                )
-            }
             startsWith("sqlite") -> {
                 val config = HikariConfig().apply {
                     jdbcUrl = environment.config.property("storage.database.sqlite.jdbcURL").getString()
