@@ -53,8 +53,8 @@ fun createBoxPlotChart(data: Map<String,List<Any>>): Plot {
     )  +
             scaleColorViridis(option = "C", end = 0.8) +
             geomBoxplot{
-                x = asDiscrete("ObservatoryName", orderBy = "..middle..", order = 1)
-             //   x = asDiscrete("ObservatoryName", order = 1)
+             //   x = asDiscrete("ObservatoryName", orderBy = "..middle..", order = 1)
+                x = asDiscrete("ObservatoryName", order = 1)
              //   x = "ObservatoryName"
                 y = "Temperature"
                 color = "..middle.."
