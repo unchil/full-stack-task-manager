@@ -296,7 +296,7 @@ fun makeUrl(funcName:String):String {
 
             @OptIn(FormatStringsInDatetimeFormats::class)
             val previous24Hour = now
-                .minus(1, DateTimeUnit.HOUR)
+                .minus(2, DateTimeUnit.HOUR)
                 .toLocalDateTime(TimeZone.of("Asia/Seoul"))
                 .format(LocalDateTime.Format{byUnicodePattern("yyyy-MM-dd HH:mm:ss")})
 
