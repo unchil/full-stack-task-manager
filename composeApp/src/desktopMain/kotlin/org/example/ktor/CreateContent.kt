@@ -10,6 +10,7 @@ import org.jetbrains.letsPlot.label.labs
 import org.jetbrains.letsPlot.letsPlot
 import org.jetbrains.letsPlot.pos.positionDodge
 import org.jetbrains.letsPlot.scale.scaleColorViridis
+import org.jetbrains.letsPlot.scale.scaleYContinuous
 import org.jetbrains.letsPlot.themes.elementText
 import org.jetbrains.letsPlot.themes.theme
 import org.jetbrains.letsPlot.tooltips.layerTooltips
@@ -71,6 +72,13 @@ fun createLineChart( data: Map<String,List<Any>> , entrie:String?): Plot {
 }
 
 fun createRibbonChart(data: Map<String,List<Any>>, entrie:String?): Plot {
+    val yMin: Float? = data.getValue("TemperatureMin").minOfOrNull {
+        it as Float
+    }
+    val yMax: Float? = data.getValue("TemperatureMax").maxOfOrNull {
+        it as Float
+    }
+
     return letsPlot(data) +
             geomRibbon(alpha = 0.1){
                 x="CollectingTime"
@@ -79,6 +87,11 @@ fun createRibbonChart(data: Map<String,List<Any>>, entrie:String?): Plot {
                 fill="ObservatoryName"
             } +
             geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
+            scaleYContinuous(
+                limits =  (yMin?.plus(0.5) ?: 0.0) to (yMax?.plus(0.5) ?: 0.0),
+                breaks = ( (yMin?.toInt()?:0).. (yMax?.toInt()?:1) ).toList(),
+                format = ".1f"
+            ) +
             labs(title="Korea ${entrie?:""} Sea Water Temperature Ribbon", x="관측시간", y="수온 °C", fill="관측지점", caption="Nifs") +
             theme
 }
