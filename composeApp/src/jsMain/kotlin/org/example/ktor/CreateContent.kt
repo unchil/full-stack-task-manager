@@ -234,7 +234,7 @@ fun createRibbonChart( data: Map<String,List<Any>>, entrie:String?):Plot {
             } +
             geomLine( showLegend=false ) { x="CollectingTime"; y="TemperatureAvg"; color="ObservatoryName"} +
             scaleYContinuous(
-                limits =  (yMin?.plus(0.5) ?: 0.0) to (yMax?.plus(0.5) ?: 0.0),
+                limits =  (yMin?.minus(0.5) ?: 0.0) to (yMax?.plus(0.5) ?: 0.0),
                 breaks = ( (yMin?.toInt()?:0).. (yMax?.toInt()?:1) ).toList(),
                 format = ".1f"
             ) +
