@@ -176,22 +176,35 @@ fun createGrid(gridDiv: Element, data:Array<Json>)  {
 val theme = theme( axisTextX= elementText( angle=45))
 
 fun createBarChart(data: Map<String,List<Any>>, entrie:String?): Plot {
+
+    val yMin: Float? = data.getValue("Temperature").minOfOrNull {
+        it as Float
+    }
+    val yMax: Float? = data.getValue("Temperature").maxOfOrNull {
+        it as Float
+    }
+
     return letsPlot(data) {
         x = "ObservatoryName"
-        weight = "Temperature" } +
-            geomBar(
-                position = positionDodge(),
-                alpha = 0.6,
-                tooltips= layerTooltips()
-                    .line("수집시간|@CollectionTime")
-                    .line("관측지점|@ObservatoryName/@ObservatoryCode")
-                    .line("관측수심|@ObservatoryDepth")
-                    .line("온도|^y °C" )
-            ) {
-                fill = "ObservatoryDepth" } +
-            labs( title="실시간 수온 정보", y="수온 °C", x="관측지점", fill="관측수심", caption="Nifs") +
-            theme +
-            ggsize(width = 1400, height = 400)
+        weight = "Temperature"
+    } + geomBar(
+            position = positionDodge(),
+            alpha = 0.6,
+            tooltips= layerTooltips()
+                .line("수집시간|@CollectionTime")
+                .line("관측지점|@ObservatoryName/@ObservatoryCode")
+                .line("관측수심|@ObservatoryDepth")
+                .line("온도|^y °C" )
+        ) {
+            fill = "ObservatoryDepth"
+    } + labs( title="실시간 수온 정보", y="수온 °C", x="관측지점", fill="관측수심", caption="Nifs") +
+    theme +
+    scaleYContinuous(
+        limits =  (yMin?.minus(0.5) ?: 0.0) to (yMax?.plus(0.5) ?: 0.0),
+        breaks = ( (yMin?.toInt()?:0).. (yMax?.toInt()?:1) ).toList(),
+        format = ".1f"
+    ) +
+    ggsize(width = 1400, height = 400)
 }
 
 fun createBoxPlotChart(data: Map<String,List<Any>>, entrie:String?):Plot{

@@ -30,6 +30,12 @@ val theme = theme(
     tooltipTitleText= elementText(family="AppleGothic") )
 
 fun createBarChart(data: Map<String,List<Any>>): Plot {
+    val yMin: Float? = data.getValue("Temperature").minOfOrNull {
+        it as Float
+    }
+    val yMax: Float? = data.getValue("Temperature").maxOfOrNull {
+        it as Float
+    }
     return letsPlot(data) {
         x = "ObservatoryName"
         weight = "Temperature" } +
@@ -43,6 +49,11 @@ fun createBarChart(data: Map<String,List<Any>>): Plot {
                     .line("온도|^y °C" )
             ) {
                 fill = "ObservatoryDepth" } +
+            scaleYContinuous(
+                limits =  (yMin?.minus(0.5) ?: 0.0) to (yMax?.plus(0.5) ?: 0.0),
+                breaks = ( (yMin?.toInt()?:0).. (yMax?.toInt()?:1) ).toList(),
+                format = ".1f"
+            ) +
             labs( title="실시간 수온 정보", y="수온 °C", x="관측지점", fill="관측수심", caption="Nifs") +
             theme
 

@@ -96,7 +96,14 @@ class NifsRepository:NifsRepositoryInterface {
 
                 ).where{
                     ObservationTable.obs_datetime greaterEq previous24Hour
-                }.map {
+                }
+                .orderBy(
+                    ObservationTable.obs_datetime to SortOrder.DESC,
+                    ObservatoryTable.gru_nam to SortOrder.ASC,
+                    ObservatoryTable.sta_nam_kor to SortOrder.ASC,
+                    ObservationTable.obs_lay to SortOrder.ASC
+                )
+                .map {
                     toSeawaterInformationByObservationPoint(it)
                 }
             }
@@ -122,7 +129,12 @@ class NifsRepository:NifsRepositoryInterface {
 
                 ).where{
                     ObservationTable.obs_datetime greaterEq previous24Hour
-                }.orderBy( ObservationTable.obs_datetime to SortOrder.DESC).map {
+                }.orderBy(
+                    ObservationTable.obs_datetime to SortOrder.DESC,
+                    ObservatoryTable.gru_nam to SortOrder.ASC,
+                    ObservatoryTable.sta_nam_kor to SortOrder.ASC,
+                    ObservationTable.obs_lay to SortOrder.ASC
+                ).map {
                         toSeawaterInformationByObservationPoint(it)
                 }
             }
@@ -152,7 +164,11 @@ class NifsRepository:NifsRepositoryInterface {
 
                     ).where{
                         ObservationTable.obs_datetime eq lastTime
-                    }.map {
+                    }.orderBy(
+                            ObservatoryTable.sta_nam_kor to SortOrder.ASC,
+                            ObservationTable.obs_lay to SortOrder.ASC
+                        )
+                        .map {
                         toSeawaterInformationByObservationPoint(it)
                     }
                 }
