@@ -248,47 +248,6 @@ class NifsRepository:NifsRepositoryInterface {
     }
 
 
-    @OptIn(FormatStringsInDatetimeFormats::class)
-    override suspend fun observationList(division: String): List<Observation> = suspendTransaction {
-
-        return@suspendTransaction when(division) {
-            "oneday" -> {
-                val previous24Hour = Clock.System.now()
-                    .minus(24, DateTimeUnit.HOUR)
-                    .toLocalDateTime(TimeZone.of("Asia/Seoul"))
-                    .format(LocalDateTime.Format{byUnicodePattern("yyyy-MM-dd HH:mm:ss")})
-
-                ObservationTable.selectAll().where{
-                    ObservationTable.obs_datetime greaterEq previous24Hour
-                }
-                .map {
-                    toObservation(it)
-                }
-            }
-            "current" -> {
-                val lastTime = ObservationTable.obs_datetime.max()
-
-                val currentTime = ObservationTable.select(lastTime).limit(1)
-                    .map {
-                        it[lastTime].toString()
-                    }.last()
-
-
-                ObservationTable.selectAll().where{
-                    ObservationTable.obs_datetime eq currentTime
-                }
-                .map {
-                   toObservation(it)
-                }
-            }
-            else -> {
-                emptyList()
-            }
-        }
-
-    }
-
-
     override suspend fun observatoryInfo(): List<Observatory> = suspendTransaction {
         ObservatoryTable.selectAll()
             .map {

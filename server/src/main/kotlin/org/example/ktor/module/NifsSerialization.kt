@@ -65,27 +65,6 @@ fun Application.configureNifsSerialization(repository: NifsRepository) {
 
             }
 
-            get("/observations/{division}"){
-                val division = call.parameters["division"]
-                if (division == null) {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@get
-                }
-
-                try {
-                    val result = repository.observationList(division)
-                    if (result.isEmpty()) {
-                        call.respond(HttpStatusCode.NotFound)
-                        return@get
-                    }
-                    call.respond(result)
-
-                } catch (ex: IllegalArgumentException) {
-                    call.respond(HttpStatusCode.BadRequest)
-                }
-
-            }
-
             get ("/observatory"){
                 try {
                     val result = repository.observatoryInfo()

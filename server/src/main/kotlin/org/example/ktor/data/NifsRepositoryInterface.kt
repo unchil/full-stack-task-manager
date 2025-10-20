@@ -9,6 +9,5 @@ interface NifsRepositoryInterface {
 
     suspend fun fetchSeaWaterInfoFromDb(division:String, ):List<SeawaterInformationByObservationPoint>
     suspend fun fetchSeaWaterInfoStatisticsFromDb():List<SeaWaterInfoByOneHourStat>
-    suspend fun observationList(division:String):List<Observation>
     suspend fun observatoryInfo():List<Observatory>
 }
