@@ -12,8 +12,6 @@ data class Observation(
     val repair_gbn: String,
     val obs_lay: String,
     val wtr_tmp: String?,
-    val dox: String?,
-    val sal: String?,
 )
 
 @DataSchema

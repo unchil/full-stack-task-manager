@@ -98,7 +98,7 @@ class NifsRepository:NifsRepositoryInterface {
                     ObservationTable.obs_datetime greaterEq previous24Hour
                 }
                 .orderBy(
-                    ObservationTable.obs_datetime to SortOrder.DESC,
+                    ObservationTable.obs_datetime to SortOrder.ASC,
                     ObservatoryTable.gru_nam to SortOrder.ASC,
                     ObservatoryTable.sta_nam_kor to SortOrder.ASC,
                     ObservationTable.obs_lay to SortOrder.ASC

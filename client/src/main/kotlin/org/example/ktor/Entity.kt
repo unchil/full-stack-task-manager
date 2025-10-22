@@ -11,8 +11,6 @@ object ObservationTable: Table("Observation"){
     val repair_gbn =  varchar("repair_gbn", 1)
     val obs_lay = varchar("obs_lay", 1)
     val wtr_tmp = varchar("wtr_tmp", 10)
-    val dox = varchar("dox", 10).nullable()
-    val sal = varchar("sal", 10).nullable()
 
     init {
         index("idx_datetime", false, columns = arrayOf(obs_datetime) )

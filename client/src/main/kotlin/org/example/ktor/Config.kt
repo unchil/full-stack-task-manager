@@ -16,5 +16,7 @@ class Config {
             driver = driver,
         )
 
+        val jobType = (config_df["COLLECTION_TYPE"] as DataRow<*>)["type"].toString()
+        val interval = (config_df["COLLECTION_TYPE"] as DataRow<*>)["interval"].toString()
     }
 }

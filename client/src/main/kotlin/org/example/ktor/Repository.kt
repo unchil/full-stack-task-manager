@@ -44,8 +44,6 @@ class Repository {
                                         it[repair_gbn] = item.repair_gbn
                                         it[obs_lay] = item.obs_lay
                                         it[wtr_tmp] = item.wtr_tmp
-                                        it[dox] = item.dox
-                                        it[sal] = item.sal
                                     }
                                 }
                             } catch (e:Exception){
