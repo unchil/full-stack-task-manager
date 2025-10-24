@@ -57,7 +57,7 @@ class NifsApi {
                 }
            }
 
-           suspend fun callMofAPI_xml():OceanWaterResponse {
+           suspend fun callMofAPI_xml():HttpResponse {
 
                val now = Clock.System.now()
                @OptIn(FormatStringsInDatetimeFormats::class)
@@ -81,10 +81,9 @@ class NifsApi {
                        "&pageNo=1" +
                        "&ServiceKey=${confData["apikey"]}"
 
-               client.get(urlString = url).let {
-                   return it.body<OceanWaterResponse>()
-               }
+               return client.get(urlString = url)
            }
+
 
            val client = HttpClient(CIO) {
 

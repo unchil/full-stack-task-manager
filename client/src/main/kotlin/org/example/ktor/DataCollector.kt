@@ -15,6 +15,7 @@ class DataCollector() {
             try {
                 repository.getRealTimeObservation()
                 repository.getRealTimeObservatory()
+                repository.getRealTimeOceanWaterQuality()
 
             } catch (e: Exception) {
                 LOGGER.error(e.stackTrace.toString())

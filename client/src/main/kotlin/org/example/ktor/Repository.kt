@@ -1,5 +1,6 @@
 package org.example.ktor
 
+import io.ktor.client.statement.bodyAsText
 import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -7,12 +8,17 @@ import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.concat
 import org.jetbrains.kotlinx.dataframe.api.count
 import org.jetbrains.kotlinx.dataframe.api.describe
 import org.jetbrains.kotlinx.dataframe.api.forEach
 import org.jetbrains.kotlinx.dataframe.api.head
+import org.jetbrains.kotlinx.dataframe.io.read
+import org.jetbrains.kotlinx.dataframe.io.readJson
+import org.jetbrains.kotlinx.dataframe.io.toCsvStr
 import org.jetbrains.kotlinx.dataframe.size
+import org.json.XML
 
 
 class Repository {
@@ -25,43 +31,52 @@ class Repository {
         }
     }
 
-
     @Suppress("DefaultLocale")
-    fun getRealTimeOceanWaterQuality(){
-        val url = makeUrl(::getRealTimeOceanWaterQuailty.name)
-        val dataList = loadData(url, 500)
-        var result = dataList.concat()
+    suspend fun  getRealTimeOceanWaterQuality(){
+            try {
+                NifsApi.callMofAPI_xml().let { response ->
+                    val jsonData = XML.toJSONObject(response.bodyAsText())
+                    val df = DataFrame.readJson(jsonData.toString().byteInputStream())
+                    val result = df.get("response").get("body").get("items").get("item")[0] as DataFrame<*>
 
-        LOGGER.info( "${::getRealTimeOceanWaterQuality.name} [receive count[${result.count()}]]")
+                    LOGGER.info( "${::getRealTimeOceanWaterQuality.name} [receive count[${result.count()}]]")
 
-        transaction (Config.conn){
-            SchemaUtils.create( OWQInformationTable)
-            result.forEach {  item  ->
-                try{
-                    OWQInformationTable.insert { it ->
+                    transaction (Config.conn){
+                        SchemaUtils.create( OWQInformationTable)
+                        result.forEach {  item  ->
+                            try{
+                                OWQInformationTable.insert { it ->
 
-                        it[rtmWqWtchDtlDt] = item["rtmWqWtchDtlDt"].toString().substringBefore('.')
-                        it[rtmWqWtchStaCd] = item["rtmWqWtchStaCd"].toString()
-                        it[rtmWtchWtem] =  String.format("%.3f", item["rtmWtchWtem"].toString().toDouble())
-                        it[rtmWqCndctv] = item["rtmWqCndctv"].toString()
-                        it[ph] = item["ph"].toString()
-                        it[rtmWqDoxn] = String.format("%.3f", item["rtmWqDoxn"].toString().toDouble())
-                        it[rtmWqTu] = item["rtmWqTu"].toString()
-                        it[rtmWqBgalgsQy] = item["rtmWqBgalgsQy"].toString()
-                        it[rtmWqChpla] = String.format("%.3f", item["rtmWqChpla"].toString().toDouble())
-                        it[rtmWqSlnty] = item["rtmWqSlnty"].toString()
-                    }
-                } catch (e:Exception){
-                    e.localizedMessage?.let { msg ->
-                        LOGGER.debug(msg)
-                        LOGGER.debug("Exception PRIMARYKEY: [" + item["rtmWqWtchDtlDt"].toString() + "," + item["rtmWqWtchStaCd"].toString() + "]")
+                                    it[rtmWqWtchDtlDt] = item["rtmWqWtchDtlDt"].toString().substringBefore('.')
+                                    it[rtmWqWtchStaCd] = item["rtmWqWtchStaCd"].toString()
+                                    it[rtmWtchWtem] =  String.format("%.3f", item["rtmWtchWtem"].toString().toDouble())
+                                    it[rtmWqCndctv] = item["rtmWqCndctv"].toString()
+                                    it[ph] = item["ph"].toString()
+                                    it[rtmWqDoxn] = String.format("%.3f", item["rtmWqDoxn"].toString().toDouble())
+                                    it[rtmWqTu] = item["rtmWqTu"].toString()
+                                    it[rtmWqBgalgsQy] = item["rtmWqBgalgsQy"].toString()
+                                    it[rtmWqChpla] = String.format("%.3f", item["rtmWqChpla"].toString().toDouble())
+                                    it[rtmWqSlnty] = item["rtmWqSlnty"].toString()
+                                }
+                            } catch (e:Exception){
+                                e.localizedMessage?.let { msg ->
+                                    LOGGER.debug(msg)
+                                    LOGGER.debug("Exception PRIMARYKEY: [" + item["rtmWqWtchDtlDt"].toString() + "," + item["rtmWqWtchStaCd"].toString() + "]")
 
+                                }
+                            }
+                        }
                     }
                 }
+            }catch(e: Exception) {
+                e.localizedMessage?.let { msg ->
+                    LOGGER.error( "${::getRealTimeObservation.name} [${msg}]")
+                }
             }
-        }
 
     }
+
+
     @Suppress("DefaultLocale")
     suspend fun getRealTimeObservation(){
         try{
