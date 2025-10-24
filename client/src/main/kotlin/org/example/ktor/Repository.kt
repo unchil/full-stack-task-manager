@@ -35,38 +35,40 @@ class Repository {
     suspend fun  getRealTimeOceanWaterQuality(){
             try {
                 NifsApi.callMofAPI_xml().let { response ->
-                    val jsonData = XML.toJSONObject(response.bodyAsText())
-                    val df = DataFrame.readJson(jsonData.toString().byteInputStream())
-                    val result = df.get("response").get("body").get("items").get("item")[0] as DataFrame<*>
+                    XML.toJSONObject(response.bodyAsText()).let { jsonData ->
+                        val df = DataFrame.readJson(jsonData.toString().byteInputStream())
+                        val result = df.get("response").get("body").get("items").get("item")[0] as DataFrame<*>
 
-                    LOGGER.info( "${::getRealTimeOceanWaterQuality.name} [receive count[${result.count()}]]")
+                        LOGGER.info( "${::getRealTimeOceanWaterQuality.name} [receive count[${result.count()}]]")
 
-                    transaction (Config.conn){
-                        SchemaUtils.create( OWQInformationTable)
-                        result.forEach {  item  ->
-                            try{
-                                OWQInformationTable.insert { it ->
+                        transaction (Config.conn){
+                            SchemaUtils.create( OWQInformationTable)
+                            result.forEach {  item  ->
+                                try{
+                                    OWQInformationTable.insert { it ->
 
-                                    it[rtmWqWtchDtlDt] = item["rtmWqWtchDtlDt"].toString().substringBefore('.')
-                                    it[rtmWqWtchStaCd] = item["rtmWqWtchStaCd"].toString()
-                                    it[rtmWtchWtem] =  String.format("%.3f", item["rtmWtchWtem"].toString().toDouble())
-                                    it[rtmWqCndctv] = String.format("%.3f", item["rtmWqCndctv"].toString().toFloat())
-                                    it[ph] = String.format("%.2f", item["ph"].toString().toFloat())
-                                    it[rtmWqDoxn] = String.format("%.3f", item["rtmWqDoxn"].toString().toDouble())
-                                    it[rtmWqTu] = item["rtmWqTu"].toString()
-                                    it[rtmWqBgalgsQy] = item["rtmWqBgalgsQy"].toString()
-                                    it[rtmWqChpla] = String.format("%.3f", item["rtmWqChpla"].toString().toDouble())
-                                    it[rtmWqSlnty] = item["rtmWqSlnty"].toString()
-                                }
-                            } catch (e:Exception){
-                                e.localizedMessage?.let { msg ->
-                                    LOGGER.debug(msg)
-                                    LOGGER.debug("Exception PRIMARYKEY: [" + item["rtmWqWtchDtlDt"].toString() + "," + item["rtmWqWtchStaCd"].toString() + "]")
+                                        it[rtmWqWtchDtlDt] = item["rtmWqWtchDtlDt"].toString().substringBefore('.')
+                                        it[rtmWqWtchStaCd] = item["rtmWqWtchStaCd"].toString()
+                                        it[rtmWtchWtem] =  String.format("%.3f", item["rtmWtchWtem"].toString().toDouble())
+                                        it[rtmWqCndctv] = String.format("%.3f", item["rtmWqCndctv"].toString().toFloat())
+                                        it[ph] = String.format("%.2f", item["ph"].toString().toFloat())
+                                        it[rtmWqDoxn] = String.format("%.3f", item["rtmWqDoxn"].toString().toDouble())
+                                        it[rtmWqTu] = item["rtmWqTu"].toString()
+                                        it[rtmWqBgalgsQy] = item["rtmWqBgalgsQy"].toString()
+                                        it[rtmWqChpla] = String.format("%.3f", item["rtmWqChpla"].toString().toDouble())
+                                        it[rtmWqSlnty] = item["rtmWqSlnty"].toString()
+                                    }
+                                } catch (e:Exception){
+                                    e.localizedMessage?.let { msg ->
+                                        LOGGER.debug(msg)
+                                        LOGGER.debug("Exception PRIMARYKEY: [" + item["rtmWqWtchDtlDt"].toString() + "," + item["rtmWqWtchStaCd"].toString() + "]")
 
+                                    }
                                 }
                             }
                         }
                     }
+
                 }
             }catch(e: Exception) {
                 e.localizedMessage?.let { msg ->
