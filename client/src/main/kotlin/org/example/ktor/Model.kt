@@ -1,5 +1,6 @@
 package org.example.ktor
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jetbrains.kotlinx.dataframe.annotations.DataSchema
 
@@ -46,6 +47,7 @@ data class Observatory(
 )
 
 @Serializable
+@SerialName("header")
 data class Header(
     val resultCode: String,
     val resultMsg: String
@@ -53,6 +55,7 @@ data class Header(
 
 
 @Serializable
+@SerialName("item")
 data class OceanWaterQuality (
     val num: String, // 순번
     val rtmWqWtchStaCd: String, // 실시간수질관측정점코드
@@ -70,6 +73,7 @@ data class OceanWaterQuality (
 
 
 @Serializable
+@SerialName("body")
 data class OceanWaterQualityBody(
     val items: List<OceanWaterQuality>,
     val numOfRows: String,
@@ -102,6 +106,7 @@ data class ObservatoryResponse(
 )
 
 @Serializable
+@SerialName("response")
 data class OceanWaterResponse(
     val header: Header,
     val body: OceanWaterQualityBody

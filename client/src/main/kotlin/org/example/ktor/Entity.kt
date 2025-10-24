@@ -40,16 +40,16 @@ object ObservatoryTable: Table("Observatory"){
 }
 
 object OWQInformationTable: Table("OWQInformation"){
-    val rtmWqWtchDtlDt = varchar("rtmWqWtchDtlDt", 20)
+    val rtmWqWtchDtlDt = varchar("rtmWqWtchDtlDt", 21)
     val rtmWqWtchStaCd = varchar("rtmWqWtchStaCd", 7)
-    val rtmWtchWtem = varchar("rtmWtchWtem", 6)
-    val rtmWqCndctv = varchar("rtmWqCndctv", 6)
-    val ph = varchar("ph", 5)
-    val rtmWqDoxn = varchar("rtmWqDoxn", 5)
-    val rtmWqTu = varchar("rtmWqTu", 5)
-    val rtmWqBgalgsQy = varchar("rtmWqBgalgsQy", 10).nullable()
-    val rtmWqChpla = varchar("rtmWqChpla", 7)
-    val rtmWqSlnty = varchar("rtmWqSlnty", 6)
+    val rtmWtchWtem = varchar("rtmWtchWtem", 20)
+    val rtmWqCndctv = varchar("rtmWqCndctv", 20)
+    val ph = varchar("ph", 20)
+    val rtmWqDoxn = varchar("rtmWqDoxn", 20)
+    val rtmWqTu = varchar("rtmWqTu", 20)
+    val rtmWqBgalgsQy = varchar("rtmWqBgalgsQy", 20).nullable()
+    val rtmWqChpla = varchar("rtmWqChpla", 20)
+    val rtmWqSlnty = varchar("rtmWqSlnty", 20)
 
 
     override val primaryKey = PrimaryKey(rtmWqWtchDtlDt, rtmWqWtchStaCd, name = "primaryKey")

@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit
 // 캐시를 저장할 ConcurrentHashMap. 스레드 안전성을 보장합니다.
 private val cacheStorage_SeawaterInfo = ConcurrentHashMap<String, Pair<List<SeawaterInformationByObservationPoint>, Long>>()
 private val cacheStorage_SeaWaterInfoStatistics = ConcurrentHashMap<String, Pair<List<SeaWaterInfoByOneHourStat>, Long>>()
-private const val CACHE_EXPIRY_SECONDS =  10 * 60L  // 10분
+private const val CACHE_EXPIRY_SECONDS =  1 * 60L  // 10분
 
 
 

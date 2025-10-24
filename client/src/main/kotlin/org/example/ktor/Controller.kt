@@ -13,6 +13,7 @@ import org.jetbrains.kotlinx.dataframe.AnyFrame
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.DataRow
 import org.jetbrains.kotlinx.dataframe.api.colsOf
+import org.jetbrains.kotlinx.dataframe.api.concat
 import org.jetbrains.kotlinx.dataframe.api.convert
 import org.jetbrains.kotlinx.dataframe.api.describe
 import org.jetbrains.kotlinx.dataframe.api.forEach
@@ -179,9 +180,10 @@ fun getRealTimeOceanWaterQuailty(){
     val url = makeUrl(::getRealTimeOceanWaterQuailty.name)
 
     val dataList = loadData(url, maxPage)
+    val df = dataList.concat()
 
-    LOGGER.info("\n"+ dataList.first().head(5).toString())
-    LOGGER.info("\n"+ dataList.first().describe().toString())
+    LOGGER.info("\n"+ df.head(5).toString())
+    LOGGER.info("\n"+ df.describe().toString())
 
     val tableName = "OWQInformation"
 
@@ -197,35 +199,35 @@ fun getRealTimeOceanWaterQuailty(){
 
             LOGGER.debug("\n"+ sql)
 
-            dataList.forEach { df ->
+
 
                 val result = df
                     .convert{ colsAtAnyDepth().colsOf<Double>() }.with { String.format("%.3f", it) }
                     .convert { colsAtAnyDepth().colsOf<Float>() }.with{ String.format("%.3f", it)}
                     .convert("rtmWqWtchDtlDt").with { (it as String).substring(0, 19) }
 
-                result.forEach { it ->
+            result.forEach { it ->
 
-                    try {
-                        conn.prepareStatement(sql)?.use { preparedStatement ->
-                            preparedStatement.setString(1, it["rtmWqWtchDtlDt"].toString())
-                            preparedStatement.setString(2, it["rtmWqWtchStaCd"].toString())
-                            preparedStatement.setString(3, it["rtmWtchWtem"].toString())
-                            preparedStatement.setString(4, it["rtmWqCndctv"].toString())
-                            preparedStatement.setString(5, it["ph"].toString())
-                            preparedStatement.setString(6, it["rtmWqDoxn"].toString())
-                            preparedStatement.setString(7, it["rtmWqTu"].toString())
-                            preparedStatement.setString(8, it["rtmWqBgalgsQy"].toString())
-                            preparedStatement.setString(9, it["rtmWqChpla"].toString())
-                            preparedStatement.setString(10, it["rtmWqSlnty"].toString())
+                try {
+                    conn.prepareStatement(sql)?.use { preparedStatement ->
+                        preparedStatement.setString(1, it["rtmWqWtchDtlDt"].toString())
+                        preparedStatement.setString(2, it["rtmWqWtchStaCd"].toString())
+                        preparedStatement.setString(3, it["rtmWtchWtem"].toString())
+                        preparedStatement.setString(4, it["rtmWqCndctv"].toString())
+                        preparedStatement.setString(5, it["ph"].toString())
+                        preparedStatement.setString(6, it["rtmWqDoxn"].toString())
+                        preparedStatement.setString(7, it["rtmWqTu"].toString())
+                        preparedStatement.setString(8, it["rtmWqBgalgsQy"].toString())
+                        preparedStatement.setString(9, it["rtmWqChpla"].toString())
+                        preparedStatement.setString(10, it["rtmWqSlnty"].toString())
 
-                            preparedStatement.executeUpdate()
-                        }
-                    } catch (e: Exception){
-                        LOGGER.debug(e.localizedMessage)
+                        preparedStatement.executeUpdate()
                     }
+                } catch (e: Exception){
+                    LOGGER.debug(e.localizedMessage)
                 }
             }
+
         }
     } catch (e: Exception){
         LOGGER.error(e.localizedMessage)

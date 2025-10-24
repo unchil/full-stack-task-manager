@@ -1,15 +1,21 @@
 package org.example.ktor
 
-import io.ktor.util.logging.*
+import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.kotlinx.dataframe.api.concat
+import org.jetbrains.kotlinx.dataframe.api.count
+import org.jetbrains.kotlinx.dataframe.api.describe
+import org.jetbrains.kotlinx.dataframe.api.forEach
+import org.jetbrains.kotlinx.dataframe.api.head
+import org.jetbrains.kotlinx.dataframe.size
+
 
 class Repository {
-
 
     internal val LOGGER = KtorSimpleLogger( Repository::class.java.name )
 
@@ -19,10 +25,47 @@ class Repository {
         }
     }
 
+
+    @Suppress("DefaultLocale")
+    fun getRealTimeOceanWaterQuality(){
+        val url = makeUrl(::getRealTimeOceanWaterQuailty.name)
+        val dataList = loadData(url, 500)
+        var result = dataList.concat()
+
+        LOGGER.info( "${::getRealTimeOceanWaterQuality.name} [receive count[${result.count()}]]")
+
+        transaction (Config.conn){
+            SchemaUtils.create( OWQInformationTable)
+            result.forEach {  item  ->
+                try{
+                    OWQInformationTable.insert { it ->
+
+                        it[rtmWqWtchDtlDt] = item["rtmWqWtchDtlDt"].toString().substringBefore('.')
+                        it[rtmWqWtchStaCd] = item["rtmWqWtchStaCd"].toString()
+                        it[rtmWtchWtem] =  String.format("%.3f", item["rtmWtchWtem"].toString().toDouble())
+                        it[rtmWqCndctv] = item["rtmWqCndctv"].toString()
+                        it[ph] = item["ph"].toString()
+                        it[rtmWqDoxn] = String.format("%.3f", item["rtmWqDoxn"].toString().toDouble())
+                        it[rtmWqTu] = item["rtmWqTu"].toString()
+                        it[rtmWqBgalgsQy] = item["rtmWqBgalgsQy"].toString()
+                        it[rtmWqChpla] = String.format("%.3f", item["rtmWqChpla"].toString().toDouble())
+                        it[rtmWqSlnty] = item["rtmWqSlnty"].toString()
+                    }
+                } catch (e:Exception){
+                    e.localizedMessage?.let { msg ->
+                        LOGGER.debug(msg)
+                        LOGGER.debug("Exception PRIMARYKEY: [" + item["rtmWqWtchDtlDt"].toString() + "," + item["rtmWqWtchStaCd"].toString() + "]")
+
+                    }
+                }
+            }
+        }
+
+    }
     @Suppress("DefaultLocale")
     suspend fun getRealTimeObservation(){
         try{
-            NifsApi.callOpenAPI_json("list").let {
+            NifsApi.callNifsAPI_json("list").let {
                 val recvData = Json.decodeFromString<ObservationResponse>(it)
                 if(recvData.header.resultCode.equals("00")){
                     LOGGER.info( "${::getRealTimeObservation.name} [receive count[${recvData.body.item.size}]]")
@@ -70,7 +113,7 @@ class Repository {
     @Suppress("DefaultLocale")
     suspend fun getRealTimeObservatory(){
         try{
-            NifsApi.callOpenAPI_json("code").let {
+            NifsApi.callNifsAPI_json("code").let {
                 val recvData = Json.decodeFromString<ObservatoryResponse>(it)
                 if(recvData.header.resultCode.equals("00")) {
 
@@ -121,3 +164,4 @@ class Repository {
 
 
 }
+

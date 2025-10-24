@@ -22,7 +22,10 @@ val LOGGER = KtorSimpleLogger( "client")
 @Suppress("DefaultLocale")
 @OptIn(FormatStringsInDatetimeFormats::class)
 fun main() = runBlocking {
-    DataCollector().startCollecting()
+    val collector = DataCollector()
+    collector.startCollecting()
+    collector.repository.getRealTimeOceanWaterQuality()
+    LOGGER.info("Data Collector Stopped.")
 }
 
 
