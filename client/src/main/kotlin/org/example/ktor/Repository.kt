@@ -57,7 +57,7 @@ class Repository {
                                             it[rtmWqTu] = item["rtmWqTu"].toString()
                                             it[rtmWqBgalgsQy] = item["rtmWqBgalgsQy"].toString()
                                             it[rtmWqChpla] = String.format("%.3f", item["rtmWqChpla"].toString().toDouble())
-                                            it[rtmWqSlnty] = item["rtmWqSlnty"].toString()
+                                            it[rtmWqSlnty] = String.format("%.3f", item["rtmWqSlnty"].toString().toFloat())
                                         }
                                     } catch (e:Exception){
                                         e.localizedMessage?.let { msg ->
