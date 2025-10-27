@@ -62,6 +62,8 @@ suspend fun loadData( id: DATA_DIVISION) :List<Any> {
         DATA_DIVISION.statistics -> {
             repository.getSeaWaterInfoStatValues()
         }
+
+        DATA_DIVISION.mof_oneday -> TODO()
     }
 }
 

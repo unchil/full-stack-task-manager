@@ -4,12 +4,13 @@ import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.example.ktor.model.Observatory
 import org.example.ktor.model.SeaWaterInfoByOneHourStat
+import org.example.ktor.model.SeaWaterInformation
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 import org.example.ktor.network.NifsApi
 
 
 enum class DATA_DIVISION {
-    oneday, grid, current, statistics
+    oneday, grid, current, statistics, mof_oneday
 }
 
 class NifsRepository {
@@ -33,6 +34,10 @@ class NifsRepository {
     val _observatoryStateFlow: MutableStateFlow<List<Observatory>>
         = MutableStateFlow(emptyList())
 
+    val _seaWaterInfoOneDayMofStateFlow: MutableStateFlow<List<SeaWaterInformation>>
+            = MutableStateFlow(emptyList())
+
+
     suspend fun getSeaWaterInfo(division: DATA_DIVISION) {
         try {
             when(division) {
@@ -51,6 +56,12 @@ class NifsRepository {
                 DATA_DIVISION.current -> {
                     nifsApi.getSeaWaterInfo(DATA_DIVISION.current.name)?.let { it ->
                         _seaWaterInfoCurrentStateFlow.value = it
+                        LOGGER.debug("getSeaWaterInfo() called[${it.count()}]")
+                    }
+                }
+                DATA_DIVISION.mof_oneday -> {
+                    nifsApi.getSeaWaterInfoMof(DATA_DIVISION.mof_oneday.name)?.let { it ->
+                        _seaWaterInfoOneDayMofStateFlow.value = it
                         LOGGER.debug("getSeaWaterInfo() called[${it.count()}]")
                     }
                 }

@@ -1,11 +1,15 @@
 package org.example.ktor
 
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
+import kotlinx.datetime.toInstant
 import org.example.ktor.model.SeaWaterInfoByOneHourStat
+import org.example.ktor.model.SeaWaterInformation
 import org.example.ktor.model.SeawaterInformationByObservationPoint
+import kotlin.time.Duration.Companion.hours
 
 
 fun List<*>.toLayerBarsData():Map<String,List<Any>> {
@@ -85,6 +89,83 @@ fun List<*>.toLineData(gruName: String):Map<String,List<Any>> {
         "Temperature" to wtr_tmp
     )
 }
+
+@OptIn(FormatStringsInDatetimeFormats::class)
+fun List<*>.toMofLineData(qualityType: WATER_QUALITY.QualityType):Map<String,List<Any>> {
+    val rtmWqWtchStaName = mutableListOf<String>()
+    val value = mutableListOf<Float>()
+    val rtmWqWtchDtlDt = mutableListOf<Any>()
+
+    val dateTimeFormatInput = LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm:ss") }
+
+    this.forEach {
+        if (it is SeaWaterInformation &&  !listOf("SEA6001","SEA1005" ).contains(it.rtmWqWtchStaCd)) {
+            rtmWqWtchStaName.add(it.rtmWqWtchStaName)
+            rtmWqWtchDtlDt.add(
+                 LocalDateTime.parse(it.rtmWqWtchDtlDt, dateTimeFormatInput)
+                     .toInstant(TimeZone.UTC)
+                     .toEpochMilliseconds()
+            )
+
+
+            when(qualityType){
+                WATER_QUALITY.QualityType.rtmWtchWtem -> {
+                    if (it.rtmWtchWtem.trim().toFloat() < 0.0){
+                        value.add( 0f)
+                    }else{
+                        value.add(it.rtmWtchWtem.trim().toFloat())
+                    }
+                }
+                WATER_QUALITY.QualityType.rtmWqCndctv -> {
+                    if (it.rtmWqCndctv.trim().toFloat() < 0.0){
+                        value.add( 0f)
+                    }else{
+                        value.add(it.rtmWqCndctv.trim().toFloat())
+                    }
+                }
+                WATER_QUALITY.QualityType.ph -> value.add(it.ph.trim().toFloat())
+                WATER_QUALITY.QualityType.rtmWqDoxn -> {
+                    if (it.rtmWqDoxn.trim().toFloat() < 0.0){
+                        value.add( 0f)
+                    }else{
+                        value.add( it.rtmWqDoxn.trim().toFloat() )
+                    }
+                }
+                WATER_QUALITY.QualityType.rtmWqTu -> {
+                    if (it.rtmWqTu.trim().toFloat() < 0.0){
+                        value.add( 0f)
+                    }else{
+                        value.add( it.rtmWqTu.trim().toFloat() )
+                    }
+                }
+                WATER_QUALITY.QualityType.rtmWqChpla -> {
+                    if (it.rtmWqChpla.trim().toFloat() < 0.0){
+                        value.add( 0f)
+                    }else{
+                        value.add( it.rtmWqChpla.trim().toFloat() )
+                    }
+
+                }
+                WATER_QUALITY.QualityType.rtmWqSlnty -> {
+                    if (it.rtmWqSlnty.trim().toFloat() < 0.0){
+                        value.add( 0f)
+                    }else{
+                        value.add(it.rtmWqSlnty.trim().toFloat())
+                    }
+                }
+            }
+        }
+    }
+
+    val data = mapOf<String, List<Any>>(
+        "CollectingTime" to rtmWqWtchDtlDt,
+        "ObservatoryName" to rtmWqWtchStaName,
+        "Value" to value
+    )
+    return data
+
+}
+
 
 fun List<*>.toRibbonData(gruName: String):Map<String,List<Any>> {
     val gru_nam = mutableListOf<String>()

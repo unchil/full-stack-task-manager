@@ -1,5 +1,8 @@
 package org.example.ktor
 
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.format
+import kotlinx.datetime.format.byUnicodePattern
 import org.jetbrains.letsPlot.asDiscrete
 import org.jetbrains.letsPlot.geom.geomBar
 import org.jetbrains.letsPlot.geom.geomBoxplot
@@ -10,6 +13,9 @@ import org.jetbrains.letsPlot.label.labs
 import org.jetbrains.letsPlot.letsPlot
 import org.jetbrains.letsPlot.pos.positionDodge
 import org.jetbrains.letsPlot.scale.scaleColorViridis
+import org.jetbrains.letsPlot.scale.scaleXContinuous
+import org.jetbrains.letsPlot.scale.scaleXDateTime
+import org.jetbrains.letsPlot.scale.scaleXDiscrete
 import org.jetbrains.letsPlot.scale.scaleYContinuous
 import org.jetbrains.letsPlot.themes.elementText
 import org.jetbrains.letsPlot.themes.theme
@@ -79,6 +85,17 @@ fun createLineChart( data: Map<String,List<Any>> , entrie:String?): Plot {
     return letsPlot(data) +
             geomLine { x="CollectingTime"; y="Temperature"; color="ObservatoryName"} +
             labs( title="Korea ${entrie?:""} Sea Water Temperature Line", y="수온 °C", x="관측시간", color="관측지점", caption="Nifs") +
+            theme
+}
+
+fun createLineChart2( data: Map<String,List<Any>> , entrie:String?): Plot {
+
+    return letsPlot(data) +
+            geomLine { x="CollectingTime"; y="Value"; color="ObservatoryName"} +
+            scaleXDateTime(
+                format = "%d %H" // 원하는 "dd HH" 형식 지정
+            ) +
+            labs( title="Korea Sea Water Information", y= entrie?:"", x="관측시간", color="관측지점", caption="Mof") +
             theme
 }
 

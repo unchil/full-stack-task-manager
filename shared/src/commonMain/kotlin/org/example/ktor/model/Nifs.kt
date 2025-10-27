@@ -4,6 +4,25 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
+data class SeaWaterInformation(
+    val rtmWqWtchDtlDt:String,
+    val rtmWqWtchStaCd:String,
+    val rtmWqWtchStaName:String,
+    val rtmWtchWtem:String,
+    val rtmWqCndctv:String,
+    val ph:String,
+    val rtmWqDoxn:String,
+    val rtmWqTu:String,
+    val rtmWqChpla:String,
+    val rtmWqSlnty:String,
+    val lon: Double,
+    val lat: Double,
+)
+
+
+
+
+@Serializable
 data class Observation(
     val sta_cde: String,
     val sta_nam_kor: String,
