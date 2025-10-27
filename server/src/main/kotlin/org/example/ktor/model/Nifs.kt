@@ -3,6 +3,24 @@ package org.example.ktor.model
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class SeaWaterInformation(
+    val rtmWqWtchDtlDt:String,
+    val rtmWqWtchStaCd:String,
+    val rtmWqWtchStaName:String,
+    val rtmWtchWtem:String,
+    val rtmWqCndctv:String,
+    val ph:String,
+    val rtmWqDoxn:String,
+    val rtmWqTu:String,
+    val rtmWqChpla:String,
+    val rtmWqSlnty:String,
+    val lon: Double,
+    val lat: Double,
+)
+
+
+
+@Serializable
 data class SeawaterInformationByObservationPoint(
     val sta_cde: String,
     val sta_nam_kor: String,
@@ -52,3 +70,4 @@ data class Observatory(
     val bot_dep: String?,
     val sta_des: String?
 )
+

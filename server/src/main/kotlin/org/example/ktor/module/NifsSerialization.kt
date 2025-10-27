@@ -28,7 +28,6 @@ fun Application.configureNifsSerialization(repository: NifsRepository) {
         get("/") {
             call.respondText("Beautiful World!")
         }
-
         route("/nifs") {
 
             get("/seawaterinfo/{division}"){
@@ -80,6 +79,25 @@ fun Application.configureNifsSerialization(repository: NifsRepository) {
 
             }
 
+        }
+        route("/mof"){
+            get("/swi/{division}"){
+                val division = call.parameters["division"]
+                if (division == null) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+                try {
+                    val result = repository.swi(division)
+                    if (result.isEmpty()) {
+                        call.respond(HttpStatusCode.NotFound)
+                        return@get
+                    }
+                    call.respond(result)
+                } catch (ex: IllegalArgumentException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
         }
 
     }

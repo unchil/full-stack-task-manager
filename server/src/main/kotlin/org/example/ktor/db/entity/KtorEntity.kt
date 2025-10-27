@@ -1,10 +1,55 @@
 package org.example.ktor.db.entity
 
+import org.example.ktor.db.entity.OWQInformationTable.rtmWqWtchDtlDt
+import org.example.ktor.db.entity.OWQInformationTable.rtmWqWtchStaCd
 import org.example.ktor.model.Observation
 import org.example.ktor.model.Observatory
+import org.example.ktor.model.SeaWaterInformation
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
+import kotlin.String
+
+
+object QWQObservatoryTable: Table("OWQObservatory"){
+    val sta_code = varchar("sta_code", 7)
+    val sta_name =  varchar("sta_name", 20)
+    val ocean_division =  varchar("ocean_division", 20)
+    val lon =  double("lon")
+    val lat =  double("lat")
+    override val primaryKey = PrimaryKey(sta_code, name = "OWQObservatory_pk")
+}
+
+object OWQInformationTable: Table("OWQInformation"){
+    val rtmWqWtchDtlDt = varchar("rtmWqWtchDtlDt", 21)
+    val rtmWqWtchStaCd = varchar("rtmWqWtchStaCd", 7)
+    val rtmWtchWtem = varchar("rtmWtchWtem", 20)
+    val rtmWqCndctv = varchar("rtmWqCndctv", 20)
+    val ph = varchar("ph", 20)
+    val rtmWqDoxn = varchar("rtmWqDoxn", 20)
+    val rtmWqTu = varchar("rtmWqTu", 20)
+    val rtmWqBgalgsQy = varchar("rtmWqBgalgsQy", 20).nullable()
+    val rtmWqChpla = varchar("rtmWqChpla", 20)
+    val rtmWqSlnty = varchar("rtmWqSlnty", 20)
+
+
+    override val primaryKey = PrimaryKey(rtmWqWtchDtlDt, rtmWqWtchStaCd, name = "primaryKey")
+}
+
+fun toSeaWaterInformation(it: ResultRow) = SeaWaterInformation(
+    it[OWQInformationTable.rtmWqWtchDtlDt],
+    it[OWQInformationTable.rtmWqWtchStaCd],
+    it[QWQObservatoryTable.sta_name],
+    it[OWQInformationTable.rtmWtchWtem],
+    it[OWQInformationTable.rtmWqCndctv],
+    it[OWQInformationTable.ph],
+    it[OWQInformationTable.rtmWqDoxn],
+    it[OWQInformationTable.rtmWqTu],
+    it[OWQInformationTable.rtmWqChpla],
+    it[OWQInformationTable.rtmWqSlnty],
+    it[QWQObservatoryTable.lon],
+    it[QWQObservatoryTable.lat]
+)
 
 
 fun toSeawaterInformationByObservationPoint(it: ResultRow) = SeawaterInformationByObservationPoint(

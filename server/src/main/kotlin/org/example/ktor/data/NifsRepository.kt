@@ -10,14 +10,18 @@ import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
+import org.example.ktor.db.entity.OWQInformationTable
 import org.example.ktor.db.entity.ObservationTable
 import org.example.ktor.db.entity.ObservatoryTable
+import org.example.ktor.db.entity.QWQObservatoryTable
+import org.example.ktor.db.entity.toSeaWaterInformation
 import org.example.ktor.db.entity.toObservation
 import org.example.ktor.db.entity.toObservatory
 import org.example.ktor.db.entity.toSeawaterInformationByObservationPoint
 import org.example.ktor.model.Observation
 import org.example.ktor.model.Observatory
 import org.example.ktor.model.SeaWaterInfoByOneHourStat
+import org.example.ktor.model.SeaWaterInformation
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 import org.example.ktor.module.LOGGER
 import org.jetbrains.exposed.sql.FloatColumnType
@@ -38,6 +42,8 @@ import java.util.concurrent.TimeUnit
 
 // 캐시를 저장할 ConcurrentHashMap. 스레드 안전성을 보장합니다.
 private val cacheStorage_SeawaterInfo = ConcurrentHashMap<String, Pair<List<SeawaterInformationByObservationPoint>, Long>>()
+
+private val cacheStorage_SeawaterInfo_Mof = ConcurrentHashMap<String, Pair<List<SeaWaterInformation>, Long>>()
 private val cacheStorage_SeaWaterInfoStatistics = ConcurrentHashMap<String, Pair<List<SeaWaterInfoByOneHourStat>, Long>>()
 private const val CACHE_EXPIRY_SECONDS =  1 * 60L  // 10분
 
@@ -69,6 +75,73 @@ class NifsRepository:NifsRepositoryInterface {
         return resultFromDb
     }
 
+    suspend fun swi(division:String):List<SeaWaterInformation?>{
+        val key = "cache_$division"
+        val now = System.currentTimeMillis()
+
+        // 캐시에서 데이터 조회 (suspendTransaction 외부)
+        cacheStorage_SeawaterInfo_Mof[key]?.let { cachedData ->
+            if ((now - cachedData.second) < TimeUnit.SECONDS.toMillis(CACHE_EXPIRY_SECONDS)) {
+                LOGGER.info("Serving from cache for ID: $division")
+                return cachedData.first
+            }
+        }
+
+        // 캐시에 없거나 만료된 경우 DB에서 데이터 조회 (suspendTransaction 내부 호출)
+        val resultFromDb = fetchSeaWaterInfoFromDb_Mof(division)
+        if (resultFromDb.isNotEmpty() ) {
+            cacheStorage_SeawaterInfo_Mof[key] = Pair(resultFromDb, now)
+        }
+        return resultFromDb
+    }
+
+
+    @OptIn(FormatStringsInDatetimeFormats::class)
+     suspend fun fetchSeaWaterInfoFromDb_Mof(division: String): List<SeaWaterInformation>  = suspendTransaction {
+        LOGGER.info("Serving from DB for ID: $division")
+
+        val result = when(division) {
+            "mof_oneday" -> {
+                val previous24Hour = Clock.System.now()
+                    .minus(24, DateTimeUnit.HOUR)
+                    .toLocalDateTime(TimeZone.of("Asia/Seoul"))
+                    .format(LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm:ss") })
+
+                OWQInformationTable.join(
+                    QWQObservatoryTable,
+                    JoinType.INNER,
+                    onColumn = OWQInformationTable.rtmWqWtchStaCd,
+                    otherColumn = QWQObservatoryTable.sta_code
+                ).select(
+                    OWQInformationTable.rtmWqWtchDtlDt,
+                    OWQInformationTable.rtmWqWtchStaCd,
+                    QWQObservatoryTable.sta_name,
+                    OWQInformationTable.rtmWtchWtem,
+                    OWQInformationTable.rtmWqCndctv,
+                    OWQInformationTable.ph,
+                    OWQInformationTable.rtmWqDoxn,
+                    OWQInformationTable.rtmWqTu,
+                    OWQInformationTable.rtmWqChpla,
+                    OWQInformationTable.rtmWqSlnty,
+                    QWQObservatoryTable.lon,
+                    QWQObservatoryTable.lat
+                ).where {
+                    OWQInformationTable.rtmWqWtchDtlDt greaterEq previous24Hour
+                }
+                .orderBy(
+                    OWQInformationTable.rtmWqWtchDtlDt to SortOrder.ASC,
+                    QWQObservatoryTable.sta_name to SortOrder.ASC
+                )
+                .map {
+                    toSeaWaterInformation(it)
+                }
+            }
+            else -> {emptyList()}
+        }
+
+
+        return@suspendTransaction result
+    }
 
     @OptIn(FormatStringsInDatetimeFormats::class)
     override suspend fun fetchSeaWaterInfoFromDb(division: String): List<SeawaterInformationByObservationPoint>  = suspendTransaction {
