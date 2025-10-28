@@ -117,13 +117,20 @@ fun List<*>.toMofLineData(qualityType: WATER_QUALITY.QualityType):Map<String,Lis
                     }
                 }
                 WATER_QUALITY.QualityType.rtmWqCndctv -> {
-                    if (it.rtmWqCndctv.trim().toFloat() < 0.0){
-                        value.add( 0f)
+                    if (it.rtmWqCndctv.trim().toFloat() < 10.0){
+                        value.add( 10f)
                     }else{
                         value.add(it.rtmWqCndctv.trim().toFloat())
                     }
                 }
-                WATER_QUALITY.QualityType.ph -> value.add(it.ph.trim().toFloat())
+                WATER_QUALITY.QualityType.ph -> {
+
+                    if (it.ph.trim().toFloat() < 7.0){
+                        value.add( 7f)
+                    }else{
+                        value.add(it.ph.trim().toFloat())
+                    }
+                }
                 WATER_QUALITY.QualityType.rtmWqDoxn -> {
                     if (it.rtmWqDoxn.trim().toFloat() < 0.0){
                         value.add( 0f)
@@ -147,8 +154,8 @@ fun List<*>.toMofLineData(qualityType: WATER_QUALITY.QualityType):Map<String,Lis
 
                 }
                 WATER_QUALITY.QualityType.rtmWqSlnty -> {
-                    if (it.rtmWqSlnty.trim().toFloat() < 0.0){
-                        value.add( 0f)
+                    if (it.rtmWqSlnty.trim().toFloat() < 6.0){
+                        value.add( 6f)
                     }else{
                         value.add(it.rtmWqSlnty.trim().toFloat())
                     }

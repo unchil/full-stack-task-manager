@@ -51,7 +51,7 @@ fun MofObservationLine(modifier: Modifier = Modifier)  {
 
 
         LaunchedEffect(key1= seaWaterInfoOneday.value, key2= selectedOption.name){
-            figureLine = createLineChart2( seaWaterInfoOneday.value.toMofLineData(selectedOption) , selectedOption.name()  )
+            figureLine = createLineChart2( seaWaterInfoOneday.value.toMofLineData(selectedOption) , selectedOption )
         }
 
         Column (modifier = Modifier.then(modifier).padding(vertical = 8.dp)) {
@@ -79,9 +79,8 @@ fun MofObservationLine(modifier: Modifier = Modifier)  {
                 }
             }
 
-
             PlotPanel(
-                modifier = Modifier.size(width = 1300.dp, height = 400.dp),
+                modifier = Modifier.size(width = 1300.dp, height = 700.dp),
                 figure = figureLine,
                 preserveAspectRatio = preserveAspectRatio.value
             ) { computationMessages ->
