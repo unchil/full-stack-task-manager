@@ -111,6 +111,18 @@ class NifsRepository {
         return result
     }
 
+    suspend fun getSeaWaterInfoMof(division: String) : List<SeaWaterInformation> {
+        var result: List<SeaWaterInformation> = emptyList()
+        try {
+            nifsApi.getSeaWaterInfoMof(division)?.let { it ->
+                result = it
+            }
+        }catch (e:Exception){
+            LOGGER.error(e.message ?: "Error ")
+        }
+        return result
+    }
+
     suspend fun getSeaWaterInfoStatValues() : List<SeaWaterInfoByOneHourStat> {
         var result: List<SeaWaterInfoByOneHourStat> = emptyList()
         try {

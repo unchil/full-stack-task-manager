@@ -4,6 +4,7 @@ package org.example.ktor
 import kotlinx.browser.window
 import kotlinx.dom.clear
 import org.example.ktor.SEA_AREA.gru_nam
+import org.example.ktor.WATER_QUALITY.name
 import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.frontend.JsFrontendUtil
 import org.w3c.dom.Element
@@ -28,6 +29,15 @@ external interface SeaWaterInfoChartProps : Props {
 	var loadDataFunction: suspend (DATA_DIVISION) -> List<Any>
 	var createChartFunction: ( Map<String, List<Any>>, String?) -> org.jetbrains.letsPlot.intern.Plot
 	var chartDataMapper: ( List<Any>, String?) -> Map<String, List<Any>>
+}
+
+external interface MofSeaQualityChartProps : Props {
+	var initialSelectedType: String
+	var chartDiv: Element?
+	var dataDivision : DATA_DIVISION
+	var loadDataFunction: suspend (DATA_DIVISION) -> List<Any>
+	var createChartFunction: ( Map<String, List<Any>>,  WATER_QUALITY.QualityType) -> org.jetbrains.letsPlot.intern.Plot
+	var chartDataMapper: ( List<Any>, WATER_QUALITY.QualityType) -> Map<String, List<Any>>
 }
 
 external interface SeaWaterInfoDataGridProps : Props {
@@ -156,3 +166,52 @@ val SeaAreaLineChart = FC<SeaWaterInfoChartProps> { props ->
 	}
 }
 
+
+
+val MofSeaQualityAreaLineChart = FC<MofSeaQualityChartProps> { props ->
+	var selectedType by useState(props.initialSelectedType)
+	val handleOptionChange: (Event:ChangeEvent<HTMLInputElement>) -> Unit = { event ->
+		val newTypeName = event.target.asDynamic().value as String
+		selectedType = WATER_QUALITY.QualityType.entries.findLast{ it.name()  == newTypeName}?.name() ?:  WATER_QUALITY.QualityType.entries[0].name()
+	}
+	var currentTime by useState(Date().toLocaleString())
+	useEffect {
+		window.setInterval({
+			currentTime = Date().toLocaleString()
+		}, 10 * 60 * 1000)
+	}
+
+	useEffect(selectedType, currentTime) {
+		props.chartDiv?.let { currentDiv ->
+			currentDiv.clear()
+			props.loadDataFunction(props.dataDivision).let { it ->
+				currentDiv.appendChild(
+					JsFrontendUtil.createPlotDiv(
+						props.createChartFunction(
+							props.chartDataMapper(it, WATER_QUALITY.QualityType.entries.findLast{ it.name() == selectedType }?: WATER_QUALITY.QualityType.entries[0]) ,
+							WATER_QUALITY.QualityType.entries.findLast{ it.name() == selectedType }?: WATER_QUALITY.QualityType.entries[0]
+						)
+					)
+				)
+			}
+		}
+	}
+
+	div {
+		className = ClassName("horizontal-div")
+
+		WATER_QUALITY.QualityType.entries.forEach { typeEnumEntry ->
+			div {
+				RadioButton {
+					name = "RadioGroup_line"+ props.chartDiv?.id  // 그룹별 고유 네임으로 설정( checked 관련 중요  )
+					id = typeEnumEntry.name + props.chartDiv?.id
+					value = typeEnumEntry.name()
+					label = typeEnumEntry.name()
+					checked = selectedType == typeEnumEntry.name()
+					onChange = handleOptionChange
+
+				}
+			}
+		}
+	}
+}

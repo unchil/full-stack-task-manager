@@ -17,6 +17,10 @@ class Config {
         )
 
         val jobType = (config_df["COLLECTION_TYPE"] as DataRow<*>)["type"].toString()
+        val jobEvent = (config_df["COLLECTION_TYPE"] as DataRow<*>)["event"].toString()
         val interval = (config_df["COLLECTION_TYPE"] as DataRow<*>)["interval"].toString()
+
+        val wtch_dt_start = (config_df["COLLECTION_TYPE"] as DataRow<*>)["wtch_dt_start"].toString()
+        val wtch_dt_end = (config_df["COLLECTION_TYPE"] as DataRow<*>)["wtch_dt_end"].toString()
     }
 }

@@ -13,6 +13,7 @@ fun main() {
     window.onload = {
         createLayOut{
             try {
+                createContent(ContainerDiv.ID.MofSeaQualityArea)
                 createContent(ContainerDiv.ID.BoxPlot)
                 createContent(ContainerDiv.ID.LayerBars)
                 createContent(ContainerDiv.ID.SeaArea)
@@ -35,8 +36,10 @@ fun createLayOut( completeHandle:()->Unit) {
     val body = document.body ?: error("No body")
     body.append {
 
-        h1 { +"Nifs Sea Water Temperature Infomation"; style="text-align:center;" }
+        h1 { +"Korea Sea Water Quality Information"; style="text-align:center;" }
 
+        div { id = ContainerDiv.ID.MofSeaQualityArea.name}
+        div { id = ContainerDiv.ID.MofSeaQuality.name}
 
         div { id = ContainerDiv.ID.BoxPlot.name}
 

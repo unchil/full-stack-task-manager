@@ -1,8 +1,6 @@
 package org.example.ktor
 
 import kotlinx.coroutines.delay
-import org.jetbrains.kotlinx.dataframe.DataRow
-import org.jetbrains.kotlinx.dataframe.io.readJson
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -11,11 +9,15 @@ class DataCollector() {
     val repository = Repository()
     suspend fun startCollecting() {
         while(true){
-            LOGGER.info("Data Collector Started. Job Type: ${Config.jobType}")
+            LOGGER.info("Data Collector Job Started.\nType:[${Config.jobType}], Event[${Config.jobEvent}]")
             try {
                 repository.getRealTimeObservation()
                 repository.getRealTimeObservatory()
-                repository.getRealTimeOceanWaterQuality()
+                if(Config.jobType.equals("batch") && Config.jobEvent.equals("recovery")){
+                    getRealTimeOceanWaterQuality_Rocovery(Config.wtch_dt_start, Config.wtch_dt_end)
+                }else{
+                    repository.getRealTimeOceanWaterQuality()
+                }
 
             } catch (e: Exception) {
                 LOGGER.error(e.stackTrace.toString())

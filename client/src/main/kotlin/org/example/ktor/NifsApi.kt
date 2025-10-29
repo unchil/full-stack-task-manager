@@ -69,7 +69,7 @@ class NifsApi {
                val previous2Hour = now
                    .minus(2, DateTimeUnit.HOUR)
                    .toLocalDateTime(TimeZone.of("Asia/Seoul"))
-                   .format(LocalDateTime.Format{byUnicodePattern("yyyy-MM-dd HH:mm:ss")})
+                   .format(LocalDateTime.Format{byUnicodePattern("yyyy-MM-dd  HH:mm:ss")})
 
                LOGGER.debug("Current time : ${currentTime}, Previous time : ${previous2Hour}")
 
@@ -77,6 +77,7 @@ class NifsApi {
 
                val url = "${confData["endPoint"]}/${confData["subPath"]}" +
                        "?wtch_dt_start=${URLEncoder.encode(previous2Hour, StandardCharsets.UTF_8.toString())}" +
+                       "&wtch_dt_end=${URLEncoder.encode(currentTime, StandardCharsets.UTF_8.toString())}" +
                        "&numOfRows=1000" +
                        "&pageNo=1" +
                        "&ServiceKey=${confData["apikey"]}"

@@ -2,6 +2,9 @@ package org.example.ktor
 
 import kotlinx.browser.document
 import org.example.ktor.SEA_AREA.gru_nam
+import org.example.ktor.WATER_QUALITY.desc
+import org.example.ktor.WATER_QUALITY.name
+import org.example.ktor.WATER_QUALITY.unit
 import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.asDiscrete
 import org.jetbrains.letsPlot.geom.geomBar
@@ -14,8 +17,8 @@ import org.jetbrains.letsPlot.label.labs
 import org.jetbrains.letsPlot.letsPlot
 import org.jetbrains.letsPlot.pos.positionDodge
 import org.jetbrains.letsPlot.scale.scaleColorViridis
+import org.jetbrains.letsPlot.scale.scaleXDateTime
 import org.jetbrains.letsPlot.scale.scaleYContinuous
-import org.jetbrains.letsPlot.scale.ylim
 import org.jetbrains.letsPlot.themes.elementText
 import org.jetbrains.letsPlot.themes.theme
 import org.jetbrains.letsPlot.tooltips.layerTooltips
@@ -23,13 +26,12 @@ import org.w3c.dom.Element
 import react.create
 import react.dom.client.createRoot
 import kotlin.js.Json
-import kotlin.js.iterator
 import kotlin.js.json
 import web.dom.Element as WasmElement
 
 object ContainerDiv {
     enum class ID {
-        LayerBars, BoxPlot, Line, Ribbon, AgGridCurrent, ComposeDataGrid, SeaArea, RibbonArea
+        LayerBars, BoxPlot, Line, MofSeaQuality, Ribbon, AgGridCurrent, ComposeDataGrid, SeaArea, RibbonArea, MofSeaQualityArea
     }
 }
 
@@ -47,7 +49,9 @@ fun ContainerDiv.ID.division(): DATA_DIVISION {
             -> DATA_DIVISION.statistics
         ContainerDiv.ID.ComposeDataGrid
             -> DATA_DIVISION.grid
-
+        ContainerDiv.ID.MofSeaQuality,
+        ContainerDiv.ID.MofSeaQualityArea
+            -> DATA_DIVISION.mof_oneday
     }
 }
 
@@ -62,8 +66,9 @@ suspend fun loadData( id: DATA_DIVISION) :List<Any> {
         DATA_DIVISION.statistics -> {
             repository.getSeaWaterInfoStatValues()
         }
-
-        DATA_DIVISION.mof_oneday -> TODO()
+        DATA_DIVISION.mof_oneday -> {
+            repository.getSeaWaterInfoMof(id.name)
+        }
     }
 }
 
@@ -148,6 +153,22 @@ fun createContent(elementId: ContainerDiv.ID){
         ContainerDiv.ID.Line -> TODO()
         ContainerDiv.ID.Ribbon -> TODO()
         ContainerDiv.ID.ComposeDataGrid -> TODO()
+        ContainerDiv.ID.MofSeaQuality -> TODO()
+        ContainerDiv.ID.MofSeaQualityArea -> {
+            createRoot(container).render(
+                MofSeaQualityAreaLineChart.create {
+                    initialSelectedType =  WATER_QUALITY.QualityType.entries[0].name()
+                    chartDiv = document.getElementById(ContainerDiv.ID.MofSeaQuality.name)
+                    dataDivision = ContainerDiv.ID.MofSeaQuality.division()
+                    loadDataFunction = ::loadData
+                    createChartFunction = ::createMofSeaQualityChart
+                    chartDataMapper =
+                        { listData, qualityType ->
+                            listData.toMofLineData(qualityType)
+                        }
+                }
+            )
+        }
     }
 
 }
@@ -231,6 +252,18 @@ fun createLineChart( data: Map<String,List<Any>>, entrie:String?): Plot {
             theme +
             ggsize( width = 1400, height = 400)
 }
+
+fun createMofSeaQualityChart(data: Map<String,List<Any>>, qualityType: WATER_QUALITY.QualityType): Plot {
+    return letsPlot(data) +
+            geomLine { x="CollectingTime"; y="Value"; color="ObservatoryName"} +
+            scaleXDateTime(
+                format = "%d %H" // 원하는 "dd HH" 형식 지정
+            ) +
+            labs( title = qualityType.name(), subtitle = qualityType.desc(), y= qualityType.unit(), x="관측일시", color="관측지점", caption=WATER_QUALITY.caption) +
+            theme +
+            ggsize( width = 1400, height = 680)
+}
+
 
 fun createRibbonChart( data: Map<String,List<Any>>, entrie:String?):Plot {
     val yMin: Float? = data.getValue("TemperatureMin").minOfOrNull {

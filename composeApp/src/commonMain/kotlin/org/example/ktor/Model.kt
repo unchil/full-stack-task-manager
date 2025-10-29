@@ -18,7 +18,7 @@ object SEA_AREA {
 
 object WATER_QUALITY {
 
-    const val caption =  "해양수산부(Ministry of Oceans and Fisheries)"
+    const val caption =  "해양수산부(Ministry of Oceans and Fisheries) https://www.mof.go.kr"
     enum class QualityType{
         rtmWtchWtem, rtmWqCndctv, ph, rtmWqDoxn, rtmWqTu, rtmWqChpla, rtmWqSlnty
     }

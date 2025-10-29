@@ -172,14 +172,29 @@ fun getRealTimeObservatory(){
 
 }
 
-fun getRealTimeOceanWaterQuailty(){
-
+fun getRealTimeOceanWaterQuality_Rocovery(wtch_dt_start:String, wtch_dt_end:String){
+    LOGGER.debug("wtch_dt_start : ${wtch_dt_start}, wtch_dt_end : ${wtch_dt_end}")
     val maxPage = 500
     val jdbcUrl = (Config.config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
+    val numOfRows = 1000
+    val confData = Config.config_df["MOF_API"] as DataRow<*>
+    val url = "${confData["endPoint"]}/${confData["subPath"]}" +
+                "?wtch_dt_start=${
+                    URLEncoder.encode(
+                        wtch_dt_start,
+                        StandardCharsets.UTF_8.toString()
+                    )
+                }" +
+                "&wtch_dt_end=${
+                    URLEncoder.encode(
+                        wtch_dt_end,
+                        StandardCharsets.UTF_8.toString()
+                    )
+                }" +
+                "&numOfRows=${numOfRows}" +
+                "&ServiceKey=${confData["apikey"]}"
 
-    val url = makeUrl(::getRealTimeOceanWaterQuailty.name)
-
-    val dataList = loadData(url, maxPage)
+    val dataList = loadData(url , maxPage)
     val df = dataList.concat()
 
     LOGGER.info("\n"+ df.head(5).toString())
@@ -289,7 +304,7 @@ fun makeUrl(funcName:String):String {
             "${confData["endPoint"].toString()}/${confData["subPath"].toString()}" +
                     "?id=${ (confData["id"] as DataRow<*>)["code"].toString()}&key=${ confData["apikey"].toString()}"
         }
-        ::getRealTimeOceanWaterQuailty.name -> {
+        ::getRealTimeOceanWaterQuality_Rocovery.name -> {
             val now = Clock.System.now()
             @OptIn(FormatStringsInDatetimeFormats::class)
             val currentTime = now
@@ -302,6 +317,7 @@ fun makeUrl(funcName:String):String {
                 .toLocalDateTime(TimeZone.of("Asia/Seoul"))
                 .format(LocalDateTime.Format{byUnicodePattern("yyyy-MM-dd HH:mm:ss")})
 
+
             LOGGER.debug("Current time : ${currentTime}, Previous time : ${previous24Hour}")
 
             val numOfRows = 1000
@@ -310,6 +326,7 @@ fun makeUrl(funcName:String):String {
 
             "${confData["endPoint"]}/${confData["subPath"]}" +
                     "?wtch_dt_start=${URLEncoder.encode(previous24Hour, StandardCharsets.UTF_8.toString())}" +
+                    "&wtch_dt_end=${URLEncoder.encode(currentTime, StandardCharsets.UTF_8.toString())}" +
                     "&numOfRows=${numOfRows}" +
                     "&ServiceKey=${confData["apikey"]}"
 
