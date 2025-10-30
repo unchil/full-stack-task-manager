@@ -4,6 +4,8 @@ import org.example.ktor.WATER_QUALITY.desc
 import org.example.ktor.WATER_QUALITY.name
 import org.example.ktor.WATER_QUALITY.unit
 import org.jetbrains.letsPlot.asDiscrete
+import org.jetbrains.letsPlot.core.spec.plotson.layer
+import org.jetbrains.letsPlot.core.spec.plotson.tooltips
 import org.jetbrains.letsPlot.geom.geomBar
 import org.jetbrains.letsPlot.geom.geomBoxplot
 import org.jetbrains.letsPlot.geom.geomLine
@@ -33,7 +35,8 @@ val theme = theme(
     axisTooltipText= elementText(family="AppleGothic"),
     tooltip= elementText(family="AppleGothic"),
     tooltipText= elementText(family="AppleGothic"),
-    tooltipTitleText= elementText(family="AppleGothic")
+    tooltipTitleText= elementText(family="AppleGothic"),
+
 )
 
 fun createBarChart(data: Map<String,List<Any>>): Plot {
@@ -93,12 +96,23 @@ fun createLineChart2( data: Map<String,List<Any>> , qualityType: WATER_QUALITY.Q
 
 
     return letsPlot(data) +
-            geomLine { x="CollectingTime"; y="Value"; color="ObservatoryName"} +
+            geomLine(
+                tooltips = layerTooltips()
+                    .line("@|@ObservatoryName")
+                    .line("관측일시|@CollectingTime")
+                    .line("${qualityType.name()}|@Value ${qualityType.unit()}")
+                    .format(field="@Value", format=".2f")
+            ) {
+                x="CollectingTime"
+                y="Value"
+                color="ObservatoryName"
+            } +
             scaleXDateTime(
-                format = "%d %H" // 원하는 "dd HH" 형식 지정
+                format = "%d %H:%M" // 원하는 "dd HH" 형식 지정
             ) +
             labs( title = qualityType.name(), subtitle = qualityType.desc(), y= qualityType.unit(), x="관측일시", color="관측지점", caption=WATER_QUALITY.caption) +
             theme
+
 }
 
 fun createRibbonChart(data: Map<String,List<Any>>, entrie:String?): Plot {

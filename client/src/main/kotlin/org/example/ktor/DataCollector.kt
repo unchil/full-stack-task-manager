@@ -13,6 +13,9 @@ class DataCollector() {
             try {
                 repository.getRealTimeObservation()
                 repository.getRealTimeObservatory()
+
+                //jobType:["batch", "schedule"]
+                //jobEvent:["recovery", "operation"]
                 if(Config.jobType.equals("batch") && Config.jobEvent.equals("recovery")){
                     getRealTimeOceanWaterQuality_Rocovery(Config.wtch_dt_start, Config.wtch_dt_end)
                 }else{

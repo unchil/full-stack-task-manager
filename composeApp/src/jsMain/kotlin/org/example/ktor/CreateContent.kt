@@ -7,6 +7,8 @@ import org.example.ktor.WATER_QUALITY.name
 import org.example.ktor.WATER_QUALITY.unit
 import org.example.ktor.data.DATA_DIVISION
 import org.jetbrains.letsPlot.asDiscrete
+import org.jetbrains.letsPlot.core.spec.plotson.TooltipsOptions
+import org.jetbrains.letsPlot.core.spec.plotson.tooltips
 import org.jetbrains.letsPlot.geom.geomBar
 import org.jetbrains.letsPlot.geom.geomBoxplot
 import org.jetbrains.letsPlot.geom.geomLine
@@ -196,7 +198,9 @@ fun createGrid(gridDiv: Element, data:Array<Json>)  {
 
 }
 
-val theme = theme( axisTextX= elementText( angle=45))
+val theme = theme(
+    axisTextX= elementText( angle=45)
+)
 
 fun createBarChart(data: Map<String,List<Any>>, entrie:String?): Plot {
 
@@ -253,11 +257,21 @@ fun createLineChart( data: Map<String,List<Any>>, entrie:String?): Plot {
             ggsize( width = 1400, height = 400)
 }
 
+
+
+
 fun createMofSeaQualityChart(data: Map<String,List<Any>>, qualityType: WATER_QUALITY.QualityType): Plot {
+
     return letsPlot(data) +
-            geomLine { x="CollectingTime"; y="Value"; color="ObservatoryName"} +
+            geomLine(
+                tooltips = layerTooltips()
+                    .line("@|@ObservatoryName")
+                    .line("관측일시|@CollectingTime")
+                    .line("${qualityType.name()}|@Value ${qualityType.unit()}")
+                    .format(field="@Value", format=".2f")
+            )  { x="CollectingTime"; y="Value"; color="ObservatoryName"} +
             scaleXDateTime(
-                format = "%d %H" // 원하는 "dd HH" 형식 지정
+                format = "%d %H:%M" // 원하는 "dd HH" 형식 지정
             ) +
             labs( title = qualityType.name(), subtitle = qualityType.desc(), y= qualityType.unit(), x="관측일시", color="관측지점", caption=WATER_QUALITY.caption) +
             theme +
