@@ -11,7 +11,6 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.kotlinx.dataframe.AnyFrame
 import org.jetbrains.kotlinx.dataframe.DataFrame
-import org.jetbrains.kotlinx.dataframe.DataRow
 import org.jetbrains.kotlinx.dataframe.api.colsOf
 import org.jetbrains.kotlinx.dataframe.api.concat
 import org.jetbrains.kotlinx.dataframe.api.convert
@@ -38,7 +37,6 @@ import kotlin.use
 
 fun getRealTimeObservation( ){
 
-    val jdbcUrl = (Config.config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
 
     val urlString = makeUrl(::getRealTimeObservation.name)
     val response = java.net.URI(urlString).toURL().openStream().use { inputStream ->
@@ -59,7 +57,7 @@ fun getRealTimeObservation( ){
     val tableName = "Observation"
 
     try {
-        DriverManager.getConnection(jdbcUrl).use { conn ->
+        DriverManager.getConnection(Config.url).use { conn ->
 
             val sql = """INSERT INTO ${tableName} ( 
                     sta_cde, sta_nam_kor, obs_dat, obs_tim, obs_datetime,
@@ -100,8 +98,6 @@ fun getRealTimeObservation( ){
 
 fun getRealTimeObservatory(){
 
-    val jdbcUrl = (Config.config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
-
     val urlString = makeUrl(::getRealTimeObservatory.name)
     val response = java.net.URI(urlString).toURL().openStream().use { inputStream ->
         InputStreamReader(inputStream, Charset.forName("EUC-KR")).readText()
@@ -123,7 +119,7 @@ fun getRealTimeObservatory(){
 
 
     try {
-        DriverManager.getConnection(jdbcUrl).use { conn ->
+        DriverManager.getConnection(Config.url).use { conn ->
 
             val sql = """INSERT INTO ${tableName} ( 
                     sta_cde, sta_nam_kor, bld_dat, end_dat, gru_nam,
@@ -175,10 +171,8 @@ fun getRealTimeObservatory(){
 fun getRealTimeOceanWaterQuality_Rocovery(wtch_dt_start:String, wtch_dt_end:String){
     LOGGER.debug("wtch_dt_start : ${wtch_dt_start}, wtch_dt_end : ${wtch_dt_end}")
     val maxPage = 500
-    val jdbcUrl = (Config.config_df["SQLITE_DB"] as DataRow<*>)["jdbcURL"].toString()
     val numOfRows = 1000
-    val confData = Config.config_df["MOF_API"] as DataRow<*>
-    val url = "${confData["endPoint"]}/${confData["subPath"]}" +
+    val url = "${Config.configData.MOF_API?.endPoint}/${Config.configData.MOF_API?.subPath}" +
                 "?wtch_dt_start=${
                     URLEncoder.encode(
                         wtch_dt_start,
@@ -192,7 +186,7 @@ fun getRealTimeOceanWaterQuality_Rocovery(wtch_dt_start:String, wtch_dt_end:Stri
                     )
                 }" +
                 "&numOfRows=${numOfRows}" +
-                "&ServiceKey=${confData["apikey"]}"
+                "&ServiceKey=${Config.configData.MOF_API?.apikey}"
 
     val dataList = loadData(url , maxPage)
     val df = dataList.concat()
@@ -204,7 +198,7 @@ fun getRealTimeOceanWaterQuality_Rocovery(wtch_dt_start:String, wtch_dt_end:Stri
 
     try {
 
-        DriverManager.getConnection(jdbcUrl).use {conn ->
+        DriverManager.getConnection(Config.url).use {conn ->
             createAndPopulateTable(conn, tableName)
 
             val sql = """INSERT INTO ${tableName} ( 
@@ -295,14 +289,12 @@ fun makeUrl(funcName:String):String {
 
     val urlString = when (funcName) {
         ::getRealTimeObservation.name -> {
-            val confData = Config.config_df["NIFS_API"] as DataRow<*>
-            "${confData["endPoint"].toString()}/${confData["subPath"].toString()}" +
-                    "?id=${ (confData["id"] as DataRow<*>)["list"].toString()}&key=${ confData["apikey"].toString()}"
+            "${Config.configData.NIFS_API?.endPoint}/${Config.configData.NIFS_API?.subPath}" +
+                    "?id=${Config.configData.NIFS_API?.id?.list}&key=${Config.configData.NIFS_API?.apikey}"
         }
         ::getRealTimeObservatory.name -> {
-            val confData = Config.config_df["NIFS_API"] as DataRow<*>
-            "${confData["endPoint"].toString()}/${confData["subPath"].toString()}" +
-                    "?id=${ (confData["id"] as DataRow<*>)["code"].toString()}&key=${ confData["apikey"].toString()}"
+            "${Config.configData.NIFS_API?.endPoint}/${Config.configData.NIFS_API?.subPath}" +
+                    "?id=${Config.configData.NIFS_API?.id?.code}&key=${Config.configData.NIFS_API?.apikey}"
         }
         ::getRealTimeOceanWaterQuality_Rocovery.name -> {
             val now = Clock.System.now()
@@ -321,14 +313,11 @@ fun makeUrl(funcName:String):String {
             LOGGER.debug("Current time : ${currentTime}, Previous time : ${previous24Hour}")
 
             val numOfRows = 1000
-
-            val confData = Config.config_df["MOF_API"] as DataRow<*>
-
-            "${confData["endPoint"]}/${confData["subPath"]}" +
+            "${Config.configData.MOF_API?.endPoint}/${Config.configData.MOF_API?.subPath}" +
                     "?wtch_dt_start=${URLEncoder.encode(previous24Hour, StandardCharsets.UTF_8.toString())}" +
                     "&wtch_dt_end=${URLEncoder.encode(currentTime, StandardCharsets.UTF_8.toString())}" +
                     "&numOfRows=${numOfRows}" +
-                    "&ServiceKey=${confData["apikey"]}"
+                    "&ServiceKey=${Config.configData.MOF_API?.apikey}"
 
 
         }

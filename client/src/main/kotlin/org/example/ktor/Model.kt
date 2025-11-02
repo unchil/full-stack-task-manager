@@ -70,8 +70,6 @@ data class OceanWaterQuality (
     val rtmWqSlnty: String // 실시간수질염분
 )
 
-
-
 @Serializable
 @SerialName("body")
 data class OceanWaterQualityBody(
@@ -80,8 +78,6 @@ data class OceanWaterQualityBody(
     val pageNo: String,
     val totalCount: String
 )
-
-
 
 @Serializable
 data class ObservationBody(
@@ -111,3 +107,50 @@ data class OceanWaterResponse(
     val header: Header,
     val body: OceanWaterQualityBody
 )
+
+
+// JSON의 최상위 구조에 해당하는 메인 데이터 클래스
+@Serializable
+data class ConfigData(
+    val NIFS_API: NifsApiConfig? = null,
+    val MOF_API: MofApiConfig? = null,
+    val SQLITE_DB: DatabaseConfig? = null,
+    val COLLECTION_TYPE: CollectionConfig? = null
+)
+
+@Serializable
+data class  NifsApiConfig(
+    val endPoint: String,
+    val apikey: String,
+    val subPath: String,
+    val id: NifsApiID
+)
+
+@Serializable
+data class NifsApiID (
+    val list: String,
+    val code: String
+)
+
+@Serializable
+data class  MofApiConfig(
+    val endPoint: String,
+    val apikey: String,
+    val subPath: String
+)
+
+@Serializable
+data class DatabaseConfig(
+    val jdbcURL: String,
+    val driverClassName: String
+)
+
+@Serializable
+data class CollectionConfig(
+    val type: String,
+    val event: String,
+    val interval: String,
+    val wtch_dt_start: String? = null, // JSON에 없을 수도 있는 값은 nullable로 처리
+    val wtch_dt_end: String? = null
+)
+

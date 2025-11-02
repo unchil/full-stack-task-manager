@@ -5,7 +5,8 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class DataCollector() {
-    private val collectionInterval = Config.interval.toInt().toDuration(DurationUnit.MINUTES)
+    private val collectionInterval = Config.interval?.toInt()?.toDuration(DurationUnit.MINUTES) ?: 0.toDuration(
+        DurationUnit.MINUTES)
     val repository = Repository()
     suspend fun startCollecting() {
         while(true){
@@ -17,7 +18,7 @@ class DataCollector() {
                 //jobType:["batch", "schedule"]
                 //jobEvent:["recovery", "operation"]
                 if(Config.jobType.equals("batch") && Config.jobEvent.equals("recovery")){
-                    getRealTimeOceanWaterQuality_Rocovery(Config.wtch_dt_start, Config.wtch_dt_end)
+                    getRealTimeOceanWaterQuality_Rocovery(Config.wtch_dt_start ?: "", Config.wtch_dt_end ?: "")
                 }else{
                     repository.getRealTimeOceanWaterQuality()
                 }
