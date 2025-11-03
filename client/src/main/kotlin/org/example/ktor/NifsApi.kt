@@ -26,31 +26,21 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 import io.ktor.serialization.kotlinx.xml.*
+import org.example.ktor.Config.Companion.configData
 
 class NifsApi {
 
        companion object {
-
-           val config_df = DataRow.readJson(path= this::class.java.classLoader?.getResource("application.json")!!.path)
-
            suspend fun callNifsAPI_json(id:String):String{
-
-                val confData = this.config_df["NIFS_API"] as DataRow<*>
-
-                val url = confData["endPoint"].toString()
-                val serviceID =  if (id.equals("list")) {
-                    (confData["id"] as DataRow<*>)["list"].toString()
-                } else{
-                    (confData["id"] as DataRow<*>)["code"].toString()
-                }
-                val key = confData["apikey"].toString()
-                val subPath = confData["subPath"].toString()
-
-                client.get(urlString =  url) {
+                client.get(urlString =  configData.NIFS_API?.endPoint ?: "") {
                     url{
-                        appendPathSegments( subPath)
-                        parameters.append("id", serviceID )
-                        parameters.append("key", key )
+                        appendPathSegments( configData.NIFS_API?.subPath ?: "")
+                        parameters.append("id",  if (id.equals("list")) {
+                            configData.NIFS_API?.id?.list ?: ""
+                        } else{
+                            configData.NIFS_API?.id?.code ?: ""
+                        })
+                        parameters.append("key", configData.NIFS_API?.apikey ?: "" )
                     }
                 }.let {
                     return it.bodyAsText(java.nio.charset.Charset.forName("EUC-KR"))
@@ -58,7 +48,6 @@ class NifsApi {
            }
 
            suspend fun callMofAPI_xml():HttpResponse {
-
                val now = Clock.System.now()
                @OptIn(FormatStringsInDatetimeFormats::class)
                val currentTime = now
@@ -73,14 +62,12 @@ class NifsApi {
 
                LOGGER.debug("Current time : ${currentTime}, Previous time : ${previous2Hour}")
 
-               val confData = this.config_df["MOF_API"] as DataRow<*>
-
-               val url = "${confData["endPoint"]}/${confData["subPath"]}" +
+               val url = "${configData.MOF_API?.endPoint}/${configData.MOF_API?.subPath}" +
                        "?wtch_dt_start=${URLEncoder.encode(previous2Hour, StandardCharsets.UTF_8.toString())}" +
                        "&wtch_dt_end=${URLEncoder.encode(currentTime, StandardCharsets.UTF_8.toString())}" +
                        "&numOfRows=1000" +
                        "&pageNo=1" +
-                       "&ServiceKey=${confData["apikey"]}"
+                       "&ServiceKey=${configData.MOF_API?.apikey}"
 
                return client.get(urlString = url)
            }
