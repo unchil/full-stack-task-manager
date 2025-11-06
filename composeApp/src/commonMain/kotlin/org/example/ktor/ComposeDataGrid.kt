@@ -335,103 +335,125 @@ fun ComposeDataGrid(
     AppTheme(enableDarkMode = enableDarkMode.value) {
 
 
-        Scaffold(
-            modifier = then(modifier)
-                .fillMaxSize()
-                .border(
-                    BorderStroke(width = 1.dp, color = Color.Black),
-                    RoundedCornerShape(2.dp)
-                ),
-            topBar = {
-                ComposeDataGridHeader(
-                    modifier = Modifier.fillMaxWidth(),
-                    columnInfo = columnInfo,
-                    onSortOrder = onMultiSortedOrder,
-                    onFilter = onFilter,
-                    updateDataColumnOrder = updateDataColumnOrder ,
-                )
-            },
-            bottomBar = {
-                if(enablePagingGrid.value) {
-                    ComposeDataGridFooter( currentPage, pageSize, presentData.size, onPageChange,)
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = contentColorFor( MaterialTheme.colorScheme.surface),
-        ){
 
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopCenter
-            ) {
-
-                LazyColumn (
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it),
-                    state = lazyListState,
-                    contentPadding = PaddingValues(1.dp),
-                    userScrollEnabled = true,
-                ){
-
-                    items(
-                        count =if(enablePagingGrid.value) {
-                            pagingData.size
-                        } else {
-                            presentData.size
-                        }
-                    ){
-                            index ->
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .border( BorderStroke( width = 1.dp, color = Color.LightGray.copy(alpha = 0.2f)) ),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-
-                            // row number
-                            Text(
-                                text =  if( enablePagingGrid.value) {
-                                    (startRowNum + index + 1).toString()
-                                } else {
-                                    (index + 1).toString()
-                                },
-                                modifier = Modifier.width(40.dp),
-                                textAlign = TextAlign.Center
-                            )
-
-                            ComposeDataGridRow(
-                                columnInfo.value,
-                                data = if(enablePagingGrid.value) {
-                                    pagingData[index] as List<Any?>
-                                } else {
-                                    presentData[index] as List<Any?>
-                                }
-                            )
-                        }
-
+            Scaffold(
+                modifier = then(modifier)
+                    .fillMaxSize()
+                    .border(
+                        BorderStroke(width = 1.dp, color = Color.Black),
+                        RoundedCornerShape(2.dp)
+                    ),
+                topBar = {
+                    ComposeDataGridHeader(
+                        modifier = Modifier.fillMaxWidth(),
+                        columnInfo = columnInfo,
+                        onSortOrder = onMultiSortedOrder,
+                        onFilter = onFilter,
+                        updateDataColumnOrder = updateDataColumnOrder,
+                    )
+                },
+                bottomBar = {
+                    if (enablePagingGrid.value) {
+                        ComposeDataGridFooter(
+                            currentPage,
+                            pageSize,
+                            presentData.size,
+                            onPageChange,
+                        )
                     }
-                }
+                },
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
+            ) {
 
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.BottomCenter
-                ){
-                    ComposeDataGridFooter(
-                        modifier = Modifier
-                            .width(500.dp)
-                            .padding( bottom = if(enablePagingGrid.value) { 70.dp} else { 10.dp} ),
-                        lazyListState = lazyListState ,
-                        dataCnt = if(enablePagingGrid.value) {pagingData.size} else {presentData.size},
-                        enablePagingGrid = enablePagingGrid,
-                        enableDarkMode = enableDarkMode,
-                        onRefresh = onRefresh
-                    )
-                }
+                    contentAlignment = Alignment.TopCenter
+                ) {
 
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it),
+                        state = lazyListState,
+                        contentPadding = PaddingValues(1.dp),
+                        userScrollEnabled = true,
+                    ) {
+
+                        items(
+                            count = if (enablePagingGrid.value) {
+                                pagingData.size
+                            } else {
+                                presentData.size
+                            }
+                        ) { index ->
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.surfaceContainerLowest )
+                                    .border(
+                                        BorderStroke(
+                                            width = 1.dp,
+                                            color = Color.LightGray.copy(alpha = 0.2f)
+                                        )
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+
+                                // row number
+                                Text(
+                                    text = if (enablePagingGrid.value) {
+                                        (startRowNum + index + 1).toString()
+                                    } else {
+                                        (index + 1).toString()
+                                    },
+                                    modifier = Modifier.width(40.dp),
+                                    textAlign = TextAlign.Center
+                                )
+
+                                ComposeDataGridRow(
+                                    columnInfo.value,
+                                    data = if (enablePagingGrid.value) {
+                                        pagingData[index] as List<Any?>
+                                    } else {
+                                        presentData[index] as List<Any?>
+                                    }
+                                )
+                            }
+
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
+                        ComposeDataGridFooter(
+                            modifier = Modifier
+                                .width(500.dp)
+                                .padding(
+                                    bottom = if (enablePagingGrid.value) {
+                                        70.dp
+                                    } else {
+                                        10.dp
+                                    }
+                                ),
+                            lazyListState = lazyListState,
+                            dataCnt = if (enablePagingGrid.value) {
+                                pagingData.size
+                            } else {
+                                presentData.size
+                            },
+                            enablePagingGrid = enablePagingGrid,
+                            enableDarkMode = enableDarkMode,
+                            onRefresh = onRefresh
+                        )
+                    }
+
+                }
             }
-        }
+
 
     }
 
@@ -470,9 +492,9 @@ fun ComposeDataGridHeader(
             .fillMaxWidth()
             .height(46.dp)
             .border(
-                border = BorderStroke(width = 1.dp, color =  MaterialTheme.colorScheme.outline),
+                border = BorderStroke(width = 1.dp, color =  MaterialTheme.colorScheme.onSecondaryContainer),
                 shape = RoundedCornerShape(2.dp) )
-            .background(MaterialTheme.colorScheme.surface),
+            .background(MaterialTheme.colorScheme.secondaryContainer),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ){
@@ -718,8 +740,8 @@ fun ComposeDataGridFooter(
     Row (
         modifier = then(modifier)
             .fillMaxWidth().height(46.dp)
-            .border( BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline), shape = RoundedCornerShape(2.dp))
-            .background(color  =MaterialTheme.colorScheme.surface),
+            .border( BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.onTertiaryContainer), shape = RoundedCornerShape(2.dp))
+            .background(color  =MaterialTheme.colorScheme.tertiaryContainer),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ){
@@ -826,8 +848,8 @@ fun ComposeDataGridFooter(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
-            .background(color  =MaterialTheme.colorScheme.surface)
-            .border( BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline),
+            .background(color  =MaterialTheme.colorScheme.secondaryContainer)
+            .border( BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.onSecondaryContainer),
             RoundedCornerShape(2.dp) ),
         contentAlignment = Alignment.Center
     ){
@@ -958,7 +980,7 @@ fun SearchMenu(
                 expanded = false
                 filterText.value = ""
             },
-            modifier = Modifier.width(180.dp).background(color =MaterialTheme.colorScheme.surface),
+            modifier = Modifier.width(180.dp).background(color =MaterialTheme.colorScheme.tertiaryContainer),
         ) {
 
             Column() {
@@ -982,7 +1004,7 @@ fun SearchMenu(
                         expanded = expandedOperator,
                         onDismissRequest = { expandedOperator = false },
                         scrollState = scrollState,
-                        modifier = Modifier.width(200.dp).height(160.dp).background(color  =MaterialTheme.colorScheme.surface),
+                        modifier = Modifier.width(200.dp).height(160.dp).background(color  =MaterialTheme.colorScheme.tertiaryContainer),
                     ) {
                         OperatorMenu.Operators.forEach { operator ->
                             HorizontalDivider()

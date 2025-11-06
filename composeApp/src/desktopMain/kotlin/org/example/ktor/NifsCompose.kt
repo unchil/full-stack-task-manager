@@ -29,13 +29,12 @@ fun NifsCompose(){
             fontWeight= FontWeight.Bold
         )
 
+        NifsSeaWaterInfoDataGrid(modifier = Modifier.fillMaxWidth(0.9f).height(560.dp ).padding(20.dp))
         MofObservationLine(modifier = Modifier.fillMaxWidth(0.9f).padding(20.dp) )
-
         NifsObservationBoxPlot(modifier = Modifier.fillMaxWidth(0.9f).padding( 20.dp))
         NifsObservationLayerBars(modifier = Modifier.fillMaxWidth(0.9f).padding(20.dp) )
         NifsObservationLine(modifier = Modifier.fillMaxWidth(0.9f).padding(20.dp) )
         NifsObservationRibbon(modifier = Modifier.fillMaxWidth(0.9f).padding( 20.dp) )
-        NifsSeaWaterInfoDataGrid(modifier = Modifier.fillMaxWidth(0.9f).height(560.dp ).padding(20.dp))
 
     }
 }
