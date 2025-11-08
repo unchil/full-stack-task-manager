@@ -434,9 +434,9 @@ fun ComposeDataGrid(
                                 .width(500.dp)
                                 .padding(
                                     bottom = if (enablePagingGrid.value) {
-                                        70.dp
+                                        90.dp
                                     } else {
-                                        10.dp
+                                        40.dp
                                     }
                                 ),
                             lazyListState = lazyListState,
@@ -530,7 +530,7 @@ fun ComposeColumnRow(
         mutableStateOf<HoverInteraction.Enter?>(null) }
     }
 
-    val dividerThickness = 2.dp
+    val dividerThickness = 1.dp
     val totalWidth = rowWidthInDp - (dividerThickness * (columnInfoList.value.size - 1))
     val draggableStates = (0 until columnInfoList.value.size - 1).map {
         index ->
@@ -715,7 +715,7 @@ fun ComposeColumnRow(
                             orientation = Orientation.Horizontal,
                             state = draggableStates[index],
                         ),
-                    color = Color.LightGray,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     thickness = dividerThickness
                 )
             }
