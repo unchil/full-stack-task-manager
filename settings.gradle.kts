@@ -36,6 +36,19 @@ dependencyResolutionManagement {
 
         google()
         mavenCentral()
+
+        // --- 아래 maven 블록을 추가하세요 ---
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/unchil/ComposeDataGrid")
+            credentials {
+                username = System.getenv("GPR_USER")
+                password = System.getenv("GPR_KEY")
+
+            }
+        }
+        // ------------------------------------
+
     }
 }
 

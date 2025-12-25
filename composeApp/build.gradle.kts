@@ -103,6 +103,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.kotlinx.datetime.old)
+
+            implementation(libs.unchil.un7datagrid)
         }
 
         desktopMain.dependencies {

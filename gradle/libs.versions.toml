@@ -50,6 +50,9 @@ foundationAndroid = "1.8.0"
 
 dataframe = "1.0.0-Beta2"
 
+## Un7DataGrid
+un7datagrid = "1.0.7"
+
 [libraries]
 
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
@@ -141,6 +144,10 @@ androidx-foundation-android = { group = "androidx.compose.foundation", name = "f
 
 react = {group = "org.jetbrains.kotlin-wrappers", name = "kotlin-react", version = "18.3.1-pre.780" }
 reactDom = {group = "org.jetbrains.kotlin-wrappers", name = "kotlin-react-dom", version = "18.3.1-pre.780" }
+
+## Un7DataGrid
+unchil-un7datagrid = { group= "com.github.unchil", name = "un7datagrid", version.ref = "un7datagrid" }
+
 
 
 [plugins]
