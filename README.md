@@ -1,4 +1,4 @@
-# Full-Stack_task-anager
+# Full-Stack-task-Manager
 
 ## The entire project includes a client module for data collection,a server module for servicing the collected data, a share module for calling the collected data, and a data table and various types of charts to display on the screen.
 
