@@ -2,6 +2,13 @@
 
 This project is a full-stack application built with Kotlin Multiplatform. It collects sea water data from public APIs, serves it through a Ktor backend, and displays it on Android, iOS, and Desktop clients built with Compose Multiplatform.
 
+## Video
+
+|                                                              Desktop                                                               |
+|:----------------------------------------------------------------------------------------------------------------------------------:|
+| [![Alt text](https://github.com/unchil/full-stack-task-manager/blob/main/screenshot/screenshot.png)](https://youtu.be/0wahYO2YU4Y) |
+
+
 ## Modules
 
 This project is divided into the following modules:
@@ -40,8 +47,3 @@ The server will be available at `http://localhost:8080`.
 *   **Android**: Open the project in Android Studio and run the `composeApp` configuration.
 *   **iOS**: Open the `iosApp` project in Xcode and run it on a simulator or a physical device.
 
-## Video
-
-|                                                              Desktop                                                               |
-|:----------------------------------------------------------------------------------------------------------------------------------:|
-| [![Alt text](https://github.com/unchil/full-stack-task-manager/blob/main/screenshot/screenshot.png)](https://youtu.be/0wahYO2YU4Y) |
