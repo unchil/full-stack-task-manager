@@ -1,6 +1,8 @@
 package org.example.ktor
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
@@ -48,7 +50,7 @@ fun NifsObservationLayerBars(modifier:Modifier = Modifier) {
 
         Row(modifier = Modifier.then(modifier).padding(vertical = 8.dp)) {
             PlotPanel(
-                modifier = Modifier.size(width = 1300.dp, height = 400.dp),
+                modifier = Modifier.fillMaxWidth().height( 400.dp),
                 figure = figure,
                 preserveAspectRatio = preserveAspectRatio.value
             ) { computationMessages ->

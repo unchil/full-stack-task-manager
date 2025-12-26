@@ -12,29 +12,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.example.ktor.theme.AppTheme
 
 @Composable
 fun NifsCompose(){
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-            .background(Color.White)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
+    AppTheme(enableDarkMode=false) {
 
-        Text("Korea Sea Water Quality Information",
-            modifier=Modifier.padding( 20.dp),
-            fontSize=20.sp ,
-            fontWeight= FontWeight.Bold
-        )
+        Column(
+            modifier = Modifier.fillMaxSize()
+                .background(Color.White)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        NifsSeaWaterInfoDataGrid(modifier = Modifier.fillMaxWidth(0.9f).height(700.dp ).padding(20.dp))
-    //    MofObservationLine(modifier = Modifier.fillMaxWidth(0.9f).padding(20.dp) )
-        NifsObservationBoxPlot(modifier = Modifier.fillMaxWidth(0.9f).padding( 20.dp))
-        NifsObservationLayerBars(modifier = Modifier.fillMaxWidth(0.9f).padding(20.dp) )
-        NifsObservationLine(modifier = Modifier.fillMaxWidth(0.9f).padding(20.dp) )
-        NifsObservationRibbon(modifier = Modifier.fillMaxWidth(0.9f).padding( 20.dp) )
+            Text(
+                "Korea Sea Water Quality Information",
+                modifier = Modifier.padding(vertical = 40.dp),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            NifsSeaWaterInfoDataGrid( modifier = Modifier.fillMaxWidth(0.95f).height(700.dp))
+            MofObservationLine(modifier = Modifier.fillMaxWidth(0.95f).padding(vertical = 10.dp))
+            NifsObservationBoxPlot(modifier = Modifier.fillMaxWidth(0.95f).padding(vertical = 10.dp))
+            NifsObservationLayerBars(modifier = Modifier.fillMaxWidth(0.95f).padding(vertical = 10.dp))
+            NifsObservationLine(modifier = Modifier.fillMaxWidth(0.95f).padding(vertical = 10.dp))
+            NifsObservationRibbon(modifier = Modifier.fillMaxWidth(0.95f).padding(vertical = 10.dp))
+
+        }
 
     }
 }

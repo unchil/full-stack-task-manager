@@ -10,6 +10,7 @@ import org.example.ktor.model.SeaWaterInfoByOneHourStat
 import org.example.ktor.model.SeaWaterInformation
 import org.example.ktor.model.SeawaterInformationByObservationPoint
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.ExperimentalTime
 
 
 fun List<*>.toLayerBarsData():Map<String,List<Any>> {
@@ -90,7 +91,7 @@ fun List<*>.toLineData(gruName: String):Map<String,List<Any>> {
     )
 }
 
-@OptIn(FormatStringsInDatetimeFormats::class)
+@OptIn(FormatStringsInDatetimeFormats::class, ExperimentalTime::class)
 fun List<*>.toMofLineData(qualityType: WATER_QUALITY.QualityType):Map<String,List<Any>> {
     val rtmWqWtchStaName = mutableListOf<String>()
     val value = mutableListOf<Float>()
