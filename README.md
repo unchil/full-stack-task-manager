@@ -44,4 +44,4 @@ The server will be available at `http://localhost:8080`.
 
 |                                                              Desktop                                                               |
 |:----------------------------------------------------------------------------------------------------------------------------------:|
-| [![Alt text](https://github.com/unchil/full-stack-task-manager/blob/main/screenshot/screenshot.png)](https://youtu.be/AUMMcXOPThE) |
+| [![Alt text](https://github.com/unchil/full-stack-task-manager/blob/main/screenshot/screenshot.png)](https://youtu.be/0wahYO2YU4Y) |
