@@ -1,37 +1,47 @@
-# Full-Stack-task-Manager
+# Full-Stack Task Manager
 
-## The entire project includes a client module for data collection,a server module for servicing the collected data, a share module for calling the collected data, and a data table and various types of charts to display on the screen.
+This project is a full-stack application built with Kotlin Multiplatform. It collects sea water data from public APIs, serves it through a Ktor backend, and displays it on Android, iOS, and Desktop clients built with Compose Multiplatform.
 
+## Modules
+
+This project is divided into the following modules:
+
+*   **:client**: This module is responsible for collecting data from the National Institute of Fisheries Science (NIFS) and the Ministry of Oceans and Fisheries (MOF) public APIs. It periodically fetches real-time observation data, observatory information, and ocean water quality, and stores it in a database. Data collection can be run as a batch job or as a scheduled task.
+
+*   **:server**: This module provides the collected data to the client applications through a Ktor-based REST API. It exposes several endpoints to query sea water information, statistics, and observatory locations.
+
+*   **:shared**: This module contains the common code shared between the `client`, `server`, and `composeApp` modules. This includes data models, business logic, and network communication code.
+
+*   **:composeApp**: This module implements the user interface for Android, iOS, and Desktop using Compose Multiplatform. It communicates with the `server` module to fetch and display the sea water data in a user-friendly way, including tables and charts.
+
+## How to Run
+
+### Data Collection
+
+To collect data, run the `client` module. You can configure the data collection mode (batch or schedule) in the configuration file.
+
+```
+./gradlew :client:run
+```
+
+### Backend Server
+
+To start the backend server, run the following Gradle task:
+
+```
+./gradlew :server:run
+```
+
+The server will be available at `http://localhost:8080`.
+
+### Client Applications
+
+*   **Desktop**: `./gradlew :composeApp:run`
+*   **Android**: Open the project in Android Studio and run the `composeApp` configuration.
+*   **iOS**: Open the `iosApp` project in Xcode and run it on a simulator or a physical device.
 
 ## Video
+
 |                                                              Desktop                                                               |
 |:----------------------------------------------------------------------------------------------------------------------------------:|
-| [![Alt text](https://github.com/unchil/full-stack-task-manager/blob/main/screenshot/screenshot.png)](https://youtu.be/AUMMcXOPThE) | 
-
-
-
-
-Original Source :[https://github.com/ktorio/ktor-documentation/tree/3.0.2/codeSnippets/snippets/tutorial-full-stack-task-manager][sorce]
-
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop, Server.
-
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
-
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
-
-* `/server` is for the Ktor server application.
-
-* `/shared` is for the code that will be shared between all targets in the project.
-  The most important subfolder is `commonMain`. If preferred, you can add code to the platform-specific folders here too.
-
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
-
-
-[sorce]: https://github.com/ktorio/ktor-documentation/tree/3.0.2/codeSnippets/snippets/tutorial-full-stack-task-manager "tutorial-full-stack-task-manager"
+| [![Alt text](https://github.com/unchil/full-stack-task-manager/blob/main/screenshot/screenshot.png)](https://youtu.be/AUMMcXOPThE) |
