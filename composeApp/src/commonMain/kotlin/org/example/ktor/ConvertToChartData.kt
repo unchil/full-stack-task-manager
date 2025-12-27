@@ -140,8 +140,9 @@ fun List<*>.toMofLineData(qualityType: WATER_QUALITY.QualityType):Map<String,Lis
                     }
                 }
                 WATER_QUALITY.QualityType.rtmWqTu -> {
-                    if (it.rtmWqTu.trim().toFloat() < 0.0){
-                        value.add( 0f)
+
+                    if (it.rtmWqTu.trim().isBlank()){
+                        value.add( -1f)
                     }else{
                         value.add( it.rtmWqTu.trim().toFloat() )
                     }

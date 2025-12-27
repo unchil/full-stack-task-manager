@@ -12,39 +12,57 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.launch
 import org.example.ktor.data.DATA_DIVISION
 import com.unchil.un7datagrid.Un7KCMPDataGrid
-import com.unchil.un7datagrid.toMap
+
+
+
+fun toInstantMap(first:List<String>, second:List<List<Any?>>):Map<String, List<Any?>>{
+    val result = mutableMapOf<String, List<Any?>>()
+    if(first.size == second.first().size) {
+        first.forEachIndexed { index, string ->
+            result.putAll(mapOf(string to second.map { it -> it[index] }.toList()) )
+        }
+    }
+    return result
+}
+
+
 
 @Composable
 fun NifsSeaWaterInfoDataGrid(modifier: Modifier = Modifier) {
 
-    val viewModel = remember { NifsSeaWaterInfoOneDayGridViewModel() }
+
+    val viewModel = remember { MofSeaWaterInfoOneDayViewModel() }
     val coroutineScope = rememberCoroutineScope()
     var isVisible by remember { mutableStateOf(false) }
-    val data = remember { mutableStateOf(emptyList<List<Any?>>()) }
 
     LaunchedEffect(key1 = viewModel){
-        viewModel.onEvent(NifsSeaWaterInfoOneDayGridViewModel.Event.ObservationRefresh(DATA_DIVISION.grid))
+        viewModel.onEvent(MofSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.mof_oneday))
     }
 
     val reloadData :()->Unit = {
         coroutineScope.launch{
-            viewModel.onEvent(NifsSeaWaterInfoOneDayGridViewModel.Event.ObservationRefresh(DATA_DIVISION.grid))
+            viewModel.onEvent(MofSeaWaterInfoOneDayViewModel.Event.ObservationRefresh(DATA_DIVISION.mof_oneday))
         }
     }
 
-    val seaWaterInfoCurrent = viewModel._seaWaterInfoOneDayGridStateFlow.collectAsState()
+    val seaWaterInfo = viewModel._seaWaterInfoOneDayStateFlow.collectAsState()
 
-    LaunchedEffect(seaWaterInfoCurrent.value){
-        isVisible = seaWaterInfoCurrent.value.isNotEmpty()
+    val columnNames = remember { mutableStateOf(emptyList<String>() ) }
+    val data = remember { mutableStateOf(emptyList<List<Any?>>()) }
+
+    LaunchedEffect(seaWaterInfo.value){
+
+        isVisible = seaWaterInfo.value.isNotEmpty()
         if(isVisible){
-            data.value = seaWaterInfoCurrent.value.map { it.toList() }
+            columnNames.value = seaWaterInfo.value.first().makeGridColumns()
+            data.value = seaWaterInfo.value.map {
+                it.toGridData()
+            }
         }
     }
-    val columnNames = listOf("수집시간", "해역", "관측지점", "지점코드", "수심", "수온", "경도", "위도")
 
     if(isVisible){
-
-        Un7KCMPDataGrid(modifier, Pair(columnNames, data.value).toMap())
+        Un7KCMPDataGrid(modifier, toInstantMap(columnNames.value , data.value))
 
     }
 }

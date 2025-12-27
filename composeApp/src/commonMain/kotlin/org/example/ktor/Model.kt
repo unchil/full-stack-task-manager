@@ -1,5 +1,7 @@
 package org.example.ktor
 
+import org.example.ktor.model.SeaWaterInformation
+
 object SEA_AREA {
 
     enum class GRU_NAME {
@@ -13,6 +15,36 @@ object SEA_AREA {
             GRU_NAME.SOUTH -> "남해"
         }
     }
+}
+
+
+fun SeaWaterInformation.makeGridColumns():List<String>{
+    val columns = mutableListOf<String>()
+    columns.add("수집시간")
+    columns.add("관측지점")
+    columns.add("수온")
+    columns.add("수소이온농도")
+    columns.add("용존산소량")
+    columns.add("탁도")
+    columns.add("엽록소")
+    columns.add("염분")
+
+    return columns
+}
+
+fun SeaWaterInformation.toGridData():List<Any?>{
+    val data = mutableListOf<Any?>()
+
+    data.add(this.rtmWqWtchDtlDt)
+    data.add(this.rtmWqWtchStaName)
+    data.add(this.rtmWtchWtem)
+    data.add(this.ph)
+    data.add(this.rtmWqDoxn)
+    data.add(this.rtmWqTu)
+    data.add(this.rtmWqChpla)
+    data.add(this.rtmWqSlnty)
+
+    return data
 }
 
 
