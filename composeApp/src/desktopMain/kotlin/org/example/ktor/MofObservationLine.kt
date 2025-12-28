@@ -82,7 +82,7 @@ fun MofObservationLine(modifier: Modifier = Modifier)  {
             }
 
             PlotPanel(
-                modifier = Modifier.fillMaxWidth().height(700.dp),
+                modifier = Modifier.fillMaxWidth().height(500.dp),
                 figure = figureLine,
                 preserveAspectRatio = preserveAspectRatio.value
             ) { computationMessages ->
