@@ -55,7 +55,7 @@ fun NifsSeaWaterInfoDataGrid(modifier: Modifier = Modifier) {
             modifier,
             Pair(columnNames.value , data.value).toMap(),
             Un7KCMPDataGridConfig(
-                true, "row", listOf("10", "20", "50", "100"), 2
+                true, "No.", listOf("10", "20", "50", "100"), 2
             )
         )
     }
