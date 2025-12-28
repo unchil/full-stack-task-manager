@@ -12,19 +12,7 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.launch
 import org.example.ktor.data.DATA_DIVISION
 import com.unchil.un7datagrid.Un7KCMPDataGrid
-
-
-
-fun toInstantMap(first:List<String>, second:List<List<Any?>>):Map<String, List<Any?>>{
-    val result = mutableMapOf<String, List<Any?>>()
-    if(first.size == second.first().size) {
-        first.forEachIndexed { index, string ->
-            result.putAll(mapOf(string to second.map { it -> it[index] }.toList()) )
-        }
-    }
-    return result
-}
-
+import com.unchil.un7datagrid.toMap
 
 
 @Composable
@@ -62,8 +50,7 @@ fun NifsSeaWaterInfoDataGrid(modifier: Modifier = Modifier) {
     }
 
     if(isVisible){
-        Un7KCMPDataGrid(modifier, toInstantMap(columnNames.value , data.value))
-
+        Un7KCMPDataGrid(modifier, Pair(columnNames.value , data.value).toMap())
     }
 }
 
