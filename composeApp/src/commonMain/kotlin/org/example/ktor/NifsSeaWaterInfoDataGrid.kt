@@ -9,11 +9,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.unchil.un7datagrid.Un7KCMPDataGrid
+import com.unchil.un7datagrid.toMap
 import kotlinx.coroutines.launch
 import org.example.ktor.data.DATA_DIVISION
-import com.unchil.un7datagrid.Un7KCMPDataGrid
-import com.unchil.un7datagrid.Un7KCMPDataGridConfig
-import com.unchil.un7datagrid.toMap
 
 
 @Composable
@@ -54,9 +53,6 @@ fun NifsSeaWaterInfoDataGrid(modifier: Modifier = Modifier) {
         Un7KCMPDataGrid(
             modifier,
             Pair(columnNames.value , data.value).toMap(),
-            Un7KCMPDataGridConfig(
-                true, "No.", listOf("10", "20", "50", "100"), 2
-            )
         )
     }
 }
