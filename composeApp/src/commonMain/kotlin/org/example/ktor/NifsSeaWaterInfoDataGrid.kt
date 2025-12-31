@@ -17,7 +17,6 @@ import com.unchil.un7datagrid.toMap
 import kotlinx.coroutines.launch
 import org.example.ktor.data.DATA_DIVISION
 
-
 @Composable
 fun NifsSeaWaterInfoDataGrid(modifier: Modifier = Modifier) {
 
@@ -57,8 +56,8 @@ fun NifsSeaWaterInfoDataGrid(modifier: Modifier = Modifier) {
             modifier,
             Pair(columnNames.value , data.value).toMap(),
             Un7KCMPDataGridConfig(
-                dataRowBackgroundColor = MaterialTheme.colorScheme.surface ,
-                dataRowContentColor = Color.DarkGray ,
+                dataRowBackgroundColor = MaterialTheme.colorScheme.surface,
+                dataRowContentColor = Color.DarkGray,
                 oddDataRowBackgroundColor = Color.White,
                 evenDataRowBackgroundColor = Color(0xFFF5F5F5)
             )
