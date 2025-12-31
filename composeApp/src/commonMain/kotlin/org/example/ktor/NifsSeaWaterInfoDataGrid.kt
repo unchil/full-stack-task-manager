@@ -1,5 +1,6 @@
 package org.example.ktor
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -9,7 +10,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.unchil.un7datagrid.Un7KCMPDataGrid
+import com.unchil.un7datagrid.Un7KCMPDataGridConfig
 import com.unchil.un7datagrid.toMap
 import kotlinx.coroutines.launch
 import org.example.ktor.data.DATA_DIVISION
@@ -53,6 +56,12 @@ fun NifsSeaWaterInfoDataGrid(modifier: Modifier = Modifier) {
         Un7KCMPDataGrid(
             modifier,
             Pair(columnNames.value , data.value).toMap(),
+            Un7KCMPDataGridConfig(
+                dataRowBackgroundColor = MaterialTheme.colorScheme.surface ,
+                dataRowContentColor = Color.DarkGray ,
+                oddDataRowBackgroundColor = Color.White,
+                evenDataRowBackgroundColor = Color(0xFFF5F5F5)
+            )
         )
     }
 }
